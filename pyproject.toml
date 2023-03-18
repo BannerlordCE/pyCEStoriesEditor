@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "pycestorieseditor"
+version = "0.1.0"
+description = ""
+authors = ["bicobus <bicobus@keemail.me>"]
+readme = "README.md"
+packages = [{include = "pycestorieseditor", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+lxml = "^4.9.2"
+graphviz = "^0.20.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+#line-length = 98
+include = '\.pyi?$'
+skip-string-normalization = true
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.github
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+)
+'''
+
+[tool.isort]
+multi_line_output = 3
+line_length = 98
+include_trailing_comma = true
+skip_glob = "tests/**,docs/**"
+skip_gitignore = false
+use_parentheses = true
