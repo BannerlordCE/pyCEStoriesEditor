@@ -1,5 +1,5 @@
 from typing import TypedDict
-from generated.ceevents_modal import (
+from pycestorieseditor.ceevents_template.ceevents_modal import (
     AgreeResultText,
     AgreeText,
     Background,
@@ -271,5 +271,4 @@ __all__ = [
     "TriggerEvent",
     "TriggerEvents",
     "WeightedChanceOfOccuring",
-    "ebucket"
 ]

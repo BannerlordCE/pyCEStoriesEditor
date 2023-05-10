@@ -90,16 +90,6 @@ def label_text(parent, label, content, row=0):
     return label, text
 
 
-def fonts_for_tkwidget(widget):
-    bold_font = font.Font(widget, widget.cget("font"))
-    bold_font.configure(weight=font.BOLD)
-    italic_font = font.Font(widget, widget.cget("font"))
-    italic_font.configure(slant=font.ITALIC)
-    bold_italic_font = font.Font(widget, widget.cget("font"))
-    bold_italic_font.configure(weight=font.BOLD, slant=font.ITALIC)
-    return bold_font, italic_font, bold_italic_font
-
-
 class HighlightText(ScrolledText):
     _w: str
 
@@ -113,6 +103,10 @@ class HighlightText(ScrolledText):
         self.define_fonts()
         self.create_tags()
         self._orig = f"{self._w}_widget"
+        # Although the following may not be necessary for this software needs,
+        # it remains a neat trick nonetheless. Effectively rename the current
+        # widget, then install a proxy function call whenever tk.call is
+        # involved.
         self.tk.call("rename", self._w, self._orig)
         self.tk.createcommand(self._w, self._proxy)
 
@@ -139,20 +133,10 @@ class HighlightText(ScrolledText):
 
     def create_tags(self):
         for token, ndef in self.style:
-            txtfont = None
-            if ndef["bold"]:
-                if ndef["italic"]:
-                    txtfont = self.fonts["bold_italic_font"]
-                else:
-                    txtfont = self.fonts["bold_font"]
-            elif ndef["italic"]:
-                txtfont = self.fonts["italic_font"]
-
-            if ndef["color"]:
-                foreground = "#%s" % ndef['color']
-            else:
-                foreground = None
-
+            bold = "_bold" if ndef["bold"] else ""
+            italic = "_italic" if ndef["italic"] else ""
+            txtfont = self.fonts[f"{bold}{italic}_font"] if bold and italic else None
+            foreground = f"#{ndef['color']}" if ndef["color"] else None
             self.tag_configure(str(token), foreground=foreground, font=txtfont)
 
     def highlighter(self):
