@@ -74,18 +74,21 @@ def label_backgrounds(parent, label, bg, row):
         tree.insert("", tk.END, values=astuple(c))
 
 
-def label_background_names(parent, label, bg, row):
+def label_background_names(parent, label, bg, row, animation=None):
     frame = ttk.Frame(parent)
     frame.grid(row=row, column=0, columnspan=2, sticky="nw")
+    if animation:
+        label = f"{label} (animation speed={animation})"
     label = ttk.Label(frame, text=label)
-    irow = 0
-    label.grid(row=irow, column=0, sticky="nw")
-    for i, c in enumerate(bg):
-        irow += 1
-        bg_txt = tk.StringVar(frame, c)
-        entry = ttk.Entry(frame, textvariable=bg_txt)
-        entry.textref = bg_txt
-        entry.grid(row=irow, column=1, sticky="nw")
+    label.grid(row=0, column=0, sticky="nw")
+
+    listb = tk.Listbox(selectmode=tk.SINGLE)
+    scrollbar = ttk.Scrollbar(parent, command=listb.yview)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    listb.configure(yscrollcommand=scrollbar.set)
+    listb.pack(side=tk.LEFT, fill=tk.BOTH)
+    for c in bg:
+        listb.insert(tk.END, c)
 
 
 def label_text(parent, label, content, row=0):
@@ -179,8 +182,14 @@ class DetailWindow(tk.Toplevel):
         with suppress(AttributeError):
             label_backgrounds(self, "Backgrounds", ceevent.backgrounds.background, row=self.row_size() + 1)
 
-        # with suppress(AttributeError):
-        #     label_background_names(self, "Background Animation")
+        with suppress(AttributeError):
+            label_background_names(
+                self,
+                "Background Animation",
+                ceevent.background_animation.background_name,
+                row=self.row_size() + 1,
+                animation=ceevent.background_animation_speed.value
+            )
 
         self._xml_rowspan = self.row_size()
         self._hidden = True
