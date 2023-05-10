@@ -10,6 +10,7 @@ from idlelib.tooltip import Hovertip
 from tkinter import ttk, font
 from tkinter.scrolledtext import ScrolledText
 
+from attrs import astuple
 from pygments import lex
 from pygments.lexers.html import XmlLexer
 from pygments.styles import get_style_by_name
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def label_entry(parent, label, content, row=0, column=0):
     label = ttk.Label(parent, text=label)
-    label.grid(row=row, column=column, sticky="nw")
+    label.grid(row=row, column=column, sticky="nsew")
     entrytxt = tk.StringVar(parent, content)
     entry = ttk.Entry(parent, textvariable=entrytxt)
     entry.textref = entrytxt  # create a reference to avoid the GC
@@ -52,32 +53,39 @@ def label_mentries(parent, label, content, row):
 
 def label_backgrounds(parent, label, bg, row):
     frame = ttk.Frame(parent)
+    frame.grid(row=row, column=0, columnspan=2, sticky="nsew")
+
+    label = ttk.Label(frame, text=label)
+    label.pack(fill=tk.X)
+
+    columns = ("name", "weight", "use_conditions")
+    tree = ttk.Treeview(frame, columns=columns, show="headings", height=5)
+    tree.pack(side=tk.LEFT, fill="both", expand=True, padx=(10, 0))
+    scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=tree.yview)
+    tree.configure(yscrollcommand=scrollbar.set)
+    scrollbar.pack(fill=tk.Y, side=tk.RIGHT, expand=False)
+    tree.heading("name", text="Name")
+    tree.heading("weight", text="Weight")
+    tree.heading("use_conditions", text="Use Conditions")
+    tree.column("name", width=300, stretch=tk.YES)
+    tree.column("weight", minwidth=0, width=50, stretch=tk.NO)
+    tree.column("use_conditions", minwidth=100, width=300, stretch=tk.YES)
+    for i, c in enumerate(bg):
+        tree.insert("", tk.END, values=astuple(c))
+
+
+def label_background_names(parent, label, bg, row):
+    frame = ttk.Frame(parent)
     frame.grid(row=row, column=0, columnspan=2, sticky="nw")
     label = ttk.Label(frame, text=label)
-    irow = 0  # inner row
+    irow = 0
     label.grid(row=irow, column=0, sticky="nw")
     for i, c in enumerate(bg):
         irow += 1
-        lbl_name = ttk.Label(frame, text="Name:")
-        lbl_name.grid(row=irow, column=1, sticky="w")
-        bgtxt = tk.StringVar(frame, c.name)
-        bg = ttk.Entry(frame, textvariable=bgtxt, width=20)
-        bg.textref = bgtxt  # create a reference to avoid the GC
-        bg.grid(row=irow, column=2, sticky="w")
-
-        weight_name = ttk.Label(frame, text="Weight:")
-        weight_name.grid(row=irow, column=3, sticky="w")
-        weight_txt = tk.StringVar(frame, c.weight)
-        weight = ttk.Entry(frame, textvariable=weight_txt, width=3)
-        weight.textref = weight_txt  # create a reference to avoid the GC
-        weight.grid(row=irow, column=4, sticky="w")
-
-        usecondition_name = ttk.Label(frame, text="Use Condition:")
-        usecondition_name.grid(row=irow, column=5, sticky="w")
-        usecondition_txt = tk.StringVar(frame, c.use_conditions)
-        usecondition = ttk.Entry(frame, textvariable=usecondition_txt, width=37)
-        usecondition.textref = usecondition_txt  # create a reference to avoid the GC
-        usecondition.grid(row=irow, column=6, sticky="w")
+        bg_txt = tk.StringVar(frame, c)
+        entry = ttk.Entry(frame, textvariable=bg_txt)
+        entry.textref = bg_txt
+        entry.grid(row=irow, column=1, sticky="nw")
 
 
 def label_text(parent, label, content, row=0):
@@ -170,6 +178,9 @@ class DetailWindow(tk.Toplevel):
 
         with suppress(AttributeError):
             label_backgrounds(self, "Backgrounds", ceevent.backgrounds.background, row=self.row_size() + 1)
+
+        # with suppress(AttributeError):
+        #     label_background_names(self, "Background Animation")
 
         self._xml_rowspan = self.row_size()
         self._hidden = True
