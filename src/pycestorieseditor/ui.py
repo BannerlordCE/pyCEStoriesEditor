@@ -74,21 +74,25 @@ def label_backgrounds(parent, label, bg, row):
         tree.insert("", tk.END, values=astuple(c))
 
 
-def label_background_names(parent, label, bg, row, animation=None):
+def label_listbox(parent, label, values, row):
     frame = ttk.Frame(parent)
-    frame.grid(row=row, column=0, columnspan=2, sticky="nw")
-    if animation:
-        label = f"{label} (animation speed={animation})"
+    frame.grid(row=row, column=0, columnspan=2, sticky="nsew")
     label = ttk.Label(frame, text=label)
-    label.grid(row=0, column=0, sticky="nw")
+    label.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.X, padx=(0, 10))
 
-    listb = tk.Listbox(selectmode=tk.SINGLE)
-    scrollbar = ttk.Scrollbar(parent, command=listb.yview)
+    listb = tk.Listbox(frame, selectmode=tk.SINGLE)
+    scrollbar = ttk.Scrollbar(frame, command=listb.yview)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
     listb.configure(yscrollcommand=scrollbar.set)
-    listb.pack(side=tk.LEFT, fill=tk.BOTH)
-    for c in bg:
+    listb.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    for c in values:
         listb.insert(tk.END, c)
+
+
+def label_background_names(parent, label, bg, row, animation=None):
+    if animation:
+        label = f"{label} (animation speed={animation})"
+    label_listbox(parent, label, bg, row)
 
 
 def label_text(parent, label, content, row=0):
@@ -174,13 +178,16 @@ class DetailWindow(tk.Toplevel):
         label_entry(self, "Name", ceevent.name.value, row=0)
 
         with suppress(AttributeError):
-            label_text(self, "Text", ceevent.text.value, row=self.row_size() + 1)
+            label_text(self, "Text", ceevent.text.value, row=self.nextrow())
 
         with suppress(AttributeError):
-            label_entry(self, "Background Name", ceevent.background_name.value, row=self.row_size() + 1)
+            label_entry(self, "Sound Name", ceevent.sound_name.value, row=self.nextrow())
 
         with suppress(AttributeError):
-            label_backgrounds(self, "Backgrounds", ceevent.backgrounds.background, row=self.row_size() + 1)
+            label_entry(self, "Background Name", ceevent.background_name.value, row=self.nextrow())
+
+        with suppress(AttributeError):
+            label_backgrounds(self, "Backgrounds", ceevent.backgrounds.background, row=self.nextrow())
 
         with suppress(AttributeError):
             label_background_names(
@@ -190,6 +197,19 @@ class DetailWindow(tk.Toplevel):
                 row=self.row_size() + 1,
                 animation=ceevent.background_animation_speed.value
             )
+
+        with suppress(AttributeError):
+            label_listbox(self, "Custom Flags", ceevent.multiple_list_of_custom_flags.custom_flag, row=self.nextrow())
+
+        label_listbox(
+            self,
+            "Restricted Flags",
+            # retrieve the value of the enum
+            [x.value for x in ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags],
+            row=self.nextrow()
+        )
+
+        label_entry(self, "CanOnlyHappenNrOfTimes", ceevent.can_only_happen_nr_of_times, row=self.nextrow())
 
         self._xml_rowspan = self.row_size()
         self._hidden = True
@@ -221,6 +241,9 @@ class DetailWindow(tk.Toplevel):
         _, row = self.grid_size()
         return row
 
+    def nextrow(self):
+        return self.row_size() + 1
+
 
 def label_click(event):
     event.widget.config(background="green")
@@ -244,7 +267,7 @@ class CeListBox(tk.Listbox):
         if not filterstr:
             iterme = items.values()
         else:
-            iterme = filter(lambda x: filterstr in x.name, items.values())
+            iterme = filter(lambda x: filterstr in x.name.value, items.values())
         for entry in iterme:
             self.insert(tk.END, entry.name.value)
             if entry.has_restricted_flag(RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT):

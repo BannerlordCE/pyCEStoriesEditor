@@ -2861,14 +2861,14 @@ class Ceevent:
             "required": True,
         }
     )
-    can_only_happen_nr_of_times: Optional[str] = field(
+    can_only_happen_nr_of_times: Optional[CanOnlyHappenNrOfTimes] = field(
         default=None,
         metadata={
             "name": "CanOnlyHappenNrOfTimes",
             "type": "Element",
         }
     )
-    sexual_content: Optional[bool] = field(
+    sexual_content: Optional[SexualContent] = field(
         default=None,
         metadata={
             "name": "SexualContent",
