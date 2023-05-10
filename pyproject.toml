@@ -8,8 +8,13 @@ packages = [{include = "pycestorieseditor", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-lxml = "^4.9.2"
 graphviz = "^0.20.1"
+xmlschema = "^2.2.2"
+jinja2 = "^3.1.2"
+attrs = "^23.1.0"
+xsdata-attrs = "^21.11"
+lxml = "^4.9.2"
+pygments = "^2.15.1"
 
 
 [build-system]
@@ -40,3 +45,57 @@ include_trailing_comma = true
 skip_glob = "tests/**,docs/**"
 skip_gitignore = false
 use_parentheses = true
+
+[tool.pylint."messages control"]
+max-line-length = 98
+
+# Only show warnings with the listed confidence levels. Leave empty to show all.
+# Valid levels: HIGH, CONTROL_FLOW, INFERENCE, INFERENCE_FAILURE, UNDEFINED.
+confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFINED"]
+
+# Disable the message, report, category or checker with the given id(s). You can
+# either give multiple identifiers separated by comma (,) or put this option
+# multiple times (only on the command line, not in the configuration file where
+# it should appear only once). You can also use "--disable=all" to disable
+# everything first and then re-enable specific checks. For example, if you want
+# to run only the similarities checker, you can use "--disable=all
+# --enable=similarities". If you want to run only the classes checker, but have
+# no Warning level messages displayed, use "--disable=all --enable=classes
+# --disable=W".
+
+disable = [
+"raw-checker-failed", "bad-inline-option", "locally-disabled",
+"file-ignored", "suppressed-message", "useless-suppression",
+"deprecated-pragma", "use-symbolic-message-instead", "too-few-public-methods",
+"missing-docstring", "consider-using-f-string", "too-many-ancestors",
+"too-many-instance-attributes"
+]
+
+# Enable the message, report, category or checker with the given id(s). You can
+# either give multiple identifier separated by comma (,) or put this option
+# multiple time (only on the command line, not in the configuration file where it
+# should appear only once). See also the "--disable" option for examples.
+enable = ["c-extension-no-member"]
+
+[tool.pylint.miscellaneous]
+# List of note tags to take in consideration, separated by a comma.
+notes = ["FIXME", "XXX", "TODO", "NOTE"]
+
+# Regular expression of note tags to take in consideration.
+# notes-rgx =
+
+[tool.pylint.similarities]
+# Comments are removed from the similarity computation
+ignore-comments = true
+
+# Docstrings are removed from the similarity computation
+ignore-docstrings = true
+
+# Imports are removed from the similarity computation
+ignore-imports = true
+
+# Signatures are removed from the similarity computation
+ignore-signatures = true
+
+# Minimum lines number of a similarity.
+min-similarity-lines = 4
