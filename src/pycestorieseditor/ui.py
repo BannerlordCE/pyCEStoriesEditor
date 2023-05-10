@@ -70,7 +70,7 @@ def label_backgrounds(parent, label, bg, row):
     tree.column("name", width=300, stretch=tk.YES)
     tree.column("weight", minwidth=0, width=50, stretch=tk.NO)
     tree.column("use_conditions", minwidth=100, width=300, stretch=tk.YES)
-    for i, c in enumerate(bg):
+    for c in bg:
         tree.insert("", tk.END, values=astuple(c))
 
 
