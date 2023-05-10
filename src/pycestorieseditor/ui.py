@@ -252,7 +252,7 @@ class CeListBox(tk.Listbox):
                 print(entry.restricted_flags)
 
     def on_selected_event(self, event):
-        # List item is unselected as a soon as the user interract with a child window,
+        # List item is unselected as a soon as the user interact with a child window,
         # thus throwing an empty selection event.
         if not self.curselection():
             return
@@ -261,7 +261,7 @@ class CeListBox(tk.Listbox):
         ceeventobj = ebucket[self.get(self.curselection())]
         dw = DetailWindow(self, ceeventobj)
         dw.wait_visibility()  # Can only grab window if visible.
-        dw.grab_set()  # Grab window, prevent interraction with parent (self).
+        dw.grab_set()  # Grab window, prevent interaction with parent (self).
 
     def on_filter_event(self, stringvar):
         string = stringvar.get()
@@ -296,7 +296,7 @@ class CeLegendFrame(tk.LabelFrame):
             padding=(10, 0, 0, 0),
             compound="left"
         )
-        lab.image = ico  # "anchor" a reference of the icone to the label
+        lab.image = ico  # "anchor" a reference of the icon to the label
         lab.pack(anchor=tk.W)
 
 
@@ -330,7 +330,7 @@ def main(xmlfile):
     main_frame.grid(row=0, column=0, sticky=tk.NSEW)
     main_frame.grid_columnconfigure(0, weight=1)
     main_frame.grid_columnconfigure(1, weight=5)
-    main_frame.grid_rowconfigure(0, weight=1)  # add more weights if use more row
+    main_frame.grid_rowconfigure(0, weight=1)  # TODO add more weights if more row are needed
     left_frame.grid(row=0, column=0, sticky=tk.NSEW)
     right_frame.grid(row=0, column=1, padx=10, pady=10, sticky=tk.NSEW)
 

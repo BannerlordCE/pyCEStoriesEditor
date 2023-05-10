@@ -54,13 +54,13 @@ class EventNode:
 
 
 def list_files(path):
-    "List xml files in path"
+    """List xml files in path"""
     for root, dirs, files in os.walk(path):
         print("\n".join(f"* {x}" for x in files))
 
 
 def list_elements(xmlfile):
-    "List event in xmlfile"
+    """List event in xmlfile"""
     tree = etree.parse(xmlfile)
     xmlevents = tree.xpath('/CEEvents/CEEvent')
     for xmlevent in xmlevents:
