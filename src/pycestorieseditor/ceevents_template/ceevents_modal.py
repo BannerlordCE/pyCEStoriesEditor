@@ -976,7 +976,7 @@ class RestrictedListOfFlagsType(Enum):
     RANDOM = "Random"
     CAPTOR = "Captor"
     CAPTIVE = "Captive"
-    OVERWRITEABLE = "Overwriteable"
+    OVERWRITABLE = "Overwritable"
     COMMON = "Common"
     FEMDOM = "Femdom"
     BESTIALITY = "Bestiality"
@@ -1586,7 +1586,7 @@ class TriggerEvent:
 
 
 @define
-class WeightedChanceOfOccuring:
+class WeightedChanceOfOccurring:
     value: str = field(
         default="",
         metadata={
@@ -2111,8 +2111,745 @@ class SpawnHeroes:
 
 
 @define
+class MenuOption:
+    order: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "Order",
+            "type": "Element",
+            "namespace": "",
+            "sequential": True,
+        }
+    )
+    menu_id: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "MenuID",
+            "type": "Element",
+            "namespace": "",
+            "sequential": True,
+        }
+    )
+    option_id: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "OptionID",
+            "type": "Element",
+            "namespace": "",
+            "sequential": True,
+        }
+    )
+    multiple_restricted_list_of_consequences: List[MultipleRestrictedListOfConsequences] = field(
+        factory=list,
+        metadata={
+            "name": "MultipleRestrictedListOfConsequences",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    option_text: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "OptionText",
+            "type": "Element",
+            "namespace": "",
+            "sequential": True,
+        }
+    )
+    trigger_event_name: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "TriggerEventName",
+            "type": "Element",
+            "namespace": "",
+            "sequential": True,
+        }
+    )
+    sound_name: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "SoundName",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    scene_to_play: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "SceneToPlay",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    pregnancy_risk_modifier: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "PregnancyRiskModifier",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    escape_chance: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "EscapeChance",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_party_have_item: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroPartyHaveItem",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captor_party_have_item: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptorPartyHaveItem",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_health_below_percentage: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroHealthBelowPercentage",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_health_above_percentage: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroHealthAbovePercentage",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_captor_relation_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroCaptorRelationAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_captor_relation_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroCaptorRelationBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_prostitute_level_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroProstituteLevelAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_prostitute_level_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroProstituteLevelBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_slave_level_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroSlaveLevelAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_slave_level_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroSlaveLevelBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_trait_level_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroTraitLevelAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_trait_level_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroTraitLevelBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captor_trait_level_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptorTraitLevelAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captor_trait_level_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptorTraitLevelBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_skill_level_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroSkillLevelAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_skill_level_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroSkillLevelBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captor_skill_level_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptorSkillLevelAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captor_skill_level_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptorSkillLevelBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_troops_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqTroopsAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_troops_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqTroopsBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captives_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptivesAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captives_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptivesBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_female_troops_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqFemaleTroopsAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_female_troops_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqFemaleTroopsBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_female_captives_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqFemaleCaptivesAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_female_captives_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqFemaleCaptivesBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_male_troops_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqMaleTroopsAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_male_troops_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqMaleTroopsBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_male_captives_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqMaleCaptivesAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_male_captives_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqMaleCaptivesBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_troops_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroTroopsAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_troops_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroTroopsBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_captives_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroCaptivesAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_captives_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroCaptivesBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_female_troops_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroFemaleTroopsAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_female_troops_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroFemaleTroopsBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_female_captives_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroFemaleCaptivesAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_female_captives_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroFemaleCaptivesBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_male_troops_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroMaleTroopsAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_male_troops_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroMaleTroopsBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_male_captives_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroMaleCaptivesAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_male_captives_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroMaleCaptivesBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_morale_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqMoraleBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_morale_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqMoraleAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_gold_above: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqGoldAbove",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_gold_below: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqGoldBelow",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    item_to_give: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ItemToGive",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    gold_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "GoldTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    captor_gold_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "CaptorGoldTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    relation_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "RelationTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    morale_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "MoraleTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    health_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "HealthTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    renown_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "RenownTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    prostitution_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ProstitutionTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    slavery_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "SlaveryTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    trait_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "TraitTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    skill_total: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "SkillTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    trait_xptotal: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "TraitXPTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    skill_xptotal: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "SkillXPTotal",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    skill_to_level: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "SkillToLevel",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captor_skill: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptorSkill",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_skill: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroSkill",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    trait_to_level: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "TraitToLevel",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_captor_trait: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqCaptorTrait",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    req_hero_trait: List[str] = field(
+        factory=list,
+        metadata={
+            "name": "ReqHeroTrait",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    trigger_events: List[TriggerEvents] = field(
+        factory=list,
+        metadata={
+            "name": "TriggerEvents",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    skills_to_level: List[SkillsToLevel] = field(
+        factory=list,
+        metadata={
+            "name": "SkillsToLevel",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    traits_to_level: List[TraitsToLevel] = field(
+        factory=list,
+        metadata={
+            "name": "TraitsToLevel",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    skills_required: List[SkillsRequired] = field(
+        factory=list,
+        metadata={
+            "name": "SkillsRequired",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    traits_required: List[TraitsRequired] = field(
+        factory=list,
+        metadata={
+            "name": "TraitsRequired",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    companions: List[Companions] = field(
+        factory=list,
+        metadata={
+            "name": "Companions",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    strip_settings: List[StripSettings] = field(
+        factory=list,
+        metadata={
+            "name": "StripSettings",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    battle_settings: List[BattleSettings] = field(
+        factory=list,
+        metadata={
+            "name": "BattleSettings",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    kingdom_options: List[KingdomOptions] = field(
+        factory=list,
+        metadata={
+            "name": "KingdomOptions",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    clan_options: List[ClanOptions] = field(
+        factory=list,
+        metadata={
+            "name": "ClanOptions",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    spawn_troops: List[SpawnTroops] = field(
+        factory=list,
+        metadata={
+            "name": "SpawnTroops",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    spawn_heroes: List[SpawnHeroes] = field(
+        factory=list,
+        metadata={
+            "name": "SpawnHeroes",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    delay_event: List[DelayEvent] = field(
+        factory=list,
+        metadata={
+            "name": "DelayEvent",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    scene_settings: List[SceneSettings] = field(
+        factory=list,
+        metadata={
+            "name": "SceneSettings",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    teleport_settings: List[TeleportSettings] = field(
+        factory=list,
+        metadata={
+            "name": "TeleportSettings",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+    damage_party: List[DamageParty] = field(
+        factory=list,
+        metadata={
+            "name": "DamageParty",
+            "type": "Element",
+            "sequential": True,
+        }
+    )
+
+
+@define
 class Option:
-    order: Optional[str] = field(
+    order: str = field(
         default=None,
         metadata={
             "name": "Order",
@@ -2744,6 +3481,18 @@ class Option:
 
 
 @define
+class MenuOptions:
+    menu_option: List[MenuOption] = field(
+        factory=list,
+        metadata={
+            "name": "MenuOption",
+            "type": "Element",
+            "min_occurs": 1,
+        }
+    )
+
+
+@define
 class Options:
     option: List[Option] = field(
         factory=list,
@@ -2890,10 +3639,10 @@ class Ceevent:
             "type": "Element",
         }
     )
-    weighted_chance_of_occuring: Optional[str] = field(
+    weighted_chance_of_occurring: Optional[str] = field(
         default=None,
         metadata={
-            "name": "WeightedChanceOfOccuring",
+            "name": "WeightedChanceOfOccurring",
             "type": "Element",
         }
     )
@@ -3398,6 +4147,13 @@ class Ceevent:
         default=None,
         metadata={
             "name": "TerrainTypesRequirements",
+            "type": "Element",
+        }
+    )
+    menu_options: Optional[MenuOptions] = field(
+        default=None,
+        metadata={
+            "name": "MenuOptions",
             "type": "Element",
         }
     )

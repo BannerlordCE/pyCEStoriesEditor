@@ -29,6 +29,8 @@ from pycestorieseditor.ceevents_template.ceevents_modal import (
     ItemToGive,
     KingdomOption,
     KingdomOptions,
+    MenuOption,
+    MenuOptions,
     MoraleTotal,
     MultipleListOfCustomFlags,
     MultipleRestrictedListOfConsequences,
@@ -133,7 +135,7 @@ from pycestorieseditor.ceevents_template.ceevents_modal import (
     TraitsToLevel,
     TriggerEvent,
     TriggerEvents,
-    WeightedChanceOfOccuring,
+    WeightedChanceOfOccurring,
 )
 
 __all__ = [
@@ -166,6 +168,8 @@ __all__ = [
     "ItemToGive",
     "KingdomOption",
     "KingdomOptions",
+    "MenuOption",
+    "MenuOptions",
     "MoraleTotal",
     "MultipleListOfCustomFlags",
     "MultipleRestrictedListOfConsequences",
@@ -270,5 +274,5 @@ __all__ = [
     "TraitsToLevel",
     "TriggerEvent",
     "TriggerEvents",
-    "WeightedChanceOfOccuring",
+    "WeightedChanceOfOccurring",
 ]
