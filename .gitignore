@@ -6,6 +6,9 @@
 .envrc
 .poetry.toml
 
+# project related files and folders
+generated/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
