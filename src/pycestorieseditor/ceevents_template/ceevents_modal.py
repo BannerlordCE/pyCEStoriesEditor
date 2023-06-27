@@ -971,6 +971,11 @@ class RestrictedListOfConsequencesValue(Enum):
     NO_MESSAGES = "NoMessages"
 
 
+class FlagsColors(Enum):
+    CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT = "#007500"
+    WAITING_MENU = "#11d116"
+
+
 class RestrictedListOfFlagsType(Enum):
     CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT = "CanOnlyBeTriggeredByOtherEvent"
     RANDOM = "Random"
@@ -1073,6 +1078,15 @@ class RestrictedListOfFlagsType(Enum):
     BIRTH_ALTERNATIVE = "BirthAlternative"
     WAITING_MENU = "WaitingMenu"
     PROGRESS_MENU = "ProgressMenu"
+
+    @property
+    def color(self):
+        return FlagsColors[self.name].value
+
+ColourFlags = [
+    ("CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT", "#007500"),
+    ("WAITING_MENU", "#11d116")
+]
 
 
 @define
@@ -4176,6 +4190,19 @@ class Ceevent:
 
     def has_restricted_flag(self, flag: RestrictedListOfFlagsType):
         return any(flag == x for x in self.multiple_restricted_list_of_flags.restricted_list_of_flags)
+
+    def get_color(self):
+        flags = self.multiple_restricted_list_of_flags.restricted_list_of_flags
+        if RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT in flags:
+            return RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT.color
+        elif RestrictedListOfFlagsType.WAITING_MENU in flags:
+            return RestrictedListOfFlagsType.WAITING_MENU.color
+        else:
+            for flag in flags:
+                try:
+                    return flag.color
+                except AttributeError:
+                    continue
 
     def set_parent_node(self, parent: Ceevent):
         self._parents.append(parent)

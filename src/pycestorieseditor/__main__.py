@@ -7,7 +7,7 @@ import sys
 
 from . import CE_TARGET_PATH
 from .graph import graph_file, list_elements, list_files
-from .ui import main
+from .wxui import main
 
 
 if __name__ == '__main__':
