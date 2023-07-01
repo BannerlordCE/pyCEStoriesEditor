@@ -1083,6 +1083,7 @@ class RestrictedListOfFlagsType(Enum):
     def color(self):
         return FlagsColors[self.name].value
 
+
 ColourFlags = [
     ("CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT", "#007500"),
     ("WAITING_MENU", "#11d116")
@@ -4201,7 +4202,7 @@ class Ceevent:
             for flag in flags:
                 try:
                     return flag.color
-                except AttributeError:
+                except KeyError:
                     continue
 
     def set_parent_node(self, parent: Ceevent):
