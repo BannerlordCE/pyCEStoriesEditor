@@ -2,12 +2,48 @@
 # © 2023 bicobus <bicobus@keemail.me>
 
 import wx
+import wx.lib.mixins.inspection
+from wx import stc
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from PIL import Image, ImageDraw
+from pygments.styles import get_style_by_name
+from pygments import token
 
 from . import CE_XSD_FILE
 from .ceevents import get_ebucket, process_file, Ceevent
 from .ceevents_template import RestrictedListOfFlagsType
+
+style = get_style_by_name("emacs")
+
+if wx.Platform == '__WXMSW__':
+    faces = {
+        'times': 'Times New Roman',
+        'mono': 'Courier New',
+        'helv': 'Arial',
+        'other': 'Comic Sans MS',
+        'size': 10,
+        'size2': 8,
+    }
+elif wx.Platform == '__WXMAC__':
+    faces = {
+        'times': 'Times New Roman',
+        'mono': 'Monaco',
+        'helv': 'Arial',
+        'other': 'Comic Sans MS',
+        'size': 12,
+        'size2': 10,
+    }
+else:
+    faces = {
+        'times': 'Times',
+        'mono': 'Courier',
+        'helv': 'Helvetica',
+        'other': 'new century schoolbook',
+        'size': 11,
+        'size2': 10,
+    }
+faces["back"] = style.background_color
+faces["fore"] = style.styles[token.Token] or "#000"
 
 
 # - Images ---
@@ -47,31 +83,120 @@ def values_as_list(modalitem):
 
 
 # - Detail Window ---
+def pyg2sci_properties(properties: str) -> str:
+    foretxt = "fore:{}"
+    backtxt = "back:{}"
+    properties = properties.split()
+    for i, p in enumerate(properties):
+        if p.startswith("#"):
+            properties[i] = foretxt.format(p)
+        elif p.startswith("bg:") and p != "bg:":  # Transparent bg, what's that?
+            properties[i] = backtxt.format(p.strip("bg:"))
+    return ','.join(properties)
+
+
+def pygment2scite(styles):
+    for pygtoken, properties in styles.items():
+        match pygtoken:
+            case token.Name.Tag:
+                scitoken = [stc.STC_H_TAG, stc.STC_H_TAGEND, stc.STC_H_TAGUNKNOWN]
+            case token.Name.Attribute:
+                scitoken = [stc.STC_H_ATTRIBUTE, stc.STC_H_ATTRIBUTEUNKNOWN]
+            case token.Name.Entity:
+                scitoken = stc.STC_H_ENTITY
+            case token.Name.Decorator:
+                scitoken = stc.STC_H_DOUBLESTRING
+            case token.String.Literal.Number:
+                scitoken = stc.STC_H_NUMBER
+            case token.String.Literal.String:
+                scitoken = stc.STC_H_SINGLESTRING
+            case token.Comment:
+                scitoken = stc.STC_H_COMMENT
+            case _:
+                continue
+
+        properties = pyg2sci_properties(properties)
+        if isinstance(scitoken, list):
+            for t in scitoken:
+                yield t, properties
+        else:
+            yield scitoken, properties
+
+
 class DwTabOne(wx.Panel):
-    def __init__(self):
-        pass
+    def __init__(self, parent, ceevent: Ceevent):
+        super().__init__(parent)
+        core = wx.BoxSizer(wx.VERTICAL)
+
+        name = wx.StaticText(self, wx.ID_ANY, label=ceevent.name.value)
+        text = wx.TextCtrl(
+            self,
+            wx.ID_ANY,
+            value=ceevent.text.value,
+            style=wx.BORDER_NONE | wx.TE_READONLY | wx.HSCROLL | wx.TE_DONTWRAP | wx.TE_MULTILINE
+        )
+
+        core.Add(name, 0, wx.EXPAND)
+        core.Add(text, 0, wx.EXPAND, 0)
+        self.SetSizer(core)
+
+
+class DwTabXml(wx.Panel):
+    def __init__(self, parent, source):
+        super().__init__(parent)
+        core = wx.BoxSizer(wx.VERTICAL)
+        t = stc.StyledTextCtrl(self, wx.ID_ANY, style=wx.TE_MULTILINE)
+        t.SetWrapMode(stc.STC_WRAP_WORD)
+        t.SetWrapIndentMode(stc.STC_WRAPINDENT_SAME)
+        t.SetMargins(0, 0)
+        t.SetTabWidth(4)
+        t.SetUseTabs(True)
+        t.SetLexer(stc.STC_LEX_XML)
+        t.SetSelBackground(True, style.highlight_color)
+        t.StyleSetSpec(stc.STC_STYLE_DEFAULT, "back:{back},fore:{fore},face:{helv},size:{size}".format(**faces))
+        t.StyleClearAll()
+        for pygtoken, spec in pygment2scite(style.styles):
+            t.StyleSetSpec(pygtoken, spec)
+        t.SetText(source)
+        t.Colourise(0, -1)
+        t.SetEditable(False)
+        core.Add(t, 1, wx.EXPAND | wx.ALL, 2)
+        self.SetSizer(core)
 
 
 class DetailWindow(wx.Dialog):
     def __init__(self, ceevent: Ceevent, *args, **kwargs):
         title = ceevent.name.value
+        kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(title=title, *args, **kwargs)
+        self.SetSizeHints(600, 400, 1024, 640)
+        self.SetSize((600, 400))
 
-        p = wx.Panel(self)
-        nb = wx.Notebook(self)
+        nb = wx.Notebook(self, wx.ID_ANY, style=wx.NB_LEFT)
 
-        tabone = DwTabOne(nb)
+        tabone = DwTabOne(nb, ceevent)
+        tabxml = DwTabXml(nb, ceevent.xmlsource)
 
-        nb.AddPage(tabone, "Tab One")
+        nb.AddPage(tabone, "Main")
+        nb.AddPage(tabxml, "Xml Source")
 
-        sizer = wx.BoxSizer()
-        sizer.Add(nb, 1, wx.EXPAND)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
 
-        p.SetSizer(sizer)
+        closebutton = wx.StdDialogButtonSizer()
+        self.button_close = wx.Button(self, wx.ID_CLOSE, "")
+        closebutton.AddButton(self.button_close)
+        sizer.Add(closebutton, 0, wx.ALIGN_RIGHT | wx.ALL, 4)
+        closebutton.Realize()
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+
+        self.SetEscapeId(self.button_close.GetId())
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
-    def on_close(self):
+    def on_close(self, event):
         self.Destroy()
 
 
@@ -88,10 +213,10 @@ class Legend(wx.BoxSizer):
 
 
 class CeListItem(wx.ListItem):
-    def __init__(self, item, id: int):
+    def __init__(self, item, wxid: int):
         super().__init__()
         self.SetText(item.name.value)
-        self.SetId(id)
+        self.SetId(wxid)
         if color := item.get_color():
             self.SetBackgroundColour(wx.Colour(hex2rgb(color)))
 
@@ -121,8 +246,7 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
         ebucket = get_ebucket()
         ceeventobj = ebucket[event.Text]
         displayframe = DetailWindow(ceeventobj, parent=self)
-        displayframe.ShowModal()
-        displayframe.Destroy()
+        displayframe.ShowWindowModal()
 
 
 class MainWindow(wx.Frame):
@@ -227,9 +351,9 @@ class MainWindow(wx.Frame):
         event.Skip()
 
 
-class CeStoriesViewer(wx.App):  # , wx.lib.mixins.inspection.InspectionMixin):
+class CeStoriesViewer(wx.App, wx.lib.mixins.inspection.InspectionMixin):
     def OnInit(self):
-        # self.Init()  # inspector thing
+        self.Init()  # inspector thing
         frame = MainWindow()
         frame.Show()
         self.SetTopWindow(frame)
@@ -240,4 +364,3 @@ def main(xmlfile):
     process_file(xmlfile, CE_XSD_FILE)
     myapp = CeStoriesViewer(redirect=False)
     myapp.MainLoop()
-
