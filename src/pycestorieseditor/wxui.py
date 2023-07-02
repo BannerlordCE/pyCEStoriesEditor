@@ -13,7 +13,7 @@ from . import CE_XSD_FILE
 from .ceevents import get_ebucket, process_file, Ceevent
 from .ceevents_template import RestrictedListOfFlagsType
 
-style = get_style_by_name("emacs")
+style = get_style_by_name("default")
 
 if wx.Platform == '__WXMSW__':
     faces = {
@@ -95,6 +95,11 @@ def pyg2sci_properties(properties: str) -> str:
     return ','.join(properties)
 
 
+# Resources:
+# * https://github.com/ScintillaOrg/lexilla/blob/711c46e160352135d524e32b045c5aa7acbcca75/lexers/LexHTML.cxx#L912
+# * https://github.com/pygments/pygments/blob/14cff613a681d2c95bf2c56f81833f645353bbe0/pygments/lexers/html.py#L194
+# * https://wiki.wxpython.org/StyledTextCtrl%20Lexer%20Quick%20Reference#Xml
+# * https://github.com/wxWidgets/wxWidgets/blob/3bd50638863a379570f7f93d27d91ba297995369/include/wx/stc/stc.h#L736-L747
 def pygment2scite(styles):
     for pygtoken, properties in styles.items():
         match pygtoken:
@@ -104,14 +109,16 @@ def pygment2scite(styles):
                 scitoken = [stc.STC_H_ATTRIBUTE, stc.STC_H_ATTRIBUTEUNKNOWN]
             case token.Name.Entity:
                 scitoken = stc.STC_H_ENTITY
-            case token.Name.Decorator:
-                scitoken = stc.STC_H_DOUBLESTRING
-            case token.String.Literal.Number:
+            case token.Literal.Number:
                 scitoken = stc.STC_H_NUMBER
-            case token.String.Literal.String:
-                scitoken = stc.STC_H_SINGLESTRING
+            case token.Literal.String:
+                scitoken = [stc.STC_H_SINGLESTRING, stc.STC_H_DOUBLESTRING]
+            case token.Operator:
+                scitoken = stc.STC_H_OTHER
             case token.Comment:
                 scitoken = stc.STC_H_COMMENT
+            case token.Whitespace:
+                scitoken = stc.STC_WRAP_WHITESPACE
             case _:
                 continue
 
@@ -133,31 +140,36 @@ class DwTabOne(wx.Panel):
             self,
             wx.ID_ANY,
             value=ceevent.text.value,
-            style=wx.BORDER_NONE | wx.TE_READONLY | wx.HSCROLL | wx.TE_DONTWRAP | wx.TE_MULTILINE
+            style=wx.BORDER_NONE | wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_WORDWRAP
         )
 
         core.Add(name, 0, wx.EXPAND)
-        core.Add(text, 0, wx.EXPAND, 0)
+        core.Add(text, 1, wx.EXPAND, 0)
         self.SetSizer(core)
 
 
 class DwTabXml(wx.Panel):
-    def __init__(self, parent, source):
+    def __init__(self, parent, source: str):
         super().__init__(parent)
         core = wx.BoxSizer(wx.VERTICAL)
         t = stc.StyledTextCtrl(self, wx.ID_ANY, style=wx.TE_MULTILINE)
         t.SetWrapMode(stc.STC_WRAP_WORD)
         t.SetWrapIndentMode(stc.STC_WRAPINDENT_SAME)
+        t.SetViewWhiteSpace(stc.STC_WS_INVISIBLE)
         t.SetMargins(0, 0)
-        t.SetTabWidth(4)
+        t.SetTabWidth(2)
+        t.SetTabIndents(True)
         t.SetUseTabs(True)
         t.SetLexer(stc.STC_LEX_XML)
         t.SetSelBackground(True, style.highlight_color)
-        t.StyleSetSpec(stc.STC_STYLE_DEFAULT, "back:{back},fore:{fore},face:{helv},size:{size}".format(**faces))
+        t.StyleSetSpec(
+            stc.STC_STYLE_DEFAULT,
+            "back:{back},fore:{fore},face:{mono},size:{size}".format(**faces)
+        )
         t.StyleClearAll()
         for pygtoken, spec in pygment2scite(style.styles):
             t.StyleSetSpec(pygtoken, spec)
-        t.SetText(source)
+        t.SetText(source.replace("    ", "\t"))
         t.Colourise(0, -1)
         t.SetEditable(False)
         core.Add(t, 1, wx.EXPAND | wx.ALL, 2)
