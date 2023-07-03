@@ -2,6 +2,7 @@
 # © 2023 bicobus <bicobus@keemail.me>
 
 import wx
+from wx.lib import expando
 import wx.lib.mixins.inspection
 from wx import stc
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
@@ -130,22 +131,31 @@ def pygment2scite(styles):
             yield scitoken, properties
 
 
-class DwTabOne(wx.Panel):
+def wx_label_text(parent, sizer, label: str, text: str, multiline=None):
+    lbl = wx.StaticText(parent, wx.ID_ANY, label=label)
+
+    if multiline:
+        wtext = expando.ExpandoTextCtrl(parent, wx.ID_ANY, value=text, style=wx.TE_WORDWRAP | wx.TE_READONLY)
+        wtext.SetMaxHeight(200)
+    else:
+        wtext = wx.TextCtrl(parent, wx.ID_ANY, value=text, style=wx.TE_READONLY)
+
+    sizer.Add(lbl, 0, wx.LEFT, 5)
+    sizer.Add(wtext, 1, wx.ALL | wx.EXPAND, 3)
+
+
+class DwTabOne(wx.ScrolledWindow):
     def __init__(self, parent, ceevent: Ceevent):
-        super().__init__(parent)
-        core = wx.BoxSizer(wx.VERTICAL)
+        super().__init__(parent, wx.ID_ANY, style=wx.TAB_TRAVERSAL)
+        self.SetScrollRate(10, 10)
+        core = wx.FlexGridSizer(2, gap=(5, 5))
+        core.SetFlexibleDirection(wx.VERTICAL)
 
-        name = wx.StaticText(self, wx.ID_ANY, label=ceevent.name.value)
-        text = wx.TextCtrl(
-            self,
-            wx.ID_ANY,
-            value=ceevent.text.value,
-            style=wx.BORDER_NONE | wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_WORDWRAP
-        )
+        wx_label_text(self, core, label="Event Name", text=ceevent.name.value)
+        wx_label_text(self, core, label="Text", text=ceevent.text.value, multiline=True)
 
-        core.Add(name, 0, wx.EXPAND)
-        core.Add(text, 1, wx.EXPAND, 0)
-        self.SetSizer(core)
+        core.AddGrowableCol(1)
+        self.SetSizerAndFit(core)
 
 
 class DwTabXml(wx.Panel):
