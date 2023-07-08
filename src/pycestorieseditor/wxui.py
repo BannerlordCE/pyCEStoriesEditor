@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 # © 2023 bicobus <bicobus@keemail.me>
+from contextlib import suppress
 
 import wx
-from wx.lib import expando
+import wx.grid
 import wx.lib.mixins.inspection
-from wx import stc
-from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from PIL import Image, ImageDraw
-from pygments.styles import get_style_by_name
 from pygments import token
+from pygments.styles import get_style_by_name
+from wx import stc
+from wx.lib import expando
+from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 
 from . import CE_XSD_FILE
 from .ceevents import get_ebucket, process_file, Ceevent
@@ -80,7 +82,7 @@ def wximage2bitmap(img):
 
 
 def values_as_list(modalitem):
-    return (x.value for x in modalitem)
+    return [x.value for x in modalitem]
 
 
 # - Detail Window ---
@@ -144,15 +146,135 @@ def wx_label_text(parent, sizer, label: str, text: str, multiline=None):
     sizer.Add(wtext, 1, wx.ALL | wx.EXPAND, 3)
 
 
+def wx_label_list(parent, sizer, label, data):
+    lbl = wx.StaticText(parent, wx.ID_ANY, label=label)
+    listbox = wx.ListBox(parent, wx.ID_ANY, style=wx.BORDER_NONE)
+    listbox.AppendItems(data)
+
+    sizer.Add(lbl, 0, wx.LEFT, 5)
+    sizer.Add(listbox, 1, wx.ALL | wx.EXPAND, 3)
+
+
+# -- Create a custom table - XXX: UNUSED
+class BackgroundTable(wx.grid.GridTableBase):
+    def __init__(self, data):
+        super().__init__()
+        self.col_labels = ("name", "weight", "use_conditions")
+        self.data = []
+        for row in data:
+            self.data.append((row.name, row.weight, row.use_conditions))
+
+    def GetNumberRows(self):
+        return len(self.data) + 1
+
+    def GetNumberCols(self):
+        return len(self.data[0])
+
+    def IsEmptyCell(self, row, col):
+        try:
+            return bool(self.data[row][col])
+        except IndexError:
+            return True
+
+    def GetValue(self, row, col):
+        try:
+            return self.data[row][col]
+        except IndexError:
+            return ''
+
+    def SetValue(self, row, col, value):
+        return
+
+    def GetColLabelValue(self, col):
+        return self.col_labels[col]
+    
+
+class CustomGrid(wx.grid.Grid):
+    def __init__(self, parent, data):
+        super().__init__(parent, wx.ID_ANY)
+        table = BackgroundTable(data)
+        self.SetTable(table, True, wx.grid.Grid.GridSelectRows)
+        self.SetRowLabelSize(0)
+        self.SetMargins(0, 0)
+        self.AutoSizeColumns(True)
+        self.EnableEditing(False)
+# -- End custom table - XXX: UNUSED
+
+
+class BackgroundListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
+    def __init__(self, parent, backgrounds):
+        super().__init__(
+            parent,
+            wx.ID_ANY,
+            style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_NONE
+        )
+        ListCtrlAutoWidthMixin.__init__(self)
+        self._backgrounds = backgrounds
+        self.InsertColumn(0, "Name")
+        self.InsertColumn(1, "Weight")
+        self.InsertColumn(2, "Use Conditions")
+
+    def populate(self):
+        for ri, rdata in enumerate(self._backgrounds):
+            idx = self.InsertItem(ri, rdata.name)
+            self.SetItem(idx, 1, rdata.weight or "")
+            self.SetItem(idx, 2, rdata.use_conditions or "")
+            yield ri, idx, [rdata.name, rdata.weight, rdata.use_conditions]
+        self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        self.SetColumnWidth(1, 55)
+        self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
+
+
+class BackgroundsCtrlPanel(wx.Panel, ColumnSorterMixin):
+    def __init__(self, parent, backgrounds):
+        super().__init__(parent, wx.ID_ANY, style=wx.WANTS_CHARS)
+        self.itemDataMap = {}
+        self.blc = BackgroundListCtrl(self, backgrounds)
+        for ri, idx, rdata in self.blc.populate():
+            self.itemDataMap[ri] = rdata
+            self.blc.SetItemData(ri, idx)
+
+        ColumnSorterMixin.__init__(self, 3)
+        self.Bind(wx.EVT_LIST_COL_CLICK, self.on_col_click, self.blc)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.blc, 1, wx.EXPAND)
+
+        self.SetSizer(sizer)
+        self.SetAutoLayout(True)
+
+    def GetListCtrl(self):
+        return self.blc
+
+    def on_col_click(self, event):
+        pass
+
+
 class DwTabOne(wx.ScrolledWindow):
     def __init__(self, parent, ceevent: Ceevent):
         super().__init__(parent, wx.ID_ANY, style=wx.TAB_TRAVERSAL)
         self.SetScrollRate(10, 10)
         core = wx.FlexGridSizer(2, gap=(5, 5))
-        core.SetFlexibleDirection(wx.VERTICAL)
 
         wx_label_text(self, core, label="Event Name", text=ceevent.name.value)
         wx_label_text(self, core, label="Text", text=ceevent.text.value, multiline=True)
+        with suppress(AttributeError):
+            wx_label_text(self, core, label="Sound Name", text=ceevent.sound_name.value, multiline=True)
+        with suppress(AttributeError):
+            wx_label_text(self, core, label="Background Name", text=ceevent.background_name.value, multiline=True)
+        with suppress(AttributeError):
+            table = BackgroundsCtrlPanel(self, ceevent.backgrounds.background)
+            core.Add(wx.StaticText(self, wx.ID_ANY, label="Backgrounds"), 0, 0, 0)
+            core.Add(table, 1, wx.EXPAND | wx.ALL, 0)
+        with suppress(AttributeError):
+            wx_label_list(self, core, label="Background Animation", data=ceevent.background_animation.background_name)
+        with suppress(AttributeError):
+            wx_label_list(self, core, label="Custom Flags", data=values_as_list(ceevent.multiple_list_of_custom_flags.custom_flag))
+
+        wx_label_list(self, core, label="Restricted Flags", data=values_as_list(ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags))
+
+        with suppress(AttributeError):
+            wx_label_text(self, core, label="CanOnlyHappenNrOfTimes", text=ceevent.can_only_happen_nr_of_times.value)
 
         core.AddGrowableCol(1)
         self.SetSizerAndFit(core)
