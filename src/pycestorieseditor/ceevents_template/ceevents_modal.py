@@ -3523,6 +3523,7 @@ class Options:
 class Ceevent:
     class Meta:
         name = "CEEvent"
+
     name: Name = field(
         default=None,
         metadata={
@@ -4172,7 +4173,11 @@ class Ceevent:
             "type": "Element",
         }
     )
-    xmlsource: str = field(default=None, validator=validators.optional(validators.instance_of(str)), metadata={"type": "ignore"})
+    xmlsource: str = field(
+        default=None,
+        validator=validators.optional(validators.instance_of(str)),
+        metadata={"type": "ignore"}
+    )
     _parents: list = field(default=[], alias="__parents", metadata={"type": XmlType.IGNORE})
     _children: list = field(default=[], alias="__children", metadata={"type": XmlType.IGNORE})
 
