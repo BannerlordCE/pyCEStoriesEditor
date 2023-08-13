@@ -10,6 +10,7 @@ import wx.grid
 import wx.lib.mixins.inspection
 import wx.lib.scrolledpanel as wx_scrolled
 from PIL import Image, ImageDraw
+from attrs import fields
 from pygments import token
 from pygments.styles import get_style_by_name
 from wx import stc
@@ -23,6 +24,7 @@ from .ceevents_template import (
     Options,
     Option,
     RestrictedListOfConsequencesValue,
+    ceevents_modal,
 )
 
 style = get_style_by_name("default")
@@ -94,6 +96,10 @@ def wximage2bitmap(img):
 
 def values_as_list(modalitem):
     return [x.value for x in modalitem]
+
+
+def get_label(attrelem, target):
+    return getattr(fields(attrelem.__class__), target).metadata['name']
 
 
 # - Detail Window ---
@@ -240,6 +246,9 @@ class AttrNotFound(Exception):
 
 
 def sanitize_attr_value(attr):
+    # Don't sanitize lists, their content is sanitized later.
+    if isinstance(attr, list):
+        return attr
     return str(attr)
 
 
@@ -342,26 +351,124 @@ class ListCtrlPanel(wx.Panel, ColumnSorterMixin):
         pass
 
 
-class CeCollapsiblePanel(wx.CollapsiblePane):
-    def __init__(self, parent, label: str, cb: Callable, data: dict):
+class CeComplexCollapsiblePanel(wx.CollapsiblePane):
+    def __init__(self, parent, label, cb, option: ceevents_modal.SpawnHero):
         super().__init__(
             parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE
         )
-        self._cb = cb
-        pane = self.GetPane()
+        self.SetMinSize((500, -1))
+        self.parent = parent
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
-        cp_box = wx.BoxSizer()
-        cp_flex = wx.FlexGridSizer(2, (5, 5))
+        self._skill = option.skills_to_level.skill
+        attributes = ["ref", "culture", "gender", "clan"]
+        self._data = {
+            get_label(option, x): sanitize_attr_value(
+                getattr(option, x)
+            )
+            for x in attributes
+        }
+        self.populate()
 
-        for label, value in data.items():
+    def populate(self):
+        pane = self.GetPane()
+        cp_box = wx.BoxSizer(wx.VERTICAL)
+        cp_box.SetMinSize((800, -1))
+        cp_flex = wx.FlexGridSizer(4, (5, 5))
+        cp_flex.AddGrowableCol(1)
+        cp_flex.AddGrowableCol(3)
+        cp_flex3 = wx.FlexGridSizer(2, (5, 5))
+        cp_flex3.AddGrowableCol(1)
+        for label, value in self._data.items():
             if isinstance(value, list):
                 wx_label_list(pane, cp_flex, label, value)
             else:
                 wx_label_text(pane, cp_flex, label, value)
 
+        cp_box.Add(cp_flex, 0, wx.EXPAND | wx.ALL, 5)
+
+        cp_flex3.Add(wx.StaticText(pane, wx.ID_ANY, label="Skills to Level"), 0, wx.LEFT, 5)
+        table = ListCtrlPanel(
+            pane,
+            self._skill,
+            ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification"),
+            GenericOptionCtrl,
+            ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
+        )
+        cp_flex3.Add(table, 1, wx.EXPAND | wx.ALL, 5)
+        cp_box.Add(cp_flex3, 1, wx.EXPAND | wx.ALL, 5)
+        pane.SetSizer(cp_box)
+        cp_box.SetSizeHints(pane)
+
+
+class CeCollapsiblePanel(wx.CollapsiblePane):
+    def __init__(self, parent, label: str, cb: Callable, data: dict):
+        super().__init__(
+            parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE
+        )
+        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
+        self._data = data
+        self.populate()
+
+    def populate(self):
+        pane = self.GetPane()
+        cp_box = wx.BoxSizer()
+        cp_flex = wx.FlexGridSizer(2, (5, 5))
+        cp_flex.AddGrowableCol(1)
+        for label, value in self._data.items():
+            if isinstance(value, list):
+                wx_label_list(pane, cp_flex, label, value)
+            else:
+                wx_label_text(pane, cp_flex, label, value)
         cp_box.Add(cp_flex, 1, wx.EXPAND | wx.ALL, 5)
         pane.SetSizer(cp_box)
         cp_box.SetSizeHints(pane)
+
+    @staticmethod
+    def build_data(option, attributes):
+        return {
+            get_label(option, x): sanitize_attr_value(
+                getattr(option, x)
+            )
+            for x in attributes
+        }
+
+
+class CeTeleportSettings(CeCollapsiblePanel):
+    def __init__(self, parent, cb, option):
+        attributes = ["location", "location_name", "distance", "faction"]
+        data = self.build_data(option, attributes)
+        CeCollapsiblePanel.__init__(self, parent, "Teleport Settings", cb, data)
+
+
+class CeDelayEvent(CeCollapsiblePanel):
+    def __init__(self, parent, cb, option):
+        attributes = [
+            "use_conditions",
+            "time_to_take",
+            "trigger_event_name",
+            "trigger_events"
+        ]
+        data = self.build_data(option, attributes)
+        CeCollapsiblePanel.__init__(self, parent, "Delay Event", cb, data)
+
+
+class CeStripSettings(CeCollapsiblePanel):
+    def __init__(self, parent, cb, option):
+        self._attributes = [
+            'custom_body',
+            'custom_cape',
+            'custom_gloves',
+            'custom_legs',
+            'custom_head',
+            'clothing',
+            'mount',
+            'melee',
+            'ranged',
+            'forced',
+            'quest_enabled',
+        ]
+        data = self.build_data(option, self._attributes)
+        CeCollapsiblePanel.__init__(self, parent, "Strip Settings", cb, data)
 
 
 class DwTabOne(wx_scrolled.ScrolledPanel):
@@ -522,17 +629,6 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Spawn Heroes"), 0, 0, 0)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
 
-        if option.spawn_heroes and option.spawn_heroes.spawn_hero:
-            table = ListCtrlPanel(
-                self,
-                option.spawn_heroes.spawn_hero,
-                ("Skills to Level", "Ref", "Culture", "Gender", "Clan"),
-                GenericOptionCtrl,
-                ["skills_to_level", "ref", "culture", "gender", "clan"],
-            )
-            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Spawn Heroes"), 0, 0, 0)
-            fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
-
         if option.trigger_events and option.trigger_events.trigger_event:
             table = ListCtrlPanel(
                 self,
@@ -566,7 +662,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "ByLevel", "ByXp", "Ref", "Color", "HideNotification"],
             )
-            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits to level"), 0, 0, 0)
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
         elif (
             RestrictedListOfConsequencesValue.CHANGE_TRAIT
@@ -653,6 +749,11 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
 
+        if option.spawn_heroes and option.spawn_heroes.spawn_hero:
+            for spawnhero in option.spawn_heroes.spawn_hero:
+                cpsh = CeComplexCollapsiblePanel(self, "Spawn Heroes", self.on_pane_toggle, spawnhero)
+                core.Add(cpsh, 0, wx.EXPAND)
+
         if option.damage_party:
             dparty = wx.StaticBoxSizer(
                 wx.StaticBox(self, wx.ID_ANY, "Damage party"), wx.HORIZONTAL
@@ -686,33 +787,16 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             core.Add(scenes, 1, wx.EXPAND)
 
         if option.delay_event:  # XXX: Can't find working example
-            data = {
-                "Use Conditions": option.delay_event.use_conditions,
-                "Time to Take": option.delay_event.time_to_take,
-                "Trigger Event Name": option.delay_event.trigger_event_name,
-                "Trigger Events": option.delay_event.trigger_events,
-            }
-            cpde = CeCollapsiblePanel(self, "Delay Event", self.on_pane_toggle, data)
+            cpde = CeDelayEvent(self, self.on_pane_toggle, option.delay_event)
             core.Add(cpde, 1, wx.GROW | wx.ALL, 5)
 
         if option.strip_settings:
-            data = {
-                "Custom Body": option.strip_settings.custom_body,
-                "Custom Cape": option.strip_settings.custom_cape,
-                "Custom Gloves": option.strip_settings.custom_gloves,
-                "Custom Legs": option.strip_settings.custom_legs,
-                "Custom Head": option.strip_settings.custom_head,
-                "Clothing": option.strip_settings.clothing,
-                "Mount": option.strip_settings.mount,
-                "Melee": option.strip_settings.melee,
-                "Ranged": option.strip_settings.ranged,
-                "Forced": sanitize_attr_value(option.strip_settings.forced),
-                "Quest Enabled": sanitize_attr_value(
-                    option.strip_settings.quest_enabled
-                ),
-            }
-            cpss = CeCollapsiblePanel(self, "Strip Settings", self.on_pane_toggle, data)
+            cpss = CeStripSettings(self, self.on_pane_toggle, option.strip_settings)
             core.Add(cpss, 0, wx.GROW | wx.ALL, 5)
+
+        if option.teleport_settings:
+            cpts = CeTeleportSettings(self, self.on_pane_toggle, option.teleport_settings)
+            core.Add(cpts, 0, wx.GROW | wx.ALL, 5)
 
         self.SetSizerAndFit(core)
         self.SetupScrolling()
