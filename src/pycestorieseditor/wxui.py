@@ -410,9 +410,24 @@ class CeComplexCollapsiblePanel(wx.CollapsiblePane):
         cp_box.SetSizeHints(pane)
 
 
+class CeSpawnTroop(CeComplexCollapsiblePanel):
+    def __init__(self, parent, cb, option: ceevents_modal.BattleSettings):
+        self._option = option
+        super().__init__(parent, "Battle Setting", cb)
+
+    def _post_init(self):
+        self._data = self.build_option(
+            self._option,
+            ["ref", "victory", "defeat", "enemy_name", "player_troops"]
+        )
+        self._lp_data = self._option.spawn_troops.spawn_troop
+        self._lp_label = "Spawn Troops"
+        self._lp_headers = ("Ref", "Id", "Number", "Wounded Number")
+        self._lp_keys = ["ref", "id", "number", "wounded_number"]
+
+
 class CeSpawnHero(CeComplexCollapsiblePanel):
     def __init__(self, parent, cb, option: ceevents_modal.SpawnHero):
-        self._skill = option.skills_to_level.skill
         self._option = option
         super().__init__(parent, "Spawn Heroes", cb)
 
@@ -774,6 +789,10 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
 
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
+
+        if option.battle_settings:
+            cpbs = CeSpawnTroop(self, self.on_pane_toggle, option.battle_settings)
+            core.Add(cpbs, 0, wx.EXPAND)
 
         if option.spawn_heroes and option.spawn_heroes.spawn_hero:
             for spawnhero in option.spawn_heroes.spawn_hero:
