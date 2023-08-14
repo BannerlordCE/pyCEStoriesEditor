@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from dataclasses import dataclass
 from typing import Callable, TypeVar, Optional
 
 import wx
@@ -351,19 +352,34 @@ class ListCtrlPanel(wx.Panel, ColumnSorterMixin):
         pass
 
 
+class DataTypeNotValid(Exception):
+    ...
+
+
+@dataclass
+class ComplexListData:
+    lp_data: list
+    lp_label: str
+    lp_headers: tuple
+    lp_keys: list
+
+
+@dataclass
+class SimpleListData:
+    lp_data: list
+    lp_label: str
+
+
 class CeComplexCollapsiblePanel(wx.CollapsiblePane):
     def __init__(self, parent, label, cb):
         super().__init__(
             parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE
         )
-        self.SetMinSize((500, -1))
+        self.SetMinSize((600, -1))
         self.parent = parent
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
         self._data = {}
-        self._lp_data = []
-        self._lp_label = ""
-        self._lp_headers = ()
-        self._lp_keys = []
+        self._cld: list[ComplexListData|SimpleListData] = []
         self._post_init()
         self.populate()
 
@@ -396,18 +412,99 @@ class CeComplexCollapsiblePanel(wx.CollapsiblePane):
 
         cp_box.Add(cp_flex, 0, wx.EXPAND | wx.ALL, 5)
 
-        cp_flex3.Add(wx.StaticText(pane, wx.ID_ANY, label=self._lp_label), 0, wx.LEFT, 5)
-        table = ListCtrlPanel(
-            pane,
-            self._lp_data,
-            self._lp_headers,
-            GenericOptionCtrl,
-            self._lp_keys,
-        )
-        cp_flex3.Add(table, 1, wx.EXPAND | wx.ALL, 5)
+        for data in self._cld:
+            if isinstance(data, ComplexListData):
+                cp_flex3.Add(
+                    wx.StaticText(pane, wx.ID_ANY, label=data.lp_label),
+                    0,
+                    wx.LEFT,
+                    5
+                )
+                cp_flex3.Add(
+                    ListCtrlPanel(
+                        pane,
+                        data.lp_data,
+                        data.lp_headers,
+                        GenericOptionCtrl,
+                        data.lp_keys,
+                    ), 1, wx.EXPAND | wx.ALL, 5)
+            elif isinstance(data, SimpleListData):
+                wx_label_list(pane, cp_flex3, data.lp_label, data.lp_data)
+            else:
+                raise DataTypeNotValid()
+
         cp_box.Add(cp_flex3, 1, wx.EXPAND | wx.ALL, 5)
         pane.SetSizer(cp_box)
         cp_box.SetSizeHints(pane)
+
+
+class CeCompanions(CeComplexCollapsiblePanel):
+    def __init__(self, parent, cb, option: ceevents_modal.Companion):
+        self._option = option
+        super().__init__(parent, "Companions", cb)
+
+    def _post_init(self):
+        self._data = self.build_option(
+            self._option,
+            [
+                "pregnancy_risk_modifier",
+                "escape_chance",
+                "gold_total",
+                "captor_gold_total",
+                "relation_total",
+                "morale_total",
+                "health_total",
+                "renown_total",
+                "id",
+                "ref",
+                "type",
+                "location",
+                "use_other_conditions"
+            ]
+        )
+        with suppress(AttributeError):
+            self._cld.append(
+                SimpleListData(
+                    values_as_list(self._option.multiple_restricted_list_of_consequences.restricted_list_of_consequences),
+                    "Restricted List of Consequence",
+                )
+            )
+        with suppress(AttributeError):
+            self._cld.append(
+                ComplexListData(
+                    self._option.skills_to_level.skill,
+                    "Skills to Level",
+                    ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification"),
+                    ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
+                )
+            )
+        with suppress(AttributeError):
+            self._cld.append(
+                ComplexListData(
+                    self._option.traits_to_level.trait,
+                    "Traits to level",
+                    ("Id", "By Level", "By XP", "Ref", "color", "Hide Notification"),
+                    ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
+                )
+            )
+        with suppress(AttributeError):
+            self._cld.append(
+                ComplexListData(
+                    self._option.kingdom_options.kingdom_option,
+                    "Kingdom Options",
+                    ("Ref", "Action", "Kingdom", "Hide Notification"),
+                    ["ref", "action", "kingdom", "hide_notification"],
+                )
+            )
+        with suppress(AttributeError):
+            self._cld.append(
+                ComplexListData(
+                    self._option.clan_options.clan_option,
+                    "Clan Options",
+                    ("Ref", "Action", "Clan", "Hide Notification"),
+                    ["ref", "action", "clan", "hide_notification"],
+                )
+            )
 
 
 class CeSpawnTroop(CeComplexCollapsiblePanel):
@@ -420,10 +517,14 @@ class CeSpawnTroop(CeComplexCollapsiblePanel):
             self._option,
             ["ref", "victory", "defeat", "enemy_name", "player_troops"]
         )
-        self._lp_data = self._option.spawn_troops.spawn_troop
-        self._lp_label = "Spawn Troops"
-        self._lp_headers = ("Ref", "Id", "Number", "Wounded Number")
-        self._lp_keys = ["ref", "id", "number", "wounded_number"]
+        self._cld = [
+            ComplexListData(
+                self._option.spawn_troops.spawn_troop,
+                "Spawn Troops",
+                ("Ref", "Id", "Number", "Wounded Number"),
+                ["ref", "id", "number", "wounded_number"]
+            )
+        ]
 
 
 class CeSpawnHero(CeComplexCollapsiblePanel):
@@ -435,10 +536,14 @@ class CeSpawnHero(CeComplexCollapsiblePanel):
         self._data = self.build_option(
             self._option, ["ref", "culture", "gender", "clan"]
         )
-        self._lp_data = self._option.skills_to_level.skill
-        self._lp_label = "Skills to Level"
-        self._lp_headers = ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification")
-        self._lp_keys = ["id", "by_level", "by_xp", "ref", "color", "hide_notification"]
+        self._cld = [
+            ComplexListData(
+                self._option.skills_to_level.skill,
+                "Skills to Level",
+                ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification"),
+                ["id", "by_level", "by_xp", "ref", "color", "hide_notification"]
+            )
+        ]
 
 
 class CeCollapsiblePanel(wx.CollapsiblePane):
@@ -688,7 +793,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                     option.kingdom_options.kingdom_option,
                     ("Ref", "Action", "Kingdom", "Hide Notification"),
                     GenericOptionCtrl,
-                    ["ref", "action", "kingdom", "HideNotification"],
+                    ["ref", "action", "kingdom", "hide_notification"],
                 )
                 fsizer.Add(
                     wx.StaticText(self, wx.ID_ANY, label="Kingdom Options"), 0, 0, 0
@@ -701,7 +806,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 option.traits_to_level.trait,
                 ("Id", "By Level", "By XP", "Ref", "color", "Hide Notification"),
                 GenericOptionCtrl,
-                ["id", "ByLevel", "ByXp", "Ref", "Color", "HideNotification"],
+                ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
@@ -789,6 +894,11 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
 
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
+
+        if option.companions and option.companions.companion:
+            for companion in option.companions.companion:
+                cpc = CeCompanions(self, self.on_pane_toggle, companion)
+                core.Add(cpc, 0, wx.EXPAND)
 
         if option.battle_settings:
             cpbs = CeSpawnTroop(self, self.on_pane_toggle, option.battle_settings)
