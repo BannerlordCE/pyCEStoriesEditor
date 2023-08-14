@@ -352,22 +352,32 @@ class ListCtrlPanel(wx.Panel, ColumnSorterMixin):
 
 
 class CeComplexCollapsiblePanel(wx.CollapsiblePane):
-    def __init__(self, parent, label, cb, option: ceevents_modal.SpawnHero):
+    def __init__(self, parent, label, cb):
         super().__init__(
             parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE
         )
         self.SetMinSize((500, -1))
         self.parent = parent
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
-        self._skill = option.skills_to_level.skill
-        attributes = ["ref", "culture", "gender", "clan"]
-        self._data = {
+        self._data = {}
+        self._lp_data = []
+        self._lp_label = ""
+        self._lp_headers = ()
+        self._lp_keys = []
+        self._post_init()
+        self.populate()
+
+    def _post_init(self):
+        raise NotImplementedError()
+
+    @staticmethod
+    def build_option(option, attributes):
+        return {
             get_label(option, x): sanitize_attr_value(
                 getattr(option, x)
             )
             for x in attributes
         }
-        self.populate()
 
     def populate(self):
         pane = self.GetPane()
@@ -386,18 +396,34 @@ class CeComplexCollapsiblePanel(wx.CollapsiblePane):
 
         cp_box.Add(cp_flex, 0, wx.EXPAND | wx.ALL, 5)
 
-        cp_flex3.Add(wx.StaticText(pane, wx.ID_ANY, label="Skills to Level"), 0, wx.LEFT, 5)
+        cp_flex3.Add(wx.StaticText(pane, wx.ID_ANY, label=self._lp_label), 0, wx.LEFT, 5)
         table = ListCtrlPanel(
             pane,
-            self._skill,
-            ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification"),
+            self._lp_data,
+            self._lp_headers,
             GenericOptionCtrl,
-            ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
+            self._lp_keys,
         )
         cp_flex3.Add(table, 1, wx.EXPAND | wx.ALL, 5)
         cp_box.Add(cp_flex3, 1, wx.EXPAND | wx.ALL, 5)
         pane.SetSizer(cp_box)
         cp_box.SetSizeHints(pane)
+
+
+class CeSpawnHero(CeComplexCollapsiblePanel):
+    def __init__(self, parent, cb, option: ceevents_modal.SpawnHero):
+        self._skill = option.skills_to_level.skill
+        self._option = option
+        super().__init__(parent, "Spawn Heroes", cb)
+
+    def _post_init(self):
+        self._data = self.build_option(
+            self._option, ["ref", "culture", "gender", "clan"]
+        )
+        self._lp_data = self._option.skills_to_level.skill
+        self._lp_label = "Skills to Level"
+        self._lp_headers = ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification")
+        self._lp_keys = ["id", "by_level", "by_xp", "ref", "color", "hide_notification"]
 
 
 class CeCollapsiblePanel(wx.CollapsiblePane):
@@ -751,7 +777,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
 
         if option.spawn_heroes and option.spawn_heroes.spawn_hero:
             for spawnhero in option.spawn_heroes.spawn_hero:
-                cpsh = CeComplexCollapsiblePanel(self, "Spawn Heroes", self.on_pane_toggle, spawnhero)
+                cpsh = CeSpawnHero(self, self.on_pane_toggle, spawnhero)
                 core.Add(cpsh, 0, wx.EXPAND)
 
         if option.damage_party:
