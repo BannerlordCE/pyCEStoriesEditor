@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from dataclasses import dataclass
+from itertools import chain
 from typing import Callable, TypeVar, Optional
 
 import wx
@@ -414,6 +415,23 @@ class CeCollapsiblePanel(ABCCollapsiblePanel):
         cp_box.SetSizeHints(pane)
 
 
+class CeCollapsible2ColPanel(ABCCollapsiblePanel):
+    def populate(self):
+        pane = self.GetPane()
+        cp_box = wx.BoxSizer()
+        cp_flex = wx.FlexGridSizer(4, (5, 5))
+        cp_flex.AddGrowableCol(1)
+        cp_flex.AddGrowableCol(3)
+        for label, value in self._data.items():
+            if isinstance(value, list):
+                wx_label_list(pane, cp_flex, label, value)
+            else:
+                wx_label_text(pane, cp_flex, label, value)
+        cp_box.Add(cp_flex, 1, wx.EXPAND | wx.ALL, 5)
+        pane.SetSizer(cp_box)
+        cp_box.SetSizeHints(pane)
+
+
 class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
     def _post_init(self):
         raise NotImplementedError()
@@ -427,22 +445,26 @@ class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
             for x in attributes
         }
 
-    def populate(self):
-        pane = self.GetPane()
-        cp_box = wx.BoxSizer(wx.VERTICAL)
-        cp_box.SetMinSize((800, -1))
+    def _first_flex(self, pane):
         cp_flex = wx.FlexGridSizer(4, (5, 5))
         cp_flex.AddGrowableCol(1)
         cp_flex.AddGrowableCol(3)
-        cp_flex3 = wx.FlexGridSizer(2, (5, 5))
-        cp_flex3.AddGrowableCol(1)
         for label, value in self._data.items():
             if isinstance(value, list):
                 wx_label_list(pane, cp_flex, label, value)
             else:
                 wx_label_text(pane, cp_flex, label, value)
 
-        cp_box.Add(cp_flex, 0, wx.EXPAND | wx.ALL, 5)
+        return cp_flex
+
+    def populate(self):
+        pane = self.GetPane()
+        cp_box = wx.BoxSizer(wx.VERTICAL)
+        cp_box.SetMinSize((800, -1))
+        cp_flex3 = wx.FlexGridSizer(2, (5, 5))
+        cp_flex3.AddGrowableCol(1)
+        if self._data:
+            cp_box.Add(self._first_flex(pane), 0, wx.EXPAND | wx.ALL, 5)
 
         for data in self._cld:
             if isinstance(data, ComplexListData):
@@ -576,6 +598,56 @@ class CeSpawnHero(CeComplexCollapsiblePanel):
                 ["id", "by_level", "by_xp", "ref", "color", "hide_notification"]
             )
         ]
+
+
+class CeReqs(CeCollapsible2ColPanel):
+    def __init__(self, parent, cb, option: ceevents_modal.Option):
+        self._option = option
+        super().__init__(parent, "Requirements", cb)
+
+    def _post_init(self):
+        s = [
+            "req_hero_health_%s_percentage",
+            "req_hero_captor_relation_%s",
+            "req_hero_prostitute_level_%s",
+            "req_hero_slave_level_%s",
+            "req_hero_trait_level_%s",
+            "req_hero_skill_level_%s",
+            "req_hero_troops_%s",
+            "req_hero_captives_%s",
+            "req_hero_female_troops_%s",
+            "req_hero_female_captives_%s",
+            "req_hero_male_troops_%s",
+            "req_hero_male_captives_%s",
+            "req_captor_trait_level_%s",
+            "req_captor_skill_level_%s",
+            "req_troops_%s",
+            "req_captives_%s",
+            "req_female_troops_%s",
+            "req_female_captives_%s",
+            "req_male_troops_%s",
+            "req_male_captives_%s",
+            "req_morale_%s",
+            "req_gold_%s",
+        ]
+        attributes = chain(
+            [
+                "req_hero_party_have_item",
+                "req_captor_party_have_item",
+                "req_captor_skill",
+                "req_captor_trait",
+                "req_hero_skill",
+                "req_hero_trait",
+            ],
+            chain.from_iterable(
+                map(lambda x: [x % y for y in ("above", "below")], s)
+            ),
+        )
+
+        self._data = self.build_data(
+            self._option,
+            attributes
+        )
 
 
 class CeTeleportSettings(CeCollapsiblePanel):
@@ -904,6 +976,8 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
 
+        creqs = CeReqs(self, self.on_pane_toggle, option)
+        core.Add(creqs, 0, wx.EXPAND)
         if option.companions and option.companions.companion:
             for companion in option.companions.companion:
                 cpc = CeCompanions(self, self.on_pane_toggle, companion)
