@@ -706,6 +706,7 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
 
         wx_label_text(self, core, label="Event Name", text=ceevent.name.value)
         wx_label_text(self, core, label="Text", text=ceevent.text.value, multiline=True)
+        wx_label_text(self, core, label="Notifiaction Name", text=ceevent.notification_name.value)
         with suppress(AttributeError):
             wx_label_text(
                 self,
@@ -731,6 +732,13 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             )
             core.Add(wx.StaticText(self, wx.ID_ANY, label="Backgrounds"), 0, wx.LEFT, 5)
             core.Add(table, 1, wx.EXPAND | wx.ALL, 0)
+        with suppress(AttributeError):
+            wx_label_text(
+                self,
+                core,
+                label="Background Animation Speed",
+                text=str(ceevent.background_animation_speed.value)
+            )
         with suppress(AttributeError):
             wx_label_list(
                 self,
