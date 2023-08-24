@@ -1,4 +1,6 @@
-from typing import TypedDict
+# -*- coding: utf-8 -*-
+# Licensed under the EUPL v1.2
+# © 2023 bicobus <bicobus@keemail.me>
 from pycestorieseditor.ceevents_template.ceevents_modal import (
     AgreeResultText,
     AgreeText,

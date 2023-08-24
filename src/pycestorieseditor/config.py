@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# Licensed under the EUPL v1.2
 # © 2023 bicobus <bicobus@keemail.me>
 
 import contextlib
