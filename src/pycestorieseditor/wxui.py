@@ -370,19 +370,51 @@ class SimpleListData:
     lp_label: str
 
 
-class CeComplexCollapsiblePanel(wx.CollapsiblePane):
+class ABCCollapsiblePanel(wx.CollapsiblePane):
     def __init__(self, parent, label, cb):
         super().__init__(
             parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE
         )
         self.SetMinSize((600, -1))
-        self.parent = parent
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
         self._data = {}
         self._cld: list[ComplexListData|SimpleListData] = []
         self._post_init()
         self.populate()
 
+    def _post_init(self):
+        raise NotImplementedError
+
+    def populate(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def build_data(option, attributes):
+        return {
+            get_label(option, x): sanitize_attr_value(
+                getattr(option, x)
+            )
+            for x in attributes
+        }
+
+
+class CeCollapsiblePanel(ABCCollapsiblePanel):
+    def populate(self):
+        pane = self.GetPane()
+        cp_box = wx.BoxSizer()
+        cp_flex = wx.FlexGridSizer(2, (5, 5))
+        cp_flex.AddGrowableCol(1)
+        for label, value in self._data.items():
+            if isinstance(value, list):
+                wx_label_list(pane, cp_flex, label, value)
+            else:
+                wx_label_text(pane, cp_flex, label, value)
+        cp_box.Add(cp_flex, 1, wx.EXPAND | wx.ALL, 5)
+        pane.SetSizer(cp_box)
+        cp_box.SetSizeHints(pane)
+
+
+class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
     def _post_init(self):
         raise NotImplementedError()
 
@@ -431,7 +463,7 @@ class CeComplexCollapsiblePanel(wx.CollapsiblePane):
             elif isinstance(data, SimpleListData):
                 wx_label_list(pane, cp_flex3, data.lp_label, data.lp_data)
             else:
-                raise DataTypeNotValid()
+                raise DataTypeNotValid(data)
 
         cp_box.Add(cp_flex3, 1, wx.EXPAND | wx.ALL, 5)
         pane.SetSizer(cp_box)
@@ -546,75 +578,52 @@ class CeSpawnHero(CeComplexCollapsiblePanel):
         ]
 
 
-class CeCollapsiblePanel(wx.CollapsiblePane):
-    def __init__(self, parent, label: str, cb: Callable, data: dict):
-        super().__init__(
-            parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE
-        )
-        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
-        self._data = data
-        self.populate()
-
-    def populate(self):
-        pane = self.GetPane()
-        cp_box = wx.BoxSizer()
-        cp_flex = wx.FlexGridSizer(2, (5, 5))
-        cp_flex.AddGrowableCol(1)
-        for label, value in self._data.items():
-            if isinstance(value, list):
-                wx_label_list(pane, cp_flex, label, value)
-            else:
-                wx_label_text(pane, cp_flex, label, value)
-        cp_box.Add(cp_flex, 1, wx.EXPAND | wx.ALL, 5)
-        pane.SetSizer(cp_box)
-        cp_box.SetSizeHints(pane)
-
-    @staticmethod
-    def build_data(option, attributes):
-        return {
-            get_label(option, x): sanitize_attr_value(
-                getattr(option, x)
-            )
-            for x in attributes
-        }
-
-
 class CeTeleportSettings(CeCollapsiblePanel):
     def __init__(self, parent, cb, option):
-        attributes = ["location", "location_name", "distance", "faction"]
-        data = self.build_data(option, attributes)
-        CeCollapsiblePanel.__init__(self, parent, "Teleport Settings", cb, data)
+        self.option = option
+        super().__init__(parent, "Teleport Settings", cb)
+
+    def _post_init(self):
+        self._data = self.build_data(
+            self.option,
+            ["location", "location_name", "distance", "faction"]
+        )
 
 
 class CeDelayEvent(CeCollapsiblePanel):
     def __init__(self, parent, cb, option):
-        attributes = [
-            "use_conditions",
-            "time_to_take",
-            "trigger_event_name",
-            "trigger_events"
-        ]
-        data = self.build_data(option, attributes)
-        CeCollapsiblePanel.__init__(self, parent, "Delay Event", cb, data)
+        self.option = option
+        super().__init__(parent, "Delay Event", cb)
+
+    def _post_init(self):
+        self._data = self.build_data(
+            self.option,
+            ["use_conditions", "time_to_take", "trigger_event_name", "trigger_events"],
+        )
 
 
 class CeStripSettings(CeCollapsiblePanel):
     def __init__(self, parent, cb, option):
-        self._attributes = [
-            'custom_body',
-            'custom_cape',
-            'custom_gloves',
-            'custom_legs',
-            'custom_head',
-            'clothing',
-            'mount',
-            'melee',
-            'ranged',
-            'forced',
-            'quest_enabled',
-        ]
-        data = self.build_data(option, self._attributes)
-        CeCollapsiblePanel.__init__(self, parent, "Strip Settings", cb, data)
+        self.option = option
+        super().__init__(parent, "Strip Settings", cb)
+
+    def _post_init(self):
+        self._data = self.build_data(
+            self.option,
+            [
+                'custom_body',
+                'custom_cape',
+                'custom_gloves',
+                'custom_legs',
+                'custom_head',
+                'clothing',
+                'mount',
+                'melee',
+                'ranged',
+                'forced',
+                'quest_enabled',
+            ]
+        )
 
 
 class DwTabOne(wx_scrolled.ScrolledPanel):
