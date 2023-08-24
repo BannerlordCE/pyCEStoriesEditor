@@ -20,8 +20,8 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "-t", "--target", required=False,
-        help="If unset, env variable CE_TARGET_PATH will be read. If empty, software "
-             "will fail."
+        help="A path containing CE xml events files. If unset, env variable "
+             "CE_TARGET_PATH will be read. If empty, software will fail."
     )
     parser.add_argument(
         "-l", "--list", action="store_true", required=False,
