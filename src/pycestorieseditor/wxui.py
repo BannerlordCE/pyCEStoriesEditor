@@ -601,7 +601,7 @@ class CeSpawnHero(CeComplexCollapsiblePanel):
         ]
 
 
-class CeReqs(CeCollapsible2ColPanel):
+class CeOptReqs(CeCollapsible2ColPanel):
     def __init__(self, parent, cb, option: ceevents_modal.Option):
         self._option = option
         super().__init__(parent, "Requirements", cb)
@@ -703,15 +703,21 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
     def __init__(self, parent, ceevent: Ceevent):
         wx_scrolled.ScrolledPanel.__init__(self, parent, style=wx.TAB_TRAVERSAL)
         self.SetMinSize((800, -1))
-        core = wx.FlexGridSizer(2, gap=(5, 5))
+        core = wx.BoxSizer(wx.VERTICAL)
+        fsizer = wx.FlexGridSizer(2, gap=(5, 5))
 
-        wx_label_text(self, core, label="Event Name", text=ceevent.name.value)
-        wx_label_text(self, core, label="Text", text=ceevent.text.value, multiline=True)
-        wx_label_text(self, core, label="Notifiaction Name", text=ceevent.notification_name.value)
+        wx_label_text(self, fsizer, label="Event Name", text=ceevent.name.value)
+        wx_label_text(self, fsizer, label="Text", text=ceevent.text.value, multiline=True)
+        wx_label_text(self, fsizer, label="Order to Call", text=ceevent.order_to_call)
+
+        with suppress(AttributeError):
+            wx_label_text(
+                self, fsizer, label="Notifiaction Name", text=ceevent.notification_name.value
+            )
         with suppress(AttributeError):
             wx_label_text(
                 self,
-                core,
+                fsizer,
                 label="Sound Name",
                 text=ceevent.sound_name.value,
                 multiline=True,
@@ -719,7 +725,7 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
         with suppress(AttributeError):
             wx_label_text(
                 self,
-                core,
+                fsizer,
                 label="Background Name",
                 text=ceevent.background_name.value,
                 multiline=True,
@@ -731,33 +737,33 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 ("Name", "Weight", "Use Conditions"),
                 BackgroundListCtrl,
             )
-            core.Add(wx.StaticText(self, wx.ID_ANY, label="Backgrounds"), 0, wx.LEFT, 5)
-            core.Add(table, 1, wx.EXPAND | wx.ALL, 0)
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Backgrounds"), 0, wx.LEFT, 5)
+            fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
         with suppress(AttributeError):
             wx_label_text(
                 self,
-                core,
+                fsizer,
                 label="Background Animation Speed",
                 text=str(ceevent.background_animation_speed.value)
             )
         with suppress(AttributeError):
             wx_label_list(
                 self,
-                core,
+                fsizer,
                 label="Background Animation",
                 data=ceevent.background_animation.background_name,
             )
         with suppress(AttributeError):
             wx_label_list(
                 self,
-                core,
+                fsizer,
                 label="Custom Flags",
                 data=values_as_list(ceevent.multiple_list_of_custom_flags.custom_flag),
             )
 
         wx_label_list(
             self,
-            core,
+            fsizer,
             label="Restricted Flags",
             data=values_as_list(
                 ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags
@@ -767,10 +773,31 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
         with suppress(AttributeError):
             wx_label_text(
                 self,
-                core,
+                fsizer,
                 label="CanOnlyHappenNrOfTimes",
                 text=ceevent.can_only_happen_nr_of_times.value,
             )
+
+        wx_label_text(
+            self, fsizer, "Sexual Content", text=str(ceevent.sexual_content.value)
+        )
+        wx_label_text(self, fsizer, label="Pregnancy Risk Modifier", text=ceevent.pregnancy_risk_modifier)
+        wx_label_text(self, fsizer, label="Escape Chance", text=ceevent.escape_chance)
+        wx_label_text(self, fsizer, label="WeightedChanceOfOccurring", text=ceevent.weighted_chance_of_occurring)
+        wx_label_text(self, fsizer, label="GoldTotal", text=ceevent.gold_total)
+        wx_label_text(self, fsizer, label="CaptorGoldTotal", text=ceevent.captor_gold_total)
+        wx_label_text(self, fsizer, label="RelationTotal", text=ceevent.relation_total)
+        wx_label_text(self, fsizer, label="MoraleTotal", text=ceevent.morale_total)
+        wx_label_text(self, fsizer, label="HealthTotal", text=ceevent.health_total)
+        wx_label_text(self, fsizer, label="RenownTotal", text=ceevent.renown_total)
+        wx_label_text(self, fsizer, label="ProstitutionTotal", text=ceevent.prostitution_total)
+        wx_label_text(self, fsizer, label="SlaveryTotal", text=ceevent.slavery_total)
+        wx_label_text(self, fsizer, label="TraitTotal", text=ceevent.trait_total)
+        wx_label_text(self, fsizer, label="SkillTotal", text=ceevent.skill_total)
+        wx_label_text(self, fsizer, label="TraitXPTotal", text=ceevent.trait_xptotal)
+        wx_label_text(self, fsizer, label="SkillXPTotal", text=ceevent.skill_xptotal)
+        wx_label_text(self, fsizer, label="SkillToLevel", text=ceevent.skill_to_level)
+        wx_label_text(self, fsizer, label="TraitToLevel", text=ceevent.trait_to_level)
 
         if ceevent.skills_required:
             table = ListCtrlPanel(
@@ -780,12 +807,62 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "max", "min", "ref"],
             )
-            core.Add(wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, 0, 0)
-            core.Add(table, 1, wx.EXPAND | wx.ALL, 0)
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, 0, 0)
+            fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
-        core.AddGrowableCol(1)
+        # TODO: may be conditional with single skill to level
+        if ceevent.skills_to_level and ceevent.skills_to_level.skill:
+            table = ListCtrlPanel(
+                self,
+                ceevent.skills_to_level.skill,
+                ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification"),
+                GenericOptionCtrl,
+                ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
+            )
+            fsizer.Add(
+                wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5
+            )
+            fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
+
+        if ceevent.traits_required:
+            table = ListCtrlPanel(
+                self,
+                ceevent.traits_required.trait_required,
+                ("Id", "Max", "Min", "Ref"),
+                GenericOptionCtrl,
+                ["id", "max", "min", "ref"],
+            )
+            fsizer.Add(
+                wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5
+            )
+            fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
+
+        # TODO: may be conditional with single trait to level
+        if ceevent.traits_to_level and ceevent.traits_to_level.trait:
+            table = ListCtrlPanel(
+                self,
+                ceevent.traits_to_level.trait,
+                ("Id", "By Level", "By XP", "Ref", "color", "Hide Notification"),
+                GenericOptionCtrl,
+                ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
+            )
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits to level"), 0, wx.LEFT, 5)
+            fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
+
+        fsizer.AddGrowableCol(1)
+        core.Add(fsizer, 1, wx.EXPAND)
+
+        if ceevent.companions and ceevent.companions.companion:
+            for companion in ceevent.companions.companion:
+                cpc = CeCompanions(self, self.on_pane_toggle, companion)
+                core.Add(cpc, 0, wx.EXPAND)
+
         self.SetSizerAndFit(core)
         self.SetupScrolling()
+
+    def on_pane_toggle(self, evt):
+        self.Fit()  # refit children inside canvas
+        self.Layout()
 
 
 class DwTabXml(wx.Panel):
@@ -985,7 +1062,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
 
-        creqs = CeReqs(self, self.on_pane_toggle, option)
+        creqs = CeOptReqs(self, self.on_pane_toggle, option)
         core.Add(creqs, 0, wx.EXPAND)
         if option.companions and option.companions.companion:
             for companion in option.companions.companion:
