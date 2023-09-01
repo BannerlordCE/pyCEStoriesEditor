@@ -1310,7 +1310,6 @@ class StripSettings:
             "name": "CustomBody",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     custom_cape: List[str] = field(
@@ -1319,7 +1318,6 @@ class StripSettings:
             "name": "CustomCape",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     custom_gloves: List[str] = field(
@@ -1328,7 +1326,6 @@ class StripSettings:
             "name": "CustomGloves",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     custom_legs: List[str] = field(
@@ -1337,7 +1334,6 @@ class StripSettings:
             "name": "CustomLegs",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     custom_head: List[str] = field(
@@ -1346,7 +1342,6 @@ class StripSettings:
             "name": "CustomHead",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     clothing: List[str] = field(
@@ -1355,7 +1350,6 @@ class StripSettings:
             "name": "Clothing",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     mount: List[str] = field(
@@ -1364,7 +1358,6 @@ class StripSettings:
             "name": "Mount",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     melee: List[str] = field(
@@ -1373,7 +1366,6 @@ class StripSettings:
             "name": "Melee",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     ranged: List[str] = field(
@@ -1382,7 +1374,6 @@ class StripSettings:
             "name": "Ranged",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     forced: Optional[bool] = field(
@@ -1676,6 +1667,7 @@ class MultipleRestrictedListOfFlags:
         metadata={
             "name": "RestrictedListOfFlags",
             "type": "Element",
+            "min_occurs": 1,
         }
     )
 
@@ -1941,7 +1933,7 @@ class Companion:
             "type": "Attribute",
         }
     )
-    type: Optional[str] = field(
+    type_value: Optional[str] = field(
         default=None,
         metadata={
             "name": "Type",
@@ -1966,87 +1958,78 @@ class Companion:
 
 @define
 class DelayEvent:
-    use_conditions: List[str] = field(
-        factory=list,
+    use_conditions: Optional[str] = field(
+        default=None,
         metadata={
             "name": "UseConditions",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
-    time_to_take: List[str] = field(
-        factory=list,
+    time_to_take: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TimeToTake",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
-    trigger_event_name: List[str] = field(
-        factory=list,
+    trigger_event_name: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TriggerEventName",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
-    trigger_events: List[TriggerEvents] = field(
-        factory=list,
+    trigger_events: Optional[TriggerEvents] = field(
+        default=None,
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
-            "sequential": True,
         }
     )
 
 
 @define
 class ProgressEvent:
-    should_stop_moving: List[bool] = field(
-        factory=list,
+    should_stop_moving: Optional[bool] = field(
+        default=None,
         metadata={
             "name": "ShouldStopMoving",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
-    display_progress_mode: List[str] = field(
-        factory=list,
+    display_progress_mode: Optional[str] = field(
+        default=None,
         metadata={
             "name": "DisplayProgressMode",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
-    time_to_take: List[str] = field(
-        factory=list,
+    time_to_take: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TimeToTake",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
-    trigger_event_name: List[str] = field(
-        factory=list,
+    trigger_event_name: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TriggerEventName",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
-    trigger_events: List[TriggerEvents] = field(
-        factory=list,
+    trigger_events: Optional[TriggerEvents] = field(
+        default=None,
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
-            "sequential": True,
         }
     )
 
@@ -2134,7 +2117,6 @@ class MenuOption:
             "name": "Order",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     menu_id: List[str] = field(
@@ -2143,7 +2125,6 @@ class MenuOption:
             "name": "MenuID",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     option_id: List[str] = field(
@@ -2152,7 +2133,6 @@ class MenuOption:
             "name": "OptionID",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     multiple_restricted_list_of_consequences: List[MultipleRestrictedListOfConsequences] = field(
@@ -2160,7 +2140,6 @@ class MenuOption:
         metadata={
             "name": "MultipleRestrictedListOfConsequences",
             "type": "Element",
-            "sequential": True,
         }
     )
     option_text: List[str] = field(
@@ -2169,7 +2148,6 @@ class MenuOption:
             "name": "OptionText",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     trigger_event_name: List[str] = field(
@@ -2178,7 +2156,6 @@ class MenuOption:
             "name": "TriggerEventName",
             "type": "Element",
             "namespace": "",
-            "sequential": True,
         }
     )
     sound_name: List[str] = field(
@@ -2186,7 +2163,6 @@ class MenuOption:
         metadata={
             "name": "SoundName",
             "type": "Element",
-            "sequential": True,
         }
     )
     scene_to_play: List[str] = field(
@@ -2194,7 +2170,6 @@ class MenuOption:
         metadata={
             "name": "SceneToPlay",
             "type": "Element",
-            "sequential": True,
         }
     )
     pregnancy_risk_modifier: List[str] = field(
@@ -2202,7 +2177,6 @@ class MenuOption:
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
-            "sequential": True,
         }
     )
     escape_chance: List[str] = field(
@@ -2210,7 +2184,6 @@ class MenuOption:
         metadata={
             "name": "EscapeChance",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_party_have_item: List[str] = field(
@@ -2218,7 +2191,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroPartyHaveItem",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captor_party_have_item: List[str] = field(
@@ -2226,7 +2198,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptorPartyHaveItem",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_health_below_percentage: List[str] = field(
@@ -2234,7 +2205,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroHealthBelowPercentage",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_health_above_percentage: List[str] = field(
@@ -2242,7 +2212,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroHealthAbovePercentage",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_captor_relation_above: List[str] = field(
@@ -2250,7 +2219,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroCaptorRelationAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_captor_relation_below: List[str] = field(
@@ -2258,7 +2226,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroCaptorRelationBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_prostitute_level_above: List[str] = field(
@@ -2266,7 +2233,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroProstituteLevelAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_prostitute_level_below: List[str] = field(
@@ -2274,7 +2240,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroProstituteLevelBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_slave_level_above: List[str] = field(
@@ -2282,7 +2247,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroSlaveLevelAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_slave_level_below: List[str] = field(
@@ -2290,7 +2254,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroSlaveLevelBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_trait_level_above: List[str] = field(
@@ -2298,7 +2261,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroTraitLevelAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_trait_level_below: List[str] = field(
@@ -2306,7 +2268,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroTraitLevelBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captor_trait_level_above: List[str] = field(
@@ -2314,7 +2275,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptorTraitLevelAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captor_trait_level_below: List[str] = field(
@@ -2322,7 +2282,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptorTraitLevelBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_skill_level_above: List[str] = field(
@@ -2330,7 +2289,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroSkillLevelAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_skill_level_below: List[str] = field(
@@ -2338,7 +2296,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroSkillLevelBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captor_skill_level_above: List[str] = field(
@@ -2346,7 +2303,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptorSkillLevelAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captor_skill_level_below: List[str] = field(
@@ -2354,7 +2310,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptorSkillLevelBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_troops_above: List[str] = field(
@@ -2362,7 +2317,6 @@ class MenuOption:
         metadata={
             "name": "ReqTroopsAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_troops_below: List[str] = field(
@@ -2370,7 +2324,6 @@ class MenuOption:
         metadata={
             "name": "ReqTroopsBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captives_above: List[str] = field(
@@ -2378,7 +2331,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptivesAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captives_below: List[str] = field(
@@ -2386,7 +2338,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptivesBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_female_troops_above: List[str] = field(
@@ -2394,7 +2345,6 @@ class MenuOption:
         metadata={
             "name": "ReqFemaleTroopsAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_female_troops_below: List[str] = field(
@@ -2402,7 +2352,6 @@ class MenuOption:
         metadata={
             "name": "ReqFemaleTroopsBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_female_captives_above: List[str] = field(
@@ -2410,7 +2359,6 @@ class MenuOption:
         metadata={
             "name": "ReqFemaleCaptivesAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_female_captives_below: List[str] = field(
@@ -2418,7 +2366,6 @@ class MenuOption:
         metadata={
             "name": "ReqFemaleCaptivesBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_male_troops_above: List[str] = field(
@@ -2426,7 +2373,6 @@ class MenuOption:
         metadata={
             "name": "ReqMaleTroopsAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_male_troops_below: List[str] = field(
@@ -2434,7 +2380,6 @@ class MenuOption:
         metadata={
             "name": "ReqMaleTroopsBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_male_captives_above: List[str] = field(
@@ -2442,7 +2387,6 @@ class MenuOption:
         metadata={
             "name": "ReqMaleCaptivesAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_male_captives_below: List[str] = field(
@@ -2450,7 +2394,6 @@ class MenuOption:
         metadata={
             "name": "ReqMaleCaptivesBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_troops_above: List[str] = field(
@@ -2458,7 +2401,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroTroopsAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_troops_below: List[str] = field(
@@ -2466,7 +2408,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroTroopsBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_captives_above: List[str] = field(
@@ -2474,7 +2415,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroCaptivesAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_captives_below: List[str] = field(
@@ -2482,7 +2422,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroCaptivesBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_female_troops_above: List[str] = field(
@@ -2490,7 +2429,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroFemaleTroopsAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_female_troops_below: List[str] = field(
@@ -2498,7 +2436,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroFemaleTroopsBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_female_captives_above: List[str] = field(
@@ -2506,7 +2443,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroFemaleCaptivesAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_female_captives_below: List[str] = field(
@@ -2514,7 +2450,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroFemaleCaptivesBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_male_troops_above: List[str] = field(
@@ -2522,7 +2457,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroMaleTroopsAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_male_troops_below: List[str] = field(
@@ -2530,7 +2464,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroMaleTroopsBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_male_captives_above: List[str] = field(
@@ -2538,7 +2471,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroMaleCaptivesAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_male_captives_below: List[str] = field(
@@ -2546,7 +2478,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroMaleCaptivesBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_morale_below: List[str] = field(
@@ -2554,7 +2485,6 @@ class MenuOption:
         metadata={
             "name": "ReqMoraleBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_morale_above: List[str] = field(
@@ -2562,7 +2492,6 @@ class MenuOption:
         metadata={
             "name": "ReqMoraleAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_gold_above: List[str] = field(
@@ -2570,7 +2499,6 @@ class MenuOption:
         metadata={
             "name": "ReqGoldAbove",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_gold_below: List[str] = field(
@@ -2578,7 +2506,6 @@ class MenuOption:
         metadata={
             "name": "ReqGoldBelow",
             "type": "Element",
-            "sequential": True,
         }
     )
     item_to_give: List[str] = field(
@@ -2586,7 +2513,6 @@ class MenuOption:
         metadata={
             "name": "ItemToGive",
             "type": "Element",
-            "sequential": True,
         }
     )
     gold_total: List[str] = field(
@@ -2594,7 +2520,6 @@ class MenuOption:
         metadata={
             "name": "GoldTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     captor_gold_total: List[str] = field(
@@ -2602,7 +2527,6 @@ class MenuOption:
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     relation_total: List[str] = field(
@@ -2610,7 +2534,6 @@ class MenuOption:
         metadata={
             "name": "RelationTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     morale_total: List[str] = field(
@@ -2618,7 +2541,6 @@ class MenuOption:
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     health_total: List[str] = field(
@@ -2626,7 +2548,6 @@ class MenuOption:
         metadata={
             "name": "HealthTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     renown_total: List[str] = field(
@@ -2634,7 +2555,6 @@ class MenuOption:
         metadata={
             "name": "RenownTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     prostitution_total: List[str] = field(
@@ -2642,7 +2562,6 @@ class MenuOption:
         metadata={
             "name": "ProstitutionTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     slavery_total: List[str] = field(
@@ -2650,7 +2569,6 @@ class MenuOption:
         metadata={
             "name": "SlaveryTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     trait_total: List[str] = field(
@@ -2658,7 +2576,6 @@ class MenuOption:
         metadata={
             "name": "TraitTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     skill_total: List[str] = field(
@@ -2666,7 +2583,6 @@ class MenuOption:
         metadata={
             "name": "SkillTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     trait_xptotal: List[str] = field(
@@ -2674,7 +2590,6 @@ class MenuOption:
         metadata={
             "name": "TraitXPTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     skill_xptotal: List[str] = field(
@@ -2682,7 +2597,6 @@ class MenuOption:
         metadata={
             "name": "SkillXPTotal",
             "type": "Element",
-            "sequential": True,
         }
     )
     skill_to_level: List[str] = field(
@@ -2690,7 +2604,6 @@ class MenuOption:
         metadata={
             "name": "SkillToLevel",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captor_skill: List[str] = field(
@@ -2698,7 +2611,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptorSkill",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_skill: List[str] = field(
@@ -2706,7 +2618,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroSkill",
             "type": "Element",
-            "sequential": True,
         }
     )
     trait_to_level: List[str] = field(
@@ -2714,7 +2625,6 @@ class MenuOption:
         metadata={
             "name": "TraitToLevel",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_captor_trait: List[str] = field(
@@ -2722,7 +2632,6 @@ class MenuOption:
         metadata={
             "name": "ReqCaptorTrait",
             "type": "Element",
-            "sequential": True,
         }
     )
     req_hero_trait: List[str] = field(
@@ -2730,7 +2639,6 @@ class MenuOption:
         metadata={
             "name": "ReqHeroTrait",
             "type": "Element",
-            "sequential": True,
         }
     )
     trigger_events: List[TriggerEvents] = field(
@@ -2738,7 +2646,6 @@ class MenuOption:
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
-            "sequential": True,
         }
     )
     skills_to_level: List[SkillsToLevel] = field(
@@ -2746,7 +2653,6 @@ class MenuOption:
         metadata={
             "name": "SkillsToLevel",
             "type": "Element",
-            "sequential": True,
         }
     )
     traits_to_level: List[TraitsToLevel] = field(
@@ -2754,7 +2660,6 @@ class MenuOption:
         metadata={
             "name": "TraitsToLevel",
             "type": "Element",
-            "sequential": True,
         }
     )
     skills_required: List[SkillsRequired] = field(
@@ -2762,7 +2667,6 @@ class MenuOption:
         metadata={
             "name": "SkillsRequired",
             "type": "Element",
-            "sequential": True,
         }
     )
     traits_required: List[TraitsRequired] = field(
@@ -2770,7 +2674,6 @@ class MenuOption:
         metadata={
             "name": "TraitsRequired",
             "type": "Element",
-            "sequential": True,
         }
     )
     companions: List[Companions] = field(
@@ -2778,7 +2681,6 @@ class MenuOption:
         metadata={
             "name": "Companions",
             "type": "Element",
-            "sequential": True,
         }
     )
     strip_settings: List[StripSettings] = field(
@@ -2786,7 +2688,6 @@ class MenuOption:
         metadata={
             "name": "StripSettings",
             "type": "Element",
-            "sequential": True,
         }
     )
     battle_settings: List[BattleSettings] = field(
@@ -2794,7 +2695,6 @@ class MenuOption:
         metadata={
             "name": "BattleSettings",
             "type": "Element",
-            "sequential": True,
         }
     )
     kingdom_options: List[KingdomOptions] = field(
@@ -2802,7 +2702,6 @@ class MenuOption:
         metadata={
             "name": "KingdomOptions",
             "type": "Element",
-            "sequential": True,
         }
     )
     clan_options: List[ClanOptions] = field(
@@ -2810,7 +2709,6 @@ class MenuOption:
         metadata={
             "name": "ClanOptions",
             "type": "Element",
-            "sequential": True,
         }
     )
     spawn_troops: List[SpawnTroops] = field(
@@ -2818,7 +2716,6 @@ class MenuOption:
         metadata={
             "name": "SpawnTroops",
             "type": "Element",
-            "sequential": True,
         }
     )
     spawn_heroes: List[SpawnHeroes] = field(
@@ -2826,7 +2723,6 @@ class MenuOption:
         metadata={
             "name": "SpawnHeroes",
             "type": "Element",
-            "sequential": True,
         }
     )
     delay_event: List[DelayEvent] = field(
@@ -2834,7 +2730,6 @@ class MenuOption:
         metadata={
             "name": "DelayEvent",
             "type": "Element",
-            "sequential": True,
         }
     )
     scene_settings: List[SceneSettings] = field(
@@ -2842,7 +2737,6 @@ class MenuOption:
         metadata={
             "name": "SceneSettings",
             "type": "Element",
-            "sequential": True,
         }
     )
     teleport_settings: List[TeleportSettings] = field(
@@ -2850,7 +2744,6 @@ class MenuOption:
         metadata={
             "name": "TeleportSettings",
             "type": "Element",
-            "sequential": True,
         }
     )
     damage_party: List[DamageParty] = field(
@@ -2858,14 +2751,13 @@ class MenuOption:
         metadata={
             "name": "DamageParty",
             "type": "Element",
-            "sequential": True,
         }
     )
 
 
 @define
 class Option:
-    order: str = field(
+    order: Optional[str] = field(
         default=None,
         metadata={
             "name": "Order",
@@ -3538,7 +3430,6 @@ class Ceevent:
         metadata={
             "name": "Text",
             "type": "Element",
-            "required": True,
         }
     )
     background_name: Optional[BackgroundName] = field(

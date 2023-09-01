@@ -512,7 +512,7 @@ class CeCompanions(CeComplexCollapsiblePanel):
                 "renown_total",
                 "id",
                 "ref",
-                "type",
+                "type_value",
                 "location",
                 "use_other_conditions"
             ]
@@ -792,12 +792,6 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
         wx_label_text(self, fsizer, label="RenownTotal", text=ceevent.renown_total)
         wx_label_text(self, fsizer, label="ProstitutionTotal", text=ceevent.prostitution_total)
         wx_label_text(self, fsizer, label="SlaveryTotal", text=ceevent.slavery_total)
-        wx_label_text(self, fsizer, label="TraitTotal", text=ceevent.trait_total)
-        wx_label_text(self, fsizer, label="SkillTotal", text=ceevent.skill_total)
-        wx_label_text(self, fsizer, label="TraitXPTotal", text=ceevent.trait_xptotal)
-        wx_label_text(self, fsizer, label="SkillXPTotal", text=ceevent.skill_xptotal)
-        wx_label_text(self, fsizer, label="SkillToLevel", text=ceevent.skill_to_level)
-        wx_label_text(self, fsizer, label="TraitToLevel", text=ceevent.trait_to_level)
 
         if ceevent.skills_required:
             table = ListCtrlPanel(
@@ -810,7 +804,6 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, 0, 0)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
-        # TODO: may be conditional with single skill to level
         if ceevent.skills_to_level and ceevent.skills_to_level.skill:
             table = ListCtrlPanel(
                 self,
@@ -823,6 +816,13 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5
             )
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
+        elif (
+            RestrictedListOfConsequencesValue.CHANGE_SKILL
+            in ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags
+        ):
+            wx_label_text(self, fsizer, label="SkillTotal", text=ceevent.skill_total)
+            wx_label_text(self, fsizer, label="SkillXPTotal", text=ceevent.skill_xptotal)
+            wx_label_text(self, fsizer, label="SkillToLevel", text=ceevent.skill_to_level)
 
         if ceevent.traits_required:
             table = ListCtrlPanel(
@@ -837,7 +837,6 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             )
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
-        # TODO: may be conditional with single trait to level
         if ceevent.traits_to_level and ceevent.traits_to_level.trait:
             table = ListCtrlPanel(
                 self,
@@ -848,6 +847,13 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
+        elif (
+            RestrictedListOfConsequencesValue.CHANGE_TRAIT
+            in ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags
+        ):
+            wx_label_text(self, fsizer, label="TraitTotal", text=ceevent.trait_total)
+            wx_label_text(self, fsizer, label="TraitXPTotal", text=ceevent.trait_xptotal)
+            wx_label_text(self, fsizer, label="TraitToLevel", text=ceevent.trait_to_level)
 
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
