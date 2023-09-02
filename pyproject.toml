@@ -23,7 +23,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-#line-length = 98
+line-length = 98
 include = '\.pyi?$'
 skip-string-normalization = true
 exclude = '''
