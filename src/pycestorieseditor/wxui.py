@@ -28,6 +28,8 @@ from .ceevents_template import (
     Option,
     RestrictedListOfConsequencesValue,
     ceevents_modal,
+    MenuOption,
+    MenuOptions,
 )
 
 style = get_style_by_name("default")
@@ -995,8 +997,21 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
     def __init__(self, parent, option: Option):
         wx_scrolled.ScrolledPanel.__init__(self, parent, -1)
         self.SetMinSize((800, -1))
-        core = wx.BoxSizer(wx.VERTICAL)
-        fsizer = wx.FlexGridSizer(2, gap=(5, 5))
+        self.core, self.fsizer = None, None
+        self._option = option
+
+        self.__add_widgets()
+
+    def get_sizers(self):
+        if not self.core:
+            self.core = wx.BoxSizer(wx.VERTICAL)
+        if not self.fsizer:
+            self.fsizer = wx.FlexGridSizer(2, gap=(5, 5))
+        return self.core, self.fsizer
+
+    def _add_widgets(self):
+        core, fsizer = self.get_sizers()
+        option = self._option
         wx_label_text(self, fsizer, label="Option text", text=option.option_text)
         wx_label_list(
             self,
@@ -1223,9 +1238,19 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
         self.SetSizerAndFit(core)
         self.SetupScrolling()
 
+    __add_widgets = _add_widgets
+
     def on_pane_toggle(self, evt):
         self.Fit()  # refit children inside canvas
         self.Layout()
+
+
+class DwTabMenuOption(DwTabOption):
+    def __init__(self, parent, moption: MenuOption):
+        core, fsizer = self.get_sizers()
+        wx_label_text(self, fsizer, label="Option text", text=moption.menu_id)
+        wx_label_text(self, fsizer, label="Option text", text=moption.option_id)
+        super().__init__(parent, moption)
 
 
 class DwTabOptions(wx.Panel):
@@ -1234,6 +1259,17 @@ class DwTabOptions(wx.Panel):
         nb = wx.Notebook(self, wx.ID_ANY, style=wx.NB_TOP | wx.NB_MULTILINE)
         for option in options.option:
             nb.AddPage(DwTabOption(nb, option), f"Order {option.order}")
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(nb, 1, wx.EXPAND | wx.ALL, 0)
+        self.SetSizerAndFit(sizer)
+
+
+class DwTabMenuOptions(wx.Panel):
+    def __init__(self, parent, options: MenuOptions):
+        super().__init__(parent)
+        nb = wx.Notebook(self, wx.ID_ANY, style=wx.NB_TOP | wx.NB_MULTILINE)
+        for option in options.menu_option:
+            nb.AddPage(DwTabMenuOption(nb, option), f"Order {option.order}")
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND | wx.ALL, 0)
         self.SetSizerAndFit(sizer)
@@ -1254,6 +1290,8 @@ class DetailWindow(wx.Dialog):
         tabone = DwTabOne(nb, ceevent)
         tabxml = DwTabXml(nb, ceevent.xmlsource)
         taboptions = DwTabOptions(nb, ceevent.options)
+        # FIXME: menu options are currently broken, waiting on PR merge to activate
+        # tabmoptions = DwTabMenuOptions(nb, ceevent.menu_options)
 
         nb.AddPage(tabone, "Main")
         nb.AddPage(tabxml, "Xml Source")
