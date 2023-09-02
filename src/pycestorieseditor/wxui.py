@@ -101,6 +101,11 @@ def values_as_list(modalitem):
     return [x.value for x in modalitem]
 
 
+# HACK around terrain types being multiple levels of list
+def values_as_list_tt(tt):
+    return [x.terrain_type[0].value for x in tt]
+
+
 def get_label(attrelem, target):
     return getattr(fields(attrelem.__class__), target).metadata['name']
 
@@ -380,7 +385,7 @@ class ABCCollapsiblePanel(wx.CollapsiblePane):
         self.SetMinSize((600, -1))
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
         self._data = {}
-        self._cld: list[ComplexListData|SimpleListData] = []
+        self._cld: list[ComplexListData | SimpleListData] = []
         self._post_init()
         self.populate()
 
@@ -437,15 +442,6 @@ class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
     def _post_init(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def build_option(option, attributes):
-        return {
-            get_label(option, x): sanitize_attr_value(
-                getattr(option, x)
-            )
-            for x in attributes
-        }
-
     def _first_flex(self, pane):
         cp_flex = wx.FlexGridSizer(4, (5, 5))
         cp_flex.AddGrowableCol(1)
@@ -499,7 +495,7 @@ class CeCompanions(CeComplexCollapsiblePanel):
         super().__init__(parent, "Companions", cb)
 
     def _post_init(self):
-        self._data = self.build_option(
+        self._data = self.build_data(
             self._option,
             [
                 "pregnancy_risk_modifier",
@@ -568,7 +564,7 @@ class CeSpawnTroop(CeComplexCollapsiblePanel):
         super().__init__(parent, "Battle Setting", cb)
 
     def _post_init(self):
-        self._data = self.build_option(
+        self._data = self.build_data(
             self._option,
             ["ref", "victory", "defeat", "enemy_name", "player_troops"]
         )
@@ -588,7 +584,7 @@ class CeSpawnHero(CeComplexCollapsiblePanel):
         super().__init__(parent, "Spawn Heroes", cb)
 
     def _post_init(self):
-        self._data = self.build_option(
+        self._data = self.build_data(
             self._option, ["ref", "culture", "gender", "clan"]
         )
         self._cld = [
@@ -651,6 +647,59 @@ class CeOptReqs(CeCollapsible2ColPanel):
         )
 
 
+class CeEvtReqs(CeCollapsible2ColPanel):
+    def __init__(self, parent, cb, ceevent: ceevents_modal.Ceevent):
+        self._ceevent = ceevent
+        super().__init__(parent, "Requirements", cb)
+
+    def _post_init(self):
+        s = [
+            "req_hero_health_%s_percentage",
+            "req_hero_captor_relation_%s",
+            "req_hero_prostitute_level_%s",
+            "req_hero_slave_level_%s",
+            "req_hero_trait_level_%s",
+            "req_hero_skill_level_%s",
+            "req_hero_troops_%s",
+            "req_hero_captives_%s",
+            "req_hero_female_troops_%s",
+            "req_hero_female_captives_%s",
+            "req_hero_male_troops_%s",
+            "req_hero_male_captives_%s",
+            "req_captor_trait_level_%s",
+            "req_captor_skill_level_%s",
+            "req_troops_%s",
+            "req_captives_%s",
+            "req_female_troops_%s",
+            "req_female_captives_%s",
+            "req_male_troops_%s",
+            "req_male_captives_%s",
+            "req_morale_%s",
+            "req_gold_%s",
+        ]
+        attributes = chain(
+            [
+                "req_custom_code",
+                "req_hero_min_age",
+                "req_hero_max_age",
+                "req_hero_party_have_item",
+                "req_captor_party_have_item",
+                "req_captor_skill",
+                "req_captor_trait",
+                "req_hero_skill",
+                "req_hero_trait",
+            ],
+            chain.from_iterable(
+                map(lambda x: [x % y for y in ("above", "below")], s)
+            ),
+        )
+
+        self._data = self.build_data(
+            self._ceevent,
+            attributes
+        )
+
+
 class CeTeleportSettings(CeCollapsiblePanel):
     def __init__(self, parent, cb, option):
         self.option = option
@@ -673,6 +722,32 @@ class CeDelayEvent(CeCollapsiblePanel):
             self.option,
             ["use_conditions", "time_to_take", "trigger_event_name", "trigger_events"],
         )
+
+
+class CeProgressEvent(CeComplexCollapsiblePanel):
+    def __init__(self, parent, cb, option):
+        self.option = option
+        super().__init__(parent, "Progress Event", cb)
+
+    def _post_init(self):
+        self._data = self.build_data(
+            self.option,
+            [
+                "should_stop_moving",
+                "display_progress_mode",
+                "time_to_take",
+                "trigger_event_name",
+                ""
+            ],
+        )
+        self._cld = [
+            ComplexListData(
+                self.option.trigger_events,
+                "Trigger Events",
+                ("event_name", "event_weight", "event_use_condition"),
+                ["event_name", "event_weight", "event_use_condition"]
+            )
+        ]
 
 
 class CeStripSettings(CeCollapsiblePanel):
@@ -759,6 +834,16 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 fsizer,
                 label="Custom Flags",
                 data=values_as_list(ceevent.multiple_list_of_custom_flags.custom_flag),
+            )
+
+        # FIXME: Terrain types are lists of lists of one enum upstream,
+        #  that is rather impractical. Should behave like flags instead.
+        if ceevent.terrain_types_requirements:
+            wx_label_list(
+                self,
+                fsizer,
+                label="Terrain Types Requirments",
+                data=values_as_list_tt(ceevent.terrain_types_requirements.terrain_types)
             )
 
         wx_label_list(
@@ -862,6 +947,13 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             for companion in ceevent.companions.companion:
                 cpc = CeCompanions(self, self.on_pane_toggle, companion)
                 core.Add(cpc, 0, wx.EXPAND)
+
+        if ceevent.progress_event:
+            core.Add(
+                CeProgressEvent(self, self.on_pane_toggle, ceevent.progress_event), 0, wx.EXPAND
+            )
+
+        core.Add(CeEvtReqs(self, self.on_pane_toggle, ceevent), 0, wx.EXPAND)
 
         self.SetSizerAndFit(core)
         self.SetupScrolling()
