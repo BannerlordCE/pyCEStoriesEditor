@@ -5,9 +5,11 @@
 .dir-locals.el
 .envrc
 .poetry.toml
+poetry.toml
 
 # project related files and folders
 generated/
+settings.conf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
