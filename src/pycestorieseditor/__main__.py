@@ -6,6 +6,7 @@ import argparse
 import os
 import sys
 
+from pycestorieseditor.wxlaunch import launch
 from . import CE_TARGET_PATH
 from .graph import graph_file, list_elements, list_files
 from .wxui import main
@@ -30,7 +31,12 @@ if __name__ == '__main__':
     parser.add_argument(
         "-g", "--gui", action="store_true", required=False,
     )
+    parser.add_argument("-x", "--launcher", action="store_true")
     args = parser.parse_args()
+
+    if args.launcher:
+        launch()
+        sys.exit()
 
     if not args.target:
         if not CE_TARGET_PATH:

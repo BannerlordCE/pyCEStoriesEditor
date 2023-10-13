@@ -16,6 +16,7 @@ lxml = "^4.9"
 pygments = "^2.15"
 wxpython = "^4.2"
 pillow = "^9.5"
+platformdirs = "^3.10.0"
 
 
 [build-system]

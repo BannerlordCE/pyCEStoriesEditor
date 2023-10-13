@@ -20,8 +20,16 @@ from wx import stc
 from wx.lib import expando
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 
-from . import CE_XSD_FILE
-from .ceevents import get_ebucket, process_file, Ceevent
+from . import CE_XSD_FILE, APPNAME
+from .ceevents import (
+    get_ebucket,
+    process_file,
+    Ceevent,
+    init_xsdfile,
+    process_xml_files,
+    CePath,
+    create_ebucket,
+)
 from .ceevents_template import (
     RestrictedListOfFlagsType,
     Options,
@@ -381,9 +389,7 @@ class SimpleListData:
 
 class ABCCollapsiblePanel(wx.CollapsiblePane):
     def __init__(self, parent, label, cb):
-        super().__init__(
-            parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE
-        )
+        super().__init__(parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE)
         self.SetMinSize((600, -1))
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
         self._data = {}
@@ -399,12 +405,7 @@ class ABCCollapsiblePanel(wx.CollapsiblePane):
 
     @staticmethod
     def build_data(option, attributes):
-        return {
-            get_label(option, x): sanitize_attr_value(
-                getattr(option, x)
-            )
-            for x in attributes
-        }
+        return {get_label(option, x): sanitize_attr_value(getattr(option, x)) for x in attributes}
 
 
 class CeCollapsiblePanel(ABCCollapsiblePanel):
@@ -467,12 +468,7 @@ class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
 
         for data in self._cld:
             if isinstance(data, ComplexListData):
-                cp_flex3.Add(
-                    wx.StaticText(pane, wx.ID_ANY, label=data.lp_label),
-                    0,
-                    wx.LEFT,
-                    5
-                )
+                cp_flex3.Add(wx.StaticText(pane, wx.ID_ANY, label=data.lp_label), 0, wx.LEFT, 5)
                 cp_flex3.Add(
                     ListCtrlPanel(
                         pane,
@@ -480,7 +476,11 @@ class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
                         data.lp_headers,
                         GenericOptionCtrl,
                         data.lp_keys,
-                    ), 1, wx.EXPAND | wx.ALL, 5)
+                    ),
+                    1,
+                    wx.EXPAND | wx.ALL,
+                    5,
+                )
             elif isinstance(data, SimpleListData):
                 wx_label_list(pane, cp_flex3, data.lp_label, data.lp_data)
             else:
@@ -512,13 +512,15 @@ class CeCompanions(CeComplexCollapsiblePanel):
                 "ref",
                 "type_value",
                 "location",
-                "use_other_conditions"
-            ]
+                "use_other_conditions",
+            ],
         )
         with suppress(AttributeError):
             self._cld.append(
                 SimpleListData(
-                    values_as_list(self._option.multiple_restricted_list_of_consequences.restricted_list_of_consequences),
+                    values_as_list(
+                        self._option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
+                    ),
                     "Restricted List of Consequence",
                 )
             )
@@ -567,15 +569,14 @@ class CeSpawnTroop(CeComplexCollapsiblePanel):
 
     def _post_init(self):
         self._data = self.build_data(
-            self._option,
-            ["ref", "victory", "defeat", "enemy_name", "player_troops"]
+            self._option, ["ref", "victory", "defeat", "enemy_name", "player_troops"]
         )
         self._cld = [
             ComplexListData(
                 self._option.spawn_troops.spawn_troop,
                 "Spawn Troops",
                 ("Ref", "Id", "Number", "Wounded Number"),
-                ["ref", "id", "number", "wounded_number"]
+                ["ref", "id", "number", "wounded_number"],
             )
         ]
 
@@ -586,15 +587,13 @@ class CeSpawnHero(CeComplexCollapsiblePanel):
         super().__init__(parent, "Spawn Heroes", cb)
 
     def _post_init(self):
-        self._data = self.build_data(
-            self._option, ["ref", "culture", "gender", "clan"]
-        )
+        self._data = self.build_data(self._option, ["ref", "culture", "gender", "clan"])
         self._cld = [
             ComplexListData(
                 self._option.skills_to_level.skill,
                 "Skills to Level",
                 ("Id", "By Level", "By XP", "Ref", "Color", "Hide Notification"),
-                ["id", "by_level", "by_xp", "ref", "color", "hide_notification"]
+                ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
             )
         ]
 
@@ -638,15 +637,10 @@ class CeOptReqs(CeCollapsible2ColPanel):
                 "req_hero_skill",
                 "req_hero_trait",
             ],
-            chain.from_iterable(
-                map(lambda x: [x % y for y in ("above", "below")], s)
-            ),
+            chain.from_iterable(map(lambda x: [x % y for y in ("above", "below")], s)),
         )
 
-        self._data = self.build_data(
-            self._option,
-            attributes
-        )
+        self._data = self.build_data(self._option, attributes)
 
 
 class CeEvtReqs(CeCollapsible2ColPanel):
@@ -691,15 +685,10 @@ class CeEvtReqs(CeCollapsible2ColPanel):
                 "req_hero_skill",
                 "req_hero_trait",
             ],
-            chain.from_iterable(
-                map(lambda x: [x % y for y in ("above", "below")], s)
-            ),
+            chain.from_iterable(map(lambda x: [x % y for y in ("above", "below")], s)),
         )
 
-        self._data = self.build_data(
-            self._ceevent,
-            attributes
-        )
+        self._data = self.build_data(self._ceevent, attributes)
 
 
 class CeTeleportSettings(CeCollapsiblePanel):
@@ -709,8 +698,7 @@ class CeTeleportSettings(CeCollapsiblePanel):
 
     def _post_init(self):
         self._data = self.build_data(
-            self.option,
-            ["location", "location_name", "distance", "faction"]
+            self.option, ["location", "location_name", "distance", "faction"]
         )
 
 
@@ -739,7 +727,7 @@ class CeProgressEvent(CeComplexCollapsiblePanel):
                 "display_progress_mode",
                 "time_to_take",
                 "trigger_event_name",
-                ""
+                "",
             ],
         )
         self._cld = [
@@ -747,7 +735,7 @@ class CeProgressEvent(CeComplexCollapsiblePanel):
                 self.option.trigger_events,
                 "Trigger Events",
                 ("event_name", "event_weight", "event_use_condition"),
-                ["event_name", "event_weight", "event_use_condition"]
+                ["event_name", "event_weight", "event_use_condition"],
             )
         ]
 
@@ -772,7 +760,7 @@ class CeStripSettings(CeCollapsiblePanel):
                 'ranged',
                 'forced',
                 'quest_enabled',
-            ]
+            ],
         )
 
 
@@ -821,7 +809,7 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 self,
                 fsizer,
                 label="Background Animation Speed",
-                text=str(ceevent.background_animation_speed.value)
+                text=str(ceevent.background_animation_speed.value),
             )
         with suppress(AttributeError):
             wx_label_list(
@@ -845,7 +833,7 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 self,
                 fsizer,
                 label="Terrain Types Requirments",
-                data=values_as_list_tt(ceevent.terrain_types_requirements.terrain_types)
+                data=values_as_list_tt(ceevent.terrain_types_requirements.terrain_types),
             )
 
         wx_label_list(
@@ -865,12 +853,17 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 text=ceevent.can_only_happen_nr_of_times.value,
             )
 
+        wx_label_text(self, fsizer, "Sexual Content", text=str(ceevent.sexual_content.value))
         wx_label_text(
-            self, fsizer, "Sexual Content", text=str(ceevent.sexual_content.value)
+            self, fsizer, label="Pregnancy Risk Modifier", text=ceevent.pregnancy_risk_modifier
         )
-        wx_label_text(self, fsizer, label="Pregnancy Risk Modifier", text=ceevent.pregnancy_risk_modifier)
         wx_label_text(self, fsizer, label="Escape Chance", text=ceevent.escape_chance)
-        wx_label_text(self, fsizer, label="WeightedChanceOfOccurring", text=ceevent.weighted_chance_of_occurring)
+        wx_label_text(
+            self,
+            fsizer,
+            label="WeightedChanceOfOccurring",
+            text=ceevent.weighted_chance_of_occurring,
+        )
         wx_label_text(self, fsizer, label="GoldTotal", text=ceevent.gold_total)
         wx_label_text(self, fsizer, label="CaptorGoldTotal", text=ceevent.captor_gold_total)
         wx_label_text(self, fsizer, label="RelationTotal", text=ceevent.relation_total)
@@ -899,9 +892,7 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
             )
-            fsizer.Add(
-                wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5
-            )
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
         elif (
             RestrictedListOfConsequencesValue.CHANGE_SKILL
@@ -919,9 +910,7 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "max", "min", "ref"],
             )
-            fsizer.Add(
-                wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5
-            )
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
         if ceevent.traits_to_level and ceevent.traits_to_level.trait:
@@ -1021,9 +1010,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
             ),
         )
-        wx_label_text(
-            self, fsizer, label="Trigger Event Name", text=option.trigger_event_name
-        )
+        wx_label_text(self, fsizer, label="Trigger Event Name", text=option.trigger_event_name)
         wx_label_text(self, fsizer, label="Sound Name", text=option.sound_name)
         wx_label_text(self, fsizer, label="Scene to play", text=option.scene_to_play)
         wx_label_text(
@@ -1034,9 +1021,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
         )
         wx_label_text(self, fsizer, label="Escape Chance", text=option.escape_chance)
         wx_label_text(self, fsizer, label="Captor Gold", text=option.captor_gold_total)
-        wx_label_text(
-            self, fsizer, label="Prostitution Total", text=option.prostitution_total
-        )
+        wx_label_text(self, fsizer, label="Prostitution Total", text=option.prostitution_total)
         wx_label_text(self, fsizer, label="Gold Total", text=option.gold_total)
         wx_label_text(self, fsizer, label="Health Total", text=option.health_total)
         wx_label_text(self, fsizer, label="Morale Total", text=option.morale_total)
@@ -1075,9 +1060,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                     GenericOptionCtrl,
                     ["ref", "action", "kingdom", "hide_notification"],
                 )
-                fsizer.Add(
-                    wx.StaticText(self, wx.ID_ANY, label="Kingdom Options"), 0, 0, 0
-                )
+                fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Kingdom Options"), 0, 0, 0)
                 fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
 
         if option.traits_to_level and option.traits_to_level.trait:
@@ -1094,17 +1077,11 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             RestrictedListOfConsequencesValue.CHANGE_TRAIT
             in option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
         ):
-            wx_label_text(
-                self, fsizer, label="Traits to level", text=option.trait_to_level
-            )
+            wx_label_text(self, fsizer, label="Traits to level", text=option.trait_to_level)
             if option.trait_total:
-                wx_label_text(
-                    self, fsizer, label="Trait Total", text=option.trait_total
-                )
+                wx_label_text(self, fsizer, label="Trait Total", text=option.trait_total)
             elif option.trait_xptotal:
-                wx_label_text(
-                    self, fsizer, label="Trait XP Total", text=option.trait_xptotal
-                )
+                wx_label_text(self, fsizer, label="Trait XP Total", text=option.trait_xptotal)
 
         if option.traits_required:
             table = ListCtrlPanel(
@@ -1114,9 +1091,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "max", "min", "ref"],
             )
-            fsizer.Add(
-                wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5
-            )
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
         if option.skills_to_level and option.skills_to_level.skill:
@@ -1127,25 +1102,17 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "by_level", "by_xp", "ref", "color", "hide_notification"],
             )
-            fsizer.Add(
-                wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5
-            )
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
         elif (
             RestrictedListOfConsequencesValue.CHANGE_SKILL
             in option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
         ):
-            wx_label_text(
-                self, fsizer, label="Skill to Level", text=option.skill_to_level
-            )
+            wx_label_text(self, fsizer, label="Skill to Level", text=option.skill_to_level)
             if option.skill_total:
-                wx_label_text(
-                    self, fsizer, label="Skill Total", text=option.skill_total
-                )
+                wx_label_text(self, fsizer, label="Skill Total", text=option.skill_total)
             elif option.skill_xptotal:
-                wx_label_text(
-                    self, fsizer, label="Skill XP Total", text=option.skill_xptotal
-                )
+                wx_label_text(self, fsizer, label="Skill XP Total", text=option.skill_xptotal)
 
         if option.skills_required:
             table = ListCtrlPanel(
@@ -1155,9 +1122,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "max", "min", "ref"],
             )
-            fsizer.Add(
-                wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5
-            )
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
         if option.clan_options:
@@ -1167,9 +1132,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 ("Ref", "Action", "Clan", "Hide Notification"),
                 ClanOptionCtrl,
             )
-            fsizer.Add(
-                wx.StaticText(self, wx.ID_ANY, label="Clan Options"), 0, wx.LEFT, 5
-            )
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Clan Options"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
         fsizer.AddGrowableCol(1)
@@ -1215,12 +1178,8 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             scenes = wx.StaticBoxSizer(
                 wx.StaticBox(self, wx.ID_ANY, "Scene settings"), wx.HORIZONTAL
             )
-            wx_label_text(
-                self, scenes, label="Talk to", text=option.scene_settings.talk_to
-            )
-            wx_label_text(
-                self, scenes, label="Scene name", text=option.scene_settings.scene_name
-            )
+            wx_label_text(self, scenes, label="Talk to", text=option.scene_settings.talk_to)
+            wx_label_text(self, scenes, label="Scene name", text=option.scene_settings.scene_name)
             core.Add(scenes, 1, wx.EXPAND)
 
         if option.delay_event:  # XXX: Can't find working example
@@ -1278,9 +1237,7 @@ class DwTabMenuOptions(wx.Panel):
 class DetailWindow(wx.Dialog):
     def __init__(self, ceevent: Ceevent, *args, **kwargs):
         title = ceevent.name.value
-        kwargs['style'] = (
-            kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
+        kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(title=title, *args, **kwargs)
         # self.SetSizeHints((800, 600), (1024, 800))
         self.SetMinSize((800, 600))
@@ -1323,9 +1280,7 @@ class Legend(wx.BoxSizer):
         super().__init__(*args, **kwargs)
         self._text = text
         self._color = color
-        img = wx.StaticBitmap(
-            parent, wx.ID_ANY, wximage2bitmap(pil2wximage(create_icon(color)))
-        )
+        img = wx.StaticBitmap(parent, wx.ID_ANY, wximage2bitmap(pil2wximage(create_icon(color))))
         label = wx.StaticText(parent, wx.ID_ANY, label=text)
         self.Add(img, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         self.Add(label, 0, wx.EXPAND, 0)
@@ -1342,9 +1297,7 @@ class CeListItem(wx.ListItem):
 
 class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
     def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args, **kwargs, style=wx.LC_REPORT | wx.LC_NO_HEADER | wx.LC_SINGLE_SEL
-        )
+        super().__init__(*args, **kwargs, style=wx.LC_REPORT | wx.LC_NO_HEADER | wx.LC_SINGLE_SEL)
         ListCtrlAutoWidthMixin.__init__(self)  # Using super() doesn't work?!
         self.InsertColumn(0, "Events")
         self.setResizeColumn(0)
@@ -1371,9 +1324,12 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
 
 
 class MainWindow(wx.Frame):
-    def __init__(self, *args, **kwds):
+    def __init__(self, conffile, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         super().__init__(None, wx.ID_ANY, *args, title="CE Events Visualizer", **kwds)
+        self._conffile = conffile
+        self._load_conf()
+
         self.Center()
         self.SetSizeHints(800, 400, 800, 600)
 
@@ -1391,9 +1347,7 @@ class MainWindow(wx.Frame):
             wx.ID_ANY,
             "Legend",  # style=wx.BORDER_SIMPLE
         )
-        self.panel_search = wx.Panel(
-            self.window_1_pane_1, wx.ID_ANY, style=wx.BORDER_SIMPLE
-        )
+        self.panel_search = wx.Panel(self.window_1_pane_1, wx.ID_ANY, style=wx.BORDER_SIMPLE)
         self.panel_search.SetMinSize((240, -1))
 
         topsizer = wx.BoxSizer(wx.VERTICAL)
@@ -1448,12 +1402,28 @@ class MainWindow(wx.Frame):
         self.window_1_pane_1.SetSizer(leftsizer)
         self.window_1.SplitVertically(self.window_1_pane_1, self.window_1_pane_2, 200)
         self.panel_1.SetSizer(topsizer)
+
         self.Layout()
 
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.celb.on_clicked_event, self.celb)
         self.Bind(wx.EVT_BUTTON, self.on_reset_event, searchbnt)
         self.Bind(wx.EVT_TEXT, self.on_text_event, self.searchent)
         self.Bind(wx.EVT_SEARCH_CANCEL, self.on_reset_event, self.searchent)
+
+    def _load_conf(self):
+        create_ebucket()
+        conf = wx.FileConfig(
+            APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE
+        )
+        conf.SetPath("/general")
+        path_amount = conf.ReadInt("CeModulePathAmount")
+
+        xmlfiles = []
+        for n in range(path_amount):
+            p = CePath(conf.Read("CeModulePath%i" % n))
+            xmlfiles.extend(p.events)
+        init_xsdfile(conf.Read("CE_XSDFILE"))
+        process_xml_files(xmlfiles)
 
     def on_reset_event(self, event):
         if event.EventType != wx.EVT_SEARCH_CANCEL.typeId:  # not EVT_BUTTON

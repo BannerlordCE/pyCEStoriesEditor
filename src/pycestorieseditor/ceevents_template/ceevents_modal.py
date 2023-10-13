@@ -7,10 +7,14 @@
 
 from __future__ import annotations
 
+import logging
+
 from attrs import define, field, validators
 from enum import Enum
 from typing import List, Optional
 from xsdata.formats.dataclass.models.elements import XmlType
+
+logger = logging.getLogger(__name__)
 
 
 @define
@@ -4070,6 +4074,11 @@ class Ceevent:
         validator=validators.optional(validators.instance_of(str)),
         metadata={"type": "ignore"}
     )
+    xmlfile: str = field(
+        default=None,
+        validator=validators.optional(validators.instance_of(str)),
+        metadata={"type": "ignore"}
+    )
     _parents: list = field(default=[], alias="__parents", metadata={"type": XmlType.IGNORE})
     _children: list = field(default=[], alias="__children", metadata={"type": XmlType.IGNORE})
 
@@ -4077,6 +4086,8 @@ class Ceevent:
     def outboundevents(self) -> list[str]:
         # Options->Option->TriggerEvents->TriggerEvent->EventName.text
         # Options->Option->TriggerEventName.text
+        if not self.options:
+            return []
         outbound_events = []
         for option in self.options.option:
             if option.trigger_events:
@@ -4107,6 +4118,7 @@ class Ceevent:
 
     def set_child_node(self, child: Ceevent):
         if child in self._children:
+            # logger.info("Event '%s' already set as child for %s", child.name.value, self.name.value)
             return
         self._children.append(child)
         child.set_parent_node(self)
