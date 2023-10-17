@@ -3,6 +3,7 @@
 # © 2023 bicobus <bicobus@keemail.me>
 from __future__ import annotations
 
+import re
 from contextlib import suppress
 from dataclasses import dataclass
 from itertools import chain
@@ -1303,14 +1304,10 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
         self.setResizeColumn(0)
         self.populate()
 
-    def populate(self, filterstr=None):
+    def populate(self, items=None):
         self.DeleteAllItems()
-        items = get_ebucket()
-
-        if filterstr:
-            items = filter(lambda x: filterstr in x.name.value, items.values())
-        else:
-            items = items.values()
+        if not items:
+            items = get_ebucket().values()
 
         # self.autocomplete_data = [item.name.value for item in items]
         for n, item in enumerate(items):
@@ -1321,6 +1318,13 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
         ceeventobj = ebucket[event.Text]
         displayframe = DetailWindow(ceeventobj, parent=self)
         displayframe.ShowWindowModal()
+
+
+def _filter_text(text, stack):
+    return filter(lambda x: x.text and text in x.text.value, stack)
+
+
+search = re.compile(r"""(?:(?P<tag>text|tag):"(?P<value>[^"]+)")+|(\w+)""")
 
 
 class MainWindow(wx.Frame):
@@ -1435,20 +1439,29 @@ class MainWindow(wx.Frame):
         if self.searchent.IsEmpty() or len(self.searchent.Value) < 3:
             event.Skip()
             return
-        self.celb.populate(self.searchent.Value)
+
+        names = []
+        constraints = []
+        for term in search.findall(self.searchent.Value):
+            match term:
+                case ("text", value, ""):
+                    constraints.append((_filter_text, value))
+                case ("tag", value, ""):  # XXX: maybe not tags
+                    ...
+                case ("", "", value):
+                    names.append(value)
+
+        filterstr = " ".join(names)
+        ebucket = get_ebucket()
+        if filterstr:
+            items = filter(lambda x: filterstr in x.name.value, ebucket.values())
+        else:
+            if not constraints:
+                event.Skip()
+                return
+            items = ebucket.values()
+        for c, value in constraints:
+            items = c(value, items)
+
+        self.celb.populate(list(items))
         event.Skip()
-
-
-class CeStoriesViewer(wx.App, wx.lib.mixins.inspection.InspectionMixin):
-    def OnInit(self):
-        self.Init()  # inspector thing
-        frame = MainWindow()
-        frame.Show()
-        self.SetTopWindow(frame)
-        return True
-
-
-def main(xmlfile):
-    process_file(xmlfile, CE_XSD_FILE)
-    myapp = CeStoriesViewer(redirect=False)
-    myapp.MainLoop()

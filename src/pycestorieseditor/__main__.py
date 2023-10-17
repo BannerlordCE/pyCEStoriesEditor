@@ -9,7 +9,6 @@ import sys
 from pycestorieseditor.wxlaunch import launch
 from . import CE_TARGET_PATH
 from .graph import graph_file, list_elements, list_files
-from .wxui import main
 
 
 if __name__ == '__main__':
@@ -31,10 +30,9 @@ if __name__ == '__main__':
     parser.add_argument(
         "-g", "--gui", action="store_true", required=False,
     )
-    parser.add_argument("-x", "--launcher", action="store_true")
     args = parser.parse_args()
 
-    if args.launcher:
+    if args.gui:
         launch()
         sys.exit()
 
@@ -57,9 +55,6 @@ if __name__ == '__main__':
         print("A xml file is required.", file=sys.stderr)
         sys.exit(1)
 
-    if args.gui:
-        main(os.path.join(target, args.inputfile))
-        sys.exit()
     list_elements(os.path.join(target, args.inputfile))
     # print(events_list)
     graph_file(args.inputfile)
