@@ -21,10 +21,9 @@ from wx import stc
 from wx.lib import expando
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 
-from . import CE_XSD_FILE, APPNAME
+from . import APPNAME
 from .ceevents import (
     get_ebucket,
-    process_file,
     Ceevent,
     init_xsdfile,
     process_xml_files,

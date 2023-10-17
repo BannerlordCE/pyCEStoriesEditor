@@ -8,12 +8,11 @@
 from __future__ import annotations
 
 import logging
-import math
 import multiprocessing
 import os
 import time
 from functools import lru_cache
-from itertools import count, islice
+from itertools import count
 from pathlib import Path
 
 from xsdata_attrs.bindings import XmlParser
@@ -107,35 +106,13 @@ def populate_children(bucket):
     return next(errors)
 
 
-# def process_file(xmlfile, xsdfile):
-#     parser = XmlParser()
-#     xsd = xmlschema.XMLSchema(xsdfile)
-#     xsobjects = xsd.to_objects(xmlfile)
-#     create_ebucket()
-#     for event in xsobjects:
-#         string = event.tostring()
-#         ceevent = parser.from_string(string, Ceevent)
-#         ceevent.xmlsource = string
-#         if ceevent.name.value in ebucket.keys():
-#             return
-#         ebucket[ceevent.name.value] = ceevent
-#
-#     populate_children()
-
-
 def process_xml_files(xmlfiles: list):
     global ebucket
-    # package = cpackage(len(xmlfiles))
-    # filebuckets = (
-    #     xmlfiles[n + (package * 1) : n + package * (i + 1)]
-    #     for i, n in enumerate(range(1, os.cpu_count() + 1))
-    # )
-
-    # Pool(processes) uses os.cpu_count() if none value is provided
 
     parser = XmlParser()
     xsd = get_xsdfile()
 
+    # Pool(processes) uses os.cpu_count() if none value is provided
     with multiprocessing.Pool(multiprocessing.cpu_count() - 1) as pool:
         res = pool.starmap(process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=4)
 
