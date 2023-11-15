@@ -6,6 +6,9 @@ authors = ["bicobus <bicobus@keemail.me>"]
 readme = "README.md"
 packages = [{include = "pycestorieseditor", from = "src"}]
 
+[tool.poetry.scripts]
+pycestorieseditor = 'pycestorieseditor.__main__:main'
+
 [tool.poetry.dependencies]
 python = "^3.11"
 graphviz = "^0.20.1"

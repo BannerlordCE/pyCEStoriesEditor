@@ -11,7 +11,7 @@ from . import CE_TARGET_PATH
 from .graph import graph_file, list_elements, list_files
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         prog="pycestorieseditor",
     )
@@ -58,3 +58,7 @@ if __name__ == '__main__':
     list_elements(os.path.join(target, args.inputfile))
     # print(events_list)
     graph_file(args.inputfile)
+
+
+if __name__ == '__main__':
+    main()
