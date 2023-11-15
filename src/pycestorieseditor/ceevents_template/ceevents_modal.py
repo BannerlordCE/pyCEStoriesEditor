@@ -4072,12 +4072,12 @@ class Ceevent:
     xmlsource: str = field(
         default=None,
         validator=validators.optional(validators.instance_of(str)),
-        metadata={"type": "ignore"}
+        metadata={"type": XmlType.IGNORE}
     )
     xmlfile: str = field(
         default=None,
         validator=validators.optional(validators.instance_of(str)),
-        metadata={"type": "ignore"}
+        metadata={"type": XmlType.IGNORE}
     )
     _parents: list = field(default=[], alias="__parents", metadata={"type": XmlType.IGNORE})
     _children: list = field(default=[], alias="__children", metadata={"type": XmlType.IGNORE})

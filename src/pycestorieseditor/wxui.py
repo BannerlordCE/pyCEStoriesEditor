@@ -3,6 +3,7 @@
 # © 2023 bicobus <bicobus@keemail.me>
 from __future__ import annotations
 
+import os
 import re
 from contextlib import suppress
 from dataclasses import dataclass
@@ -13,7 +14,6 @@ import wx
 import wx.grid
 import wx.lib.mixins.inspection
 import wx.lib.scrolledpanel as wx_scrolled
-from PIL import Image, ImageDraw
 from attrs import fields
 from pygments import token
 from pygments.styles import get_style_by_name
@@ -29,6 +29,8 @@ from .ceevents import (
     process_xml_files,
     CePath,
     create_ebucket,
+    scan_for_images,
+    create_imgbucket, get_imgbucket,
 )
 from .ceevents_template import (
     RestrictedListOfFlagsType,
@@ -39,6 +41,7 @@ from .ceevents_template import (
     MenuOption,
     MenuOptions,
 )
+from .pil2wx import hex2rgb, create_icon, pil2wximage, wximage2bitmap
 
 style = get_style_by_name("default")
 
@@ -71,40 +74,6 @@ else:
     }
 faces["back"] = style.background_color
 faces["fore"] = style.styles[token.Token] or "#000"
-
-
-# - Images ---
-def hex2rgb(color: str):
-    c = color.lstrip("#")
-    return tuple(int(c[i : i + 2], 16) for i in (0, 2, 4))
-
-
-def create_icon(color=None):
-    if not color:
-        color = "#2ecc71"
-    img = Image.new('RGBA', (16, 16))
-    draw = ImageDraw.Draw(img)
-    draw.rectangle([(1, 1), (14, 14)], fill=color, outline="black")
-    return img
-
-
-def pil2wximage(img: Image.Image):
-    """Convert a PIL image to wxImage"""
-    wx_image = wx.Image(*img.size)
-    wx_image.SetData(img.convert('RGB').tobytes())
-    wx_image.InitAlpha()
-    alpha = img.getchannel("A").tobytes()
-    for i in range(img.size[0]):
-        for j in range(img.size[1]):
-            wx_image.SetAlpha(i, j, alpha[i + j * img.size[0]])
-    return wx_image
-
-
-def wximage2bitmap(img):
-    return img.ConvertToBitmap()
-
-
-# - End Images ---
 
 
 def values_as_list(modalitem):
@@ -1234,13 +1203,14 @@ class DwTabMenuOptions(wx.Panel):
         self.SetSizerAndFit(sizer)
 
 
-class DetailWindow(wx.Dialog):
+class DetailWindow(wx.Frame):
     def __init__(self, ceevent: Ceevent, *args, **kwargs):
         title = ceevent.name.value
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(title=title, *args, **kwargs)
         # self.SetSizeHints((800, 600), (1024, 800))
         self.SetMinSize((800, 600))
+        self.previewframe = None
 
         nb = wx.Notebook(self, wx.ID_ANY, style=wx.NB_LEFT)
 
@@ -1259,19 +1229,81 @@ class DetailWindow(wx.Dialog):
 
         closebutton = wx.StdDialogButtonSizer()
         self.button_close = wx.Button(self, wx.ID_CLOSE, "")
+        button_preview = wx.Button(self, wx.ID_HELP, "Preview")
         closebutton.AddButton(self.button_close)
+        closebutton.AddButton(button_preview)
         sizer.Add(closebutton, 0, wx.ALIGN_RIGHT | wx.ALL, 4)
         closebutton.Realize()
 
         self.SetSizerAndFit(sizer)
         self.CenterOnScreen()
 
-        self.SetEscapeId(self.button_close.GetId())
-
         self.Bind(wx.EVT_CLOSE, self.on_close)
+        self.Bind(wx.EVT_BUTTON, self.on_close, self.button_close)
+        self.Bind(wx.EVT_BUTTON, lambda evt: self.on_preview_click(evt, ceevent), button_preview)
 
     def on_close(self, event):
+        self.GetParent().Enable(True)
         self.Destroy()
+
+    def on_preview_click(self, evt, ceevent):
+        size = (445, 805)
+        self.previewframe = wx.Frame(None, size=size, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
+        self.previewframe.SetMinSize(size)
+        self.previewframe.SetMaxSize(size)
+        self.previewframe.SetTitle(ceevent.name.value)
+        preview = PreviewEvent(self.previewframe, ceevent)
+        self.previewframe.Center()
+        self.previewframe.Show()
+
+
+class PreviewEvent(wx.Panel):
+    def __init__(self, parent, ceevent: Ceevent):
+        super().__init__(parent)
+        self.SetBackgroundStyle(wx.BG_STYLE_ERASE)
+        self.frame = parent
+        self.SetSize(445, 805)
+
+        background_img: Optional[str] = None
+        try:
+            background_img = ceevent.background_name.value
+        except AttributeError:
+            try:
+                background_img = ceevent.backgrounds.background[0].name
+            except AttributeError:
+                with suppress(AttributeError):
+                    background_img = ceevent.background_animation.background_name[0]
+
+        ibucket = get_imgbucket()
+        self.background_img: os.PathLike = ibucket[background_img]
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        for num in range(4):  # TODO: put data here
+            label = "Button %s" % num
+            btn = wx.Button(self, label=label)
+            sizer.Add(btn, 0, wx.ALL, 5)
+        hsizer.Add((1,1), 1, wx.EXPAND)
+        hsizer.Add(sizer, 0, wx.TOP, 100)
+        hsizer.Add((1,1), 0, wx.ALL, 75)
+        self.SetSizer(hsizer)
+
+        self.Layout()
+
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
+
+    def on_erase_background(self, evt):
+        dc = evt.GetDC()
+        if not dc:
+            dc = wx.ClientDC(self)
+            rect = self.GetUpdateRegion().GetBox()
+            dc.SetClippingRegion(rect)
+        dc.Clear()
+        if isinstance(self.background_img, os.PathLike):
+            bmp = wx.Bitmap(str(self.background_img), wx.BITMAP_TYPE_PNG)
+        else:
+            bmp = wx.StaticBitmap(self, wx.ID_ANY, self.background_img)
+        dc.DrawBitmap(bmp, 0, 0)
 
 
 # - Main Window ---
@@ -1316,7 +1348,8 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
         ebucket = get_ebucket()
         ceeventobj = ebucket[event.Text]
         displayframe = DetailWindow(ceeventobj, parent=self)
-        displayframe.ShowWindowModal()
+        displayframe.Show()
+        self.Disable()
 
 
 def _filter_text(text, stack):
@@ -1415,6 +1448,7 @@ class MainWindow(wx.Frame):
 
     def _load_conf(self):
         create_ebucket()
+        create_imgbucket()
         conf = wx.FileConfig(
             APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE
         )
@@ -1424,7 +1458,8 @@ class MainWindow(wx.Frame):
         xmlfiles = []
         for n in range(path_amount):
             p = CePath(conf.Read("CeModulePath%i" % n))
-            xmlfiles.extend(p.events)
+            xmlfiles.extend(p.events_files)
+            scan_for_images(str(p))
         init_xsdfile(conf.Read("CE_XSDFILE"))
         process_xml_files(xmlfiles)
 

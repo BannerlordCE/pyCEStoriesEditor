@@ -19,6 +19,7 @@ from xsdata_attrs.bindings import XmlParser
 import xmlschema
 
 from .ceevents_template import Ceevent
+from .pil2wx import default_background
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,19 @@ def get_ebucket():
     return ebucket
 
 
+def create_imgbucket():
+    global imgbucket
+    imgbucket = {None: default_background()}
+    return imgbucket
+
+
+def get_imgbucket():
+    global imgbucket
+    return imgbucket
+
+
 ebucket: dict[str, Ceevent] | None = None  # pylint: disable=invalid-name
+imgbucket: dict[str, os.PathLike] | None = None  # pylint: disable=invalid-name
 
 
 def init_xsdfile(pathname):
@@ -106,6 +119,18 @@ def populate_children(bucket):
     return next(errors)
 
 
+def scan_for_images(module_path):
+    module_path = Path(module_path)
+    ibucket = get_imgbucket()
+    for img in module_path.glob('Images/**/*.png'):
+        key = img.name.replace('.png', '')
+        if key in ibucket:
+            logger.warning(
+                "Override of key '%s' with file of module %s.", key, module_path.resolve().name
+            )
+        ibucket[key] = img
+
+
 def process_xml_files(xmlfiles: list):
     global ebucket
 
@@ -113,7 +138,7 @@ def process_xml_files(xmlfiles: list):
     xsd = get_xsdfile()
 
     # Pool(processes) uses os.cpu_count() if none value is provided
-    with multiprocessing.Pool(multiprocessing.cpu_count() - 1) as pool:
+    with multiprocessing.Pool() as pool:
         res = pool.starmap(process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=4)
 
     for bucket in res:
@@ -142,6 +167,7 @@ def process_file(xmlfile, xsd, parser) -> list[Ceevent]:
     return bucket
 
 
+# XXX: to delete
 def process_xml_events(xmlfile):
     parser = XmlParser()
     xmlfile = Path(xmlfile)
@@ -160,6 +186,7 @@ def process_xml_events(xmlfile):
             return 0
         ebucket[ceevent.name.value] = ceevent
     return 1
+# //END to delete
 
 
 class NotBannerLordModule(Exception):
@@ -201,6 +228,8 @@ class CePath:
         return self._name
 
     @property
-    def events(self):
+    def events_files(self):
         for f in self._events.glob('*.xml'):
             yield str(f)
+
+
