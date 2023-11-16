@@ -7,6 +7,7 @@ import os
 import re
 from contextlib import suppress
 from dataclasses import dataclass
+from functools import lru_cache
 from itertools import chain
 from typing import Callable, TypeVar, Optional
 
@@ -30,7 +31,8 @@ from .ceevents import (
     CePath,
     create_ebucket,
     scan_for_images,
-    create_imgbucket, get_imgbucket,
+    create_imgbucket,
+    get_imgbucket,
 )
 from .ceevents_template import (
     RestrictedListOfFlagsType,
@@ -1248,7 +1250,9 @@ class DetailWindow(wx.Frame):
 
     def on_preview_click(self, evt, ceevent):
         size = (445, 805)
-        self.previewframe = wx.Frame(None, size=size, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
+        self.previewframe = wx.Frame(
+            None, size=size, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER
+        )
         self.previewframe.SetMinSize(size)
         self.previewframe.SetMaxSize(size)
         self.previewframe.SetTitle(ceevent.name.value)
@@ -1257,40 +1261,111 @@ class DetailWindow(wx.Frame):
         self.previewframe.Show()
 
 
+txtfilter = re.compile(r"{=[^}]+}")
+
+
+def filter_text(txt, end=False):
+    return "%s%s" % (txtfilter.sub("", txt, 1), " (END)" if end else "")
+
+
+def determine_background(ceevent):
+    with suppress(AttributeError):
+        return ceevent.background_name.value
+    with suppress(AttributeError):
+        return ceevent.backgrounds.background[0].name
+    with suppress(AttributeError):
+        return ceevent.background_animation.background_name[0]
+    return None
+
+
 class PreviewEvent(wx.Panel):
     def __init__(self, parent, ceevent: Ceevent):
         super().__init__(parent)
         self.SetBackgroundStyle(wx.BG_STYLE_ERASE)
         self.frame = parent
         self.SetSize(445, 805)
+        self.background_img: Optional[os.PathLike] = None
 
-        background_img: Optional[str] = None
-        try:
-            background_img = ceevent.background_name.value
-        except AttributeError:
-            try:
-                background_img = ceevent.backgrounds.background[0].name
-            except AttributeError:
-                with suppress(AttributeError):
-                    background_img = ceevent.background_animation.background_name[0]
-
-        ibucket = get_imgbucket()
-        self.background_img: os.PathLike = ibucket[background_img]
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        for num in range(4):  # TODO: put data here
-            label = "Button %s" % num
-            btn = wx.Button(self, label=label)
-            sizer.Add(btn, 0, wx.ALL, 5)
-        hsizer.Add((1,1), 1, wx.EXPAND)
-        hsizer.Add(sizer, 0, wx.TOP, 100)
-        hsizer.Add((1,1), 0, wx.ALL, 75)
-        self.SetSizer(hsizer)
+        self.set_bgimg(ceevent)
+        self.build_widgets(ceevent)
 
         self.Layout()
-
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
+
+    def set_bgimg(self, ceevent):
+        ibucket = get_imgbucket()
+        try:
+            self.background_img = ibucket[determine_background(ceevent)]
+        except KeyError:  # Some images come with the core module, which isn't parsed.
+            self.background_img = ibucket[None]
+
+    def build_widgets(self, ceevent):
+        vsizer = wx.BoxSizer(wx.VERTICAL)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        text = expando.ExpandoTextCtrl(
+            self,
+            wx.ID_ANY,
+            value=filter_text(ceevent.text.value),
+            style=wx.TE_WORDWRAP | wx.TE_READONLY,
+        )
+        text.SetMaxHeight(400)
+        vsizer.Add(text, 0, wx.EXPAND | wx.ALL, 5)
+        vsizer.Add((1, 1), 1, wx.EXPAND)
+        for opt in ceevent.options.option:
+            # opt.trigger_events.trigger_event
+            # opt.trigger_event_name
+            if not opt.trigger_event_name and not opt.trigger_events:
+                btn = wx.Button(
+                    self, label=filter_text(opt.option_text, True), style=wx.BORDER_STATIC
+                )
+                btn.SetBackgroundColour("#FF6666")
+                btn.Bind(wx.EVT_BUTTON, lambda evt: self.GetParent().Destroy(), btn)
+                sizer.Add(btn, 0, wx.ALL, 5)
+            elif not opt.trigger_events:
+                btn = wx.Button(
+                    self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC
+                )
+                btn.event_name = opt.trigger_event_name
+                self.Bind(wx.EVT_BUTTON, self.on_button_clicked, btn)
+                sizer.Add(btn, 0, wx.ALL, 5)
+            else:
+                for event in opt.trigger_events.trigger_event:
+                    ssizer = wx.BoxSizer(wx.VERTICAL)
+
+                    btn = wx.Button(
+                        self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC
+                    )
+                    btn.event_name = event.event_name
+                    btn.Bind(wx.EVT_BUTTON, self.on_button_clicked, btn)
+                    t = wx.StaticText(self, wx.ID_ANY, label="For event '%s'" % event.event_name)
+                    t.SetBackgroundColour("#000f4d")
+                    ssizer.Add(btn, 0, wx.ALL, 0)
+                    ssizer.Add(t, 0, wx.LEFT, 10)
+                    sizer.Add(ssizer, 0, wx.ALL, 5)
+
+        hsizer.Add((1, 1), 1, wx.EXPAND)
+        hsizer.Add(sizer, 0, wx.TOP, 100)
+        hsizer.Add((1, 1), 0, wx.ALL, 75)
+        vsizer.Add(hsizer, 0, wx.ALL, 5)
+        vsizer.Add((1, 1), 0, wx.ALL, 75)
+        self.SetSizer(vsizer)
+
+    def on_button_clicked(self, evt):
+        bucket = get_ebucket()
+        wdg = evt.GetEventObject()
+        ceevent = bucket[wdg.event_name]
+        self.DestroyChildren()
+        self.ClearBackground()
+        self.set_bgimg(ceevent)
+        self.build_widgets(ceevent)
+        self.Layout()
+
+    @lru_cache
+    def get_bitmap(self, img):
+        if isinstance(img, wx.Bitmap):
+            return img
+        return wx.Bitmap(str(img), wx.BITMAP_TYPE_PNG)
 
     def on_erase_background(self, evt):
         dc = evt.GetDC()
@@ -1299,11 +1374,7 @@ class PreviewEvent(wx.Panel):
             rect = self.GetUpdateRegion().GetBox()
             dc.SetClippingRegion(rect)
         dc.Clear()
-        if isinstance(self.background_img, os.PathLike):
-            bmp = wx.Bitmap(str(self.background_img), wx.BITMAP_TYPE_PNG)
-        else:
-            bmp = wx.StaticBitmap(self, wx.ID_ANY, self.background_img)
-        dc.DrawBitmap(bmp, 0, 0)
+        dc.DrawBitmap(self.get_bitmap(self.background_img), 0, 0)
 
 
 # - Main Window ---
