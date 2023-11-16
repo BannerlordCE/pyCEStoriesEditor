@@ -1206,10 +1206,10 @@ class DwTabMenuOptions(wx.Panel):
 
 
 class DetailWindow(wx.Frame):
-    def __init__(self, ceevent: Ceevent, *args, **kwargs):
+    def __init__(self, parent, ceevent: Ceevent, *args, **kwargs):
         title = ceevent.name.value
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        super().__init__(title=title, *args, **kwargs)
+        super().__init__(parent, title=title, *args, **kwargs)
         # self.SetSizeHints((800, 600), (1024, 800))
         self.SetMinSize((800, 600))
         self.previewframe = None
@@ -1245,20 +1245,27 @@ class DetailWindow(wx.Frame):
         self.Bind(wx.EVT_BUTTON, lambda evt: self.on_preview_click(evt, ceevent), button_preview)
 
     def on_close(self, event):
-        self.GetParent().Enable(True)
+        self.GetParent()._cb_toggle()
         self.Destroy()
 
     def on_preview_click(self, evt, ceevent):
+        self.Enable(False)
         size = (445, 805)
         self.previewframe = wx.Frame(
-            None, size=size, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER
+            self, size=size, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER
         )
+        self.previewframe.Bind(wx.EVT_CLOSE, self.preview_on_close)
         self.previewframe.SetMinSize(size)
         self.previewframe.SetMaxSize(size)
         self.previewframe.SetTitle(ceevent.name.value)
         preview = PreviewEvent(self.previewframe, ceevent)
         self.previewframe.Center()
         self.previewframe.Show()
+
+    def preview_on_close(self, evt):
+        self.Enable(True)
+        self.previewframe.Destroy()
+        self.previewframe = None
 
 
 txtfilter = re.compile(r"{=[^}]+}")
@@ -1313,14 +1320,12 @@ class PreviewEvent(wx.Panel):
         vsizer.Add(text, 0, wx.EXPAND | wx.ALL, 5)
         vsizer.Add((1, 1), 1, wx.EXPAND)
         for opt in ceevent.options.option:
-            # opt.trigger_events.trigger_event
-            # opt.trigger_event_name
             if not opt.trigger_event_name and not opt.trigger_events:
                 btn = wx.Button(
                     self, label=filter_text(opt.option_text, True), style=wx.BORDER_STATIC
                 )
                 btn.SetBackgroundColour("#FF6666")
-                btn.Bind(wx.EVT_BUTTON, lambda evt: self.GetParent().Destroy(), btn)
+                btn.Bind(wx.EVT_BUTTON, lambda evt: self.GetParent().Close(), btn)
                 sizer.Add(btn, 0, wx.ALL, 5)
             elif not opt.trigger_events:
                 btn = wx.Button(
@@ -1399,12 +1404,13 @@ class CeListItem(wx.ListItem):
 
 
 class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, style=wx.LC_REPORT | wx.LC_NO_HEADER | wx.LC_SINGLE_SEL)
+    def __init__(self, parent, wxid, cb):
+        super().__init__(parent, wxid, style=wx.LC_REPORT | wx.LC_NO_HEADER | wx.LC_SINGLE_SEL)
         ListCtrlAutoWidthMixin.__init__(self)  # Using super() doesn't work?!
         self.InsertColumn(0, "Events")
         self.setResizeColumn(0)
         self.populate()
+        self._cb_toggle = cb
 
     def populate(self, items=None):
         self.DeleteAllItems()
@@ -1418,9 +1424,9 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
     def on_clicked_event(self, event):
         ebucket = get_ebucket()
         ceeventobj = ebucket[event.Text]
-        displayframe = DetailWindow(ceeventobj, parent=self)
+        displayframe = DetailWindow(self, ceeventobj)
         displayframe.Show()
-        self.Disable()
+        self._cb_toggle()
 
 
 def _filter_text(text, stack):
@@ -1489,7 +1495,7 @@ class MainWindow(wx.Frame):
         self.searchent.SetFocus()
         searchbnt = wx.Button(self.panel_search, label="Clear")
 
-        self.celb = CeListBox(self.window_1_pane_2, wx.ID_ANY)
+        self.celb = CeListBox(self.window_1_pane_2, wx.ID_ANY, cb=self.cb_toggle_enable)
 
         topsizer.Add(self.window_1, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
         leftsizer.Add(self.panel_leg, 2, wx.EXPAND | wx.ALL, 5)
@@ -1516,6 +1522,12 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.on_reset_event, searchbnt)
         self.Bind(wx.EVT_TEXT, self.on_text_event, self.searchent)
         self.Bind(wx.EVT_SEARCH_CANCEL, self.on_reset_event, self.searchent)
+
+    def cb_toggle_enable(self):
+        if self.IsEnabled():
+            self.Disable()
+        else:
+            self.Enable(True)
 
     def _load_conf(self):
         create_ebucket()
