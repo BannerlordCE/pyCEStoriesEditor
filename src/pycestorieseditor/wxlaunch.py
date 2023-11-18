@@ -196,7 +196,7 @@ class CeSettingsWindow(wx.Frame):
     def _button_save_pressed(self, evt):
         if not self._paths or not self.xsdentry.GetValue():
             return
-        fconf = wx.FileConfig(APPNAME, localFilename=self._conffile, style=wx.CONFIG_USE_LOCAL_FILE)
+        fconf = wx.FileConfig(APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE)
         fconf.SetPath("/general")
         fconf.Write("CE_XSDFILE", self.xsdentry.GetValue())
         n = count()
@@ -207,7 +207,7 @@ class CeSettingsWindow(wx.Frame):
         fconf.Flush()
 
     def _load_conf(self):
-        conf = wx.FileConfig(APPNAME, localFilename=self._conffile, style=wx.CONFIG_USE_LOCAL_FILE)
+        conf = wx.FileConfig(APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE)
         conf.SetPath("/general")
         path_amount = conf.ReadInt("CeModulePathAmount")
         for n in range(path_amount):
