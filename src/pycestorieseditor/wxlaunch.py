@@ -22,6 +22,7 @@ from pycestorieseditor.config import get_config
 from pycestorieseditor.wxui import MainWindow
 
 logger = logging.getLogger(__name__)
+LAUNCH_SETTINGS = False
 
 
 class CeListPathItem(wx.ListItem):
@@ -240,10 +241,11 @@ class CeSettingsWindow(wx.Frame):
 
 class CeStoriesViewer(wx.App):
     def OnInit(self):
+        global LAUNCH_SETTINGS
         self.SetAppName(APPNAME)
         if PORTABLE:
             conf = get_config("settings")
-            if os.path.exists(conf):
+            if os.path.exists(conf) and not LAUNCH_SETTINGS:
                 window = MainWindow(conf)
             else:
                 window = CeSettingsWindow(None, conf)
@@ -256,6 +258,8 @@ class CeStoriesViewer(wx.App):
         return True
 
 
-def launch():
+def launch(settings=False):
+    global LAUNCH_SETTINGS
+    LAUNCH_SETTINGS = settings
     app = CeStoriesViewer()
     app.MainLoop()

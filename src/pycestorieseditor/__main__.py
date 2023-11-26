@@ -29,11 +29,19 @@ def main():
     )
     parser.add_argument(
         "-g", "--gui", action="store_true", required=False,
+        help="Launch the GUI, ignore all other argument."
+    )
+    parser.add_argument(
+        "-s", "--settings", action="store_true", required=False,
+        help="Launch the settings window. Implies -g."
     )
     args = parser.parse_args()
 
     if args.gui:
-        launch()
+        settings = False
+        if args.settings:
+            settings = True
+        launch(settings)
         sys.exit()
 
     if not args.target:
