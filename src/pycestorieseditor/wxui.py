@@ -33,6 +33,8 @@ from .ceevents import (
     scan_for_images,
     create_imgbucket,
     get_imgbucket,
+    init_index,
+    get_indexes,
 )
 from .ceevents_template import (
     RestrictedListOfFlagsType,
@@ -166,54 +168,6 @@ def wx_label_list(parent, sizer, label, data):
 
     sizer.Add(lbl, 0, wx.LEFT, 5)
     sizer.Add(listbox, 1, wx.ALL | wx.EXPAND, 3)
-
-
-# -- Create a custom table - XXX: UNUSED
-class BackgroundTable(wx.grid.GridTableBase):
-    def __init__(self, data):
-        super().__init__()
-        self.col_labels = ("name", "weight", "use_conditions")
-        self.data = []
-        for row in data:
-            self.data.append((row.name, row.weight, row.use_conditions))
-
-    def GetNumberRows(self):
-        return len(self.data) + 1
-
-    def GetNumberCols(self):
-        return len(self.data[0])
-
-    def IsEmptyCell(self, row, col):
-        try:
-            return bool(self.data[row][col])
-        except IndexError:
-            return True
-
-    def GetValue(self, row, col):
-        try:
-            return self.data[row][col]
-        except IndexError:
-            return ''
-
-    def SetValue(self, row, col, value):
-        return
-
-    def GetColLabelValue(self, col):
-        return self.col_labels[col]
-
-
-class CustomGrid(wx.grid.Grid):
-    def __init__(self, parent, data):
-        super().__init__(parent, wx.ID_ANY)
-        table = BackgroundTable(data)
-        self.SetTable(table, True, wx.grid.Grid.GridSelectRows)
-        self.SetRowLabelSize(0)
-        self.SetMargins(0, 0)
-        self.AutoSizeColumns(True)
-        self.EnableEditing(False)
-
-
-# -- End custom table - XXX: UNUSED
 
 
 class ABCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
@@ -1218,13 +1172,15 @@ class DetailWindow(wx.Frame):
 
         tabone = DwTabOne(nb, ceevent)
         tabxml = DwTabXml(nb, ceevent.xmlsource)
-        taboptions = DwTabOptions(nb, ceevent.options)
+        if ceevent.options:
+            taboptions = DwTabOptions(nb, ceevent.options)
         # FIXME: menu options are currently broken, waiting on PR merge to activate
         # tabmoptions = DwTabMenuOptions(nb, ceevent.menu_options)
 
         nb.AddPage(tabone, "Main")
         nb.AddPage(tabxml, "Xml Source")
-        nb.AddPage(taboptions, "Options")
+        if ceevent.options:
+            nb.AddPage(taboptions, "Options")
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
@@ -1232,6 +1188,8 @@ class DetailWindow(wx.Frame):
         closebutton = wx.StdDialogButtonSizer()
         self.button_close = wx.Button(self, wx.ID_CLOSE, "")
         button_preview = wx.Button(self, wx.ID_HELP, "Preview")
+        if not ceevent.options:
+            button_preview.Disable()
         closebutton.AddButton(self.button_close)
         closebutton.AddButton(button_preview)
         sizer.Add(closebutton, 0, wx.ALIGN_RIGHT | wx.ALL, 4)
@@ -1429,11 +1387,19 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
         self._cb_toggle()
 
 
-def _filter_text(text, stack):
+def _filter_text(text, stack: list[Ceevent]):
     return filter(lambda x: x.text and text in x.text.value, stack)
 
 
-search = re.compile(r"""(?:(?P<tag>text|tag):"(?P<value>[^"]+)")+|(\w+)""")
+def _filter_skillid(skill, stack: list[Ceevent]):
+    indexes = get_indexes()
+    ebucket = get_ebucket()
+    if skill in indexes['skills'].keys():
+        for event in indexes['skills'][skill]:
+            yield ebucket[event]
+
+
+search = re.compile(r"""(?:(?P<tag>text|skill):"(?P<value>[^"]+)")+|(\w+)""")
 
 
 class MainWindow(wx.Frame):
@@ -1532,6 +1498,7 @@ class MainWindow(wx.Frame):
     def _load_conf(self):
         create_ebucket()
         create_imgbucket()
+        init_index()
         conf = wx.FileConfig(
             APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE
         )
@@ -1563,8 +1530,8 @@ class MainWindow(wx.Frame):
             match term:
                 case ("text", value, ""):
                     constraints.append((_filter_text, value))
-                case ("tag", value, ""):  # XXX: maybe not tags
-                    ...
+                case ("skill", value, ""):
+                    constraints.append((_filter_skillid, value))
                 case ("", "", value):
                     names.append(value)
 

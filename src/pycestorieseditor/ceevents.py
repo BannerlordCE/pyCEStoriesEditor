@@ -7,18 +7,19 @@
 #   ElementTree.tostring(xsd['CEEvents'].encode(doctree))
 from __future__ import annotations
 
+import inspect
 import logging
 import multiprocessing
 import os
 import time
 from functools import lru_cache
-from itertools import count
+from itertools import count, dropwhile
 from pathlib import Path
 
 from xsdata_attrs.bindings import XmlParser
 import xmlschema
 
-from .ceevents_template import Ceevent
+from .ceevents_template import Ceevent, SkillsRequired, SkillsToLevel
 from .pil2wx import default_background
 
 logger = logging.getLogger(__name__)
@@ -46,8 +47,20 @@ def get_imgbucket():
     return imgbucket
 
 
+def init_index():
+    global indexes
+    indexes = {'skills': {}}
+    return indexes
+
+
+def get_indexes():
+    global indexes
+    return indexes
+
+
 ebucket: dict[str, Ceevent] | None = None  # pylint: disable=invalid-name
 imgbucket: dict[str, os.PathLike] | None = None  # pylint: disable=invalid-name
+indexes: dict[str, dict] | None = None  # pylint: disable=invalid-name
 
 
 def init_xsdfile(pathname):
@@ -113,7 +126,8 @@ def populate_children(bucket):
         except ChildNotFound as e:
             logger.error(
                 "Child Not Found: Cannot find event with name '%s' in the bucket. (bound file '%s')",
-                e.outboundevent, cevent.xmlfile
+                e.outboundevent,
+                cevent.xmlfile,
             )
     print(f"end: {time.strftime('%X')}")
     return next(errors)
@@ -131,24 +145,103 @@ def scan_for_images(module_path):
         ibucket[key] = img
 
 
+SKILLNAMES = (
+    'req_captor_skill',
+    'req_hero_skill',
+    'skill_to_level',  # XXX: is a list in MenuOptions?!? Not used in the wild.
+    'skills_required',
+    'skills_to_level',
+)
+SKIPELEM = ('value', 'restricted_list_of_flags')
+
+
+def get_skill_value(ceevent, skill):
+    if elem := getattr(ceevent, skill):
+        return elem
+
+
+def get_skill_text_value(element):
+    if isinstance(element, SkillsRequired):
+        return (skill.id for skill in element.skill_required)
+    if isinstance(element, SkillsToLevel):
+        return (skill.id for skill in element.skill)
+    raise Exception("element of type '%s' not handled" % type(element))
+
+
+def filter_and_yield_skills(members, ceevent, cname):
+    if any(x[0] in SKILLNAMES for x in members):
+        for value in filter(
+            lambda x: x is not None,
+            (get_skill_value(ceevent, skillname) for skillname in SKILLNAMES),
+        ):
+            yield [x for x in get_skill_text_value(value)], cname
+
+
+def filter_and_yield_from_options(members, ceevent, cname):
+    name = ["options", "menu_options"]
+    subname = {"options": "option", "menu_options": "menu_option"}
+    for otree in (x[0] for x in filter(lambda x: x[0] in name, members)):
+        options = getattr(ceevent, otree)
+        if not options:
+            return
+        for option in getattr(options, subname[otree]):
+            for value in filter(
+                lambda x: x is not None,
+                (get_skill_value(option, skillname) for skillname in SKILLNAMES),
+            ):
+                if otree == "menu_options":
+                    for skill in value:
+                        yield [x for x in get_skill_text_value(skill)], cname
+                else:
+                    yield [x for x in get_skill_text_value(value)], cname
+
+
+def filter_ceevent(ceevent: Ceevent, ceeventname):
+    if not ceevent or isinstance(ceevent, (str, int, list, float)):
+        return None
+    members = dropwhile(
+        lambda x: x[0][0] == '_',
+        inspect.getmembers_static(
+            ceevent, lambda x: inspect.ismemberdescriptor(x) or isinstance(x, str)
+        ),
+    )
+    members = list(members)
+    for name, cname in filter_and_yield_skills(members, ceevent, ceeventname):
+        yield name, cname
+    for name, cname in filter_and_yield_from_options(members, ceevent, ceeventname):
+        yield name, cname
+    for name, cname in filter_and_yield_from_options(members, ceevent, ceeventname):
+        yield name, cname
+
+
 def process_xml_files(xmlfiles: list):
-    global ebucket
+    global ebucket, indexes
 
     parser = XmlParser()
     xsd = get_xsdfile()
 
     # Pool(processes) uses os.cpu_count() if none value is provided
     with multiprocessing.Pool() as pool:
-        res = pool.starmap(process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=4)
+        res = pool.starmap(
+            process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=4
+        )
 
-    for bucket in res:
+    for bucket, skills in res:
         for ceevent in bucket:
             if ceevent.name.value in ebucket.keys():
-                logger.warning("Override of '%s' already present in bucket. (trigger: %s)", ceevent.name.value, ceevent.xmlfile)
+                logger.warning(
+                    "Override of '%s' already present in bucket. (trigger: %s)",
+                    ceevent.name.value,
+                    ceevent.xmlfile,
+                )
             ebucket[ceevent.name.value] = ceevent
+        for skill, eventname in skills:
+            for s in skill:
+                indexes['skills'].setdefault(s, [])
+                indexes['skills'][s].append(eventname)
 
 
-def process_file(xmlfile, xsd, parser) -> list[Ceevent]:
+def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list] | list:
     x = Path(xmlfile)
     logger.info(f"-start- {x.name}: {time.strftime('%X')}")
     bucket = []
@@ -157,36 +250,16 @@ def process_file(xmlfile, xsd, parser) -> list[Ceevent]:
     except xmlschema.validators.exceptions.XMLSchemaChildrenValidationError as e:
         logger.error("Invalid xml file: %s. Msg: %s", xmlfile, e.reason)
         return []
+    skills = []
     for event in xsobjects:
         string = event.tostring()
-        ceevent = parser.from_string(string, Ceevent)
+        ceevent: Ceevent = parser.from_string(string, Ceevent)
         ceevent.xmlsource = string
         ceevent.xmlfile = xmlfile
+        skills = skills + [x for x in filter_ceevent(ceevent, ceevent.name.value)]
         bucket.append(ceevent)
     logger.info(f"-stop- {x.name}: {time.strftime('%X')}")
-    return bucket
-
-
-# XXX: to delete
-def process_xml_events(xmlfile):
-    parser = XmlParser()
-    xmlfile = Path(xmlfile)
-    xsd = get_xsdfile()
-    if not xsd:
-        logger.error("No xsd file exists. Was it saved?")
-        return -1
-    xsobjects = xsd.to_objects(xmlfile)
-    ebucket = get_ebucket()
-    for event in xsobjects:
-        string = event.tostring()
-        ceevent = parser.from_string(string, Ceevent)
-        ceevent.xmlsource = string
-        if ceevent.name.value in ebucket.keys():
-            logger.warning("'%s' already present in bucket.", ceevent.name.value)
-            return 0
-        ebucket[ceevent.name.value] = ceevent
-    return 1
-# //END to delete
+    return bucket, skills
 
 
 class NotBannerLordModule(Exception):
@@ -231,5 +304,3 @@ class CePath:
     def events_files(self):
         for f in self._events.glob('*.xml'):
             yield str(f)
-
-
