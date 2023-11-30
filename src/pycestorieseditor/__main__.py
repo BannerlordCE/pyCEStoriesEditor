@@ -7,8 +7,8 @@ import os
 import sys
 
 from pycestorieseditor.wxlaunch import launch
-from . import CE_TARGET_PATH
-from .graph import graph_file, list_elements, list_files
+from pycestorieseditor import CE_TARGET_PATH
+from pycestorieseditor.graph import graph_file, list_elements, list_files
 
 
 def main():

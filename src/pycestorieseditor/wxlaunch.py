@@ -208,6 +208,8 @@ class CeSettingsWindow(wx.Frame):
         fconf.Flush()
 
     def _load_conf(self):
+        if not os.path.exists(self._conffile):
+            return
         conf = wx.FileConfig(APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE)
         conf.SetPath("/general")
         path_amount = conf.ReadInt("CeModulePathAmount")

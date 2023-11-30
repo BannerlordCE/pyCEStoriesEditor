@@ -19,8 +19,8 @@ from pathlib import Path
 from xsdata_attrs.bindings import XmlParser
 import xmlschema
 
-from .ceevents_template import Ceevent, SkillsRequired, SkillsToLevel
-from .pil2wx import default_background
+from pycestorieseditor.ceevents_template import Ceevent, SkillsRequired, SkillsToLevel
+from pycestorieseditor.pil2wx import default_background
 
 logger = logging.getLogger(__name__)
 

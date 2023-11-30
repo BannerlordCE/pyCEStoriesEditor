@@ -22,30 +22,16 @@ from wx import stc
 from wx.lib import expando
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 
-from . import APPNAME
-from .ceevents import (
-    get_ebucket,
-    Ceevent,
-    init_xsdfile,
-    process_xml_files,
-    CePath,
-    create_ebucket,
-    scan_for_images,
-    create_imgbucket,
-    get_imgbucket,
-    init_index,
-    get_indexes,
+from pycestorieseditor import APPNAME
+from pycestorieseditor.ceevents import (
+    get_ebucket, Ceevent, init_xsdfile, process_xml_files, CePath, create_ebucket,
+    scan_for_images, create_imgbucket, get_imgbucket, init_index, get_indexes,
 )
-from .ceevents_template import (
-    RestrictedListOfFlagsType,
-    Options,
-    Option,
-    RestrictedListOfConsequencesValue,
-    ceevents_modal,
-    MenuOption,
-    MenuOptions,
+from pycestorieseditor.ceevents_template import (
+    RestrictedListOfFlagsType, Options, Option,
+    RestrictedListOfConsequencesValue, ceevents_modal, MenuOption, MenuOptions,
 )
-from .pil2wx import hex2rgb, create_icon, pil2wximage, wximage2bitmap
+from pycestorieseditor.pil2wx import hex2rgb, create_icon, pil2wximage, wximage2bitmap
 
 style = get_style_by_name("default")
 
