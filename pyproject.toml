@@ -1,3 +1,15 @@
+[project]
+name = "pyCeStoriesEditor"
+version = "0.1"
+description = "Small stories visualizer for the Bannerlord mod Captivity Events."
+
+[tool.distutils.build_exe]
+excludes = [
+  "tkinter", "gi", "gtk", "PyQt4", "PyQt5", "PyQt6",
+  "PySide2", "PySide6", "shiboken2", "shiboken6", "lib2to3"
+]
+packages = ["xsdata_attrs.hooks"]
+
 [tool.poetry]
 name = "pycestorieseditor"
 version = "0.1.0"
@@ -10,7 +22,7 @@ packages = [{include = "pycestorieseditor", from = "src"}]
 pycestorieseditor = 'pycestorieseditor.__main__:main'
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.12"
 graphviz = "^0.20.1"
 xmlschema = "^2.2"
 attrs = "^23.1"
@@ -26,6 +38,7 @@ platformdirs = "^3.10.0"
 setuptools = "^68.2.2"
 wheel = "^0.41.3"
 pip = "^23.3.1"
+cx-freeze = "^6.15.11"
 
 [build-system]
 requires = ["poetry-core"]
