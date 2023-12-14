@@ -24,7 +24,7 @@ from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 
 from pycestorieseditor import APPNAME
 from pycestorieseditor.ceevents import (
-    get_ebucket, Ceevent, init_xsdfile, process_xml_files, CePath, create_ebucket,
+    get_ebucket, Ceevent, init_xsdfile, process_module, CePath, create_ebucket,
     scan_for_images, create_imgbucket, get_imgbucket, init_index, get_indexes,
 )
 from pycestorieseditor.ceevents_template import (
@@ -1497,7 +1497,7 @@ class MainWindow(wx.Frame):
             xmlfiles.extend(p.events_files)
             scan_for_images(str(p))
         init_xsdfile(conf.Read("CE_XSDFILE"))
-        process_xml_files(xmlfiles)
+        process_module(xmlfiles)
 
     def on_reset_event(self, event):
         if event.EventType != wx.EVT_SEARCH_CANCEL.typeId:  # not EVT_BUTTON

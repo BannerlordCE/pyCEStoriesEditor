@@ -13,10 +13,12 @@ from wx.lib.scrolledpanel import ScrolledPanel
 from pycestorieseditor import PORTABLE, APPNAME
 from pycestorieseditor.ceevents import (
     init_xsdfile,
-    populate_children,
     create_ebucket,
-    get_ebucket,
-    process_xml_files, NotBannerLordModule, NotCeSubmodule, CePath,
+    process_module,
+    NotBannerLordModule,
+    NotCeSubmodule,
+    CePath,
+    init_index,
 )
 from pycestorieseditor.config import get_config
 from pycestorieseditor.wxui import MainWindow
@@ -71,9 +73,12 @@ class CeSettingsWindow(wx.Frame):
         fsizer.AddGrowableCol(1)
         addremovesizer = wx.BoxSizer(wx.VERTICAL)
 
-        self._warningtxt = wxst.GenStaticText(panel, wx.ID_ANY, label="Sample text")
+        self._warningtxt = wxst.GenStaticText(panel, wx.ID_ANY, label="")
         self._warningtxt.SetForegroundColour((255, 0, 0))
         self._warningtxt.Hide()
+        self._noticetxt = wxst.GenStaticText(panel, wx.ID_ANY, label="Lorem ipsum dolor sit amet")
+        self._noticetxt.SetForegroundColour((0, 255, 0))
+        self._noticetxt.Hide()
         self._flist = CeListBox(window, wx.ID_ANY)
         buttonadd = wx.Button(window, wx.ID_ANY, "+", (50, 50))
         buttonrem = wx.Button(window, wx.ID_ANY, "-", (50, 50))
@@ -110,6 +115,7 @@ class CeSettingsWindow(wx.Frame):
         fsizer.Add(btnsave, 0, wx.RIGHT, 3)
 
         bsizer.Add(self._warningtxt, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.LEFT | wx.RIGHT, 3)
+        bsizer.Add(self._noticetxt, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.LEFT | wx.RIGHT, 3)
         bsizer.Add(window, 1, wx.EXPAND, 0)
 
         self.Bind(wx.EVT_BUTTON, self._button_add_folder_pressed, buttonadd)
@@ -120,6 +126,9 @@ class CeSettingsWindow(wx.Frame):
         self._warningtxt.Bind(wx.EVT_ENTER_WINDOW, self._on_mouse_event, self._warningtxt)
         self._warningtxt.Bind(wx.EVT_LEAVE_WINDOW, self._on_mouse_event, self._warningtxt)
         self._warningtxt.Bind(wx.EVT_LEFT_DOWN, self._on_mouse_event, self._warningtxt)
+        self._noticetxt.Bind(wx.EVT_ENTER_WINDOW, self._on_mouse_event, self._noticetxt)
+        self._noticetxt.Bind(wx.EVT_LEAVE_WINDOW, self._on_mouse_event, self._noticetxt)
+        self._noticetxt.Bind(wx.EVT_LEFT_DOWN, self._on_mouse_event, self._noticetxt)
 
         window.SetSizerAndFit(fsizer)
         panel.SetSizerAndFit(bsizer)
@@ -181,23 +190,20 @@ class CeSettingsWindow(wx.Frame):
 
     def _button_validate_pressed(self, evt):
         create_ebucket()
-
+        init_index()
+        errs = 0
         for module in self._paths.values():
-            process_xml_files([str(f) for f in module.events])
-        errs = populate_children(get_ebucket())
-        print(errs)
-
-        # errs = populate_children()
-        # if errs > 0:
-        #     self._flist.reset()
-        #     CeListPathItem._wid = count()
-        #     for path in self._paths.values():
-        #         self._flist.InsertItem(CeListPathItem(path))
+            err = process_module([str(f) for f in module.events_files])
+            errs += err
+        if errs > 0:
+            self._show_warning(f"{errs} xml files couldn't be validated, please check the logs.")
 
     def _button_save_pressed(self, evt):
         if not self._paths or not self.xsdentry.GetValue():
             return
-        fconf = wx.FileConfig(APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE)
+        fconf = wx.FileConfig(
+            APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE
+        )
         fconf.SetPath("/general")
         fconf.Write("CE_XSDFILE", self.xsdentry.GetValue())
         n = count()
@@ -206,11 +212,14 @@ class CeSettingsWindow(wx.Frame):
             fconf.Write(key, str(path._path))
         fconf.WriteInt("CeModulePathAmount", next(n))
         fconf.Flush()
+        self._show_notice("Settings properly saved.")
 
     def _load_conf(self):
         if not os.path.exists(self._conffile):
             return
-        conf = wx.FileConfig(APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE)
+        conf = wx.FileConfig(
+            APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE
+        )
         conf.SetPath("/general")
         path_amount = conf.ReadInt("CeModulePathAmount")
         for n in range(path_amount):
@@ -222,14 +231,28 @@ class CeSettingsWindow(wx.Frame):
 
     def _on_mouse_event(self, evt: wx.MouseEvent):
         obj: wxst.GenStaticText = evt.GetEventObject()
-        if evt.Entering():
-            obj.SetForegroundColour((200, 0, 0))
-        elif evt.Leaving():
-            obj.SetForegroundColour((255, 0, 0))
+        match obj, evt.Entering(), evt.Leaving():
+            case self._warningtxt, True, False:
+                obj.SetForegroundColour((200, 0, 0))
+            case self._warningtxt, False, True:
+                obj.SetForegroundColour((255, 0, 0))
+            case self._noticetxt, True, False:
+                obj.SetForegroundColour((0, 200, 0))
+            case self._noticetxt, False, True:
+                obj.SetForegroundColour((0, 255, 0))
+            case _:
+                obj.SetLabel("")
+                obj.Hide()
+                self._bsizer.Layout()
+
+    def _show_notice(self, txt: str):
+        """Show notice text. Empty 'txt' value hides widget."""
+        self._noticetxt.SetLabel(txt)
+        if not txt:
+            self._noticetxt.Hide()
         else:
-            obj.SetLabel("")
-            obj.Hide()
-            self._bsizer.Layout()
+            self._noticetxt.ShowWithEffect(wx.SHOW_EFFECT_EXPAND)
+        self._bsizer.Layout()
 
     def _show_warning(self, txt: str):
         """Show warning text. Empty 'txt' value hides widget."""

@@ -12,6 +12,7 @@ import logging
 import multiprocessing
 import os
 import time
+from xml.etree.ElementTree import ParseError as xmlParseError
 from functools import lru_cache
 from itertools import count, dropwhile
 from pathlib import Path
@@ -214,7 +215,12 @@ def filter_ceevent(ceevent: Ceevent, ceeventname):
         yield name, cname
 
 
-def process_xml_files(xmlfiles: list):
+def process_module(xmlfiles: list):
+    """Process the various xml files present in a given module
+
+    Args:
+        xmlfiles (list): list of paths leading to xml files
+    """
     global ebucket, indexes
 
     parser = XmlParser()
@@ -226,7 +232,9 @@ def process_xml_files(xmlfiles: list):
             process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=4
         )
 
-    for bucket, skills in res:
+    errcount = 0
+    for bucket, skills, errs in res:
+        errcount += errs
         for ceevent in bucket:
             if ceevent.name.value in ebucket.keys():
                 logger.warning(
@@ -240,16 +248,19 @@ def process_xml_files(xmlfiles: list):
                 indexes['skills'].setdefault(s, [])
                 indexes['skills'][s].append(eventname)
 
+    return errcount
 
-def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list] | list:
+
+def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, int]:
     x = Path(xmlfile)
     logger.info(f"-start- {x.name}: {time.strftime('%X')}")
     bucket = []
     try:
         xsobjects = xsd.to_objects(xmlfile)
-    except xmlschema.validators.exceptions.XMLSchemaChildrenValidationError as e:
-        logger.error("Invalid xml file: %s. Msg: %s", xmlfile, e.reason)
-        return []
+    except (xmlschema.validators.exceptions.XMLSchemaChildrenValidationError, xmlParseError) as e:
+        msg = e.reason if hasattr(e, 'reason') else e.msg
+        logger.error("Invalid xml file: %s. Msg: %s", xmlfile, msg)
+        return [], [], 1
     skills = []
     for event in xsobjects:
         string = event.tostring()
@@ -259,7 +270,7 @@ def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list] | list:
         skills = skills + [x for x in filter_ceevent(ceevent, ceevent.name.value)]
         bucket.append(ceevent)
     logger.info(f"-stop- {x.name}: {time.strftime('%X')}")
-    return bucket, skills
+    return bucket, skills, 0
 
 
 class NotBannerLordModule(Exception):
