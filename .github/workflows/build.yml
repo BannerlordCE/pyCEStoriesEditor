@@ -3,7 +3,7 @@ name: wxPython Build
 on:
   push:
     branches:
-      - master
+      - debug-
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
       - v[0-9]+.[0-9]+.[0-9]+-*
