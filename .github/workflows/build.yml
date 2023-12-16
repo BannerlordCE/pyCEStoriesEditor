@@ -55,7 +55,9 @@ jobs:
         run: poetry install --with dev
 
       - name: Build
-        run: python setup.py build
+        run: |
+          poetry shell
+          python setup.py build
       - name: Packaging
         run: |
           ls build

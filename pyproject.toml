@@ -35,9 +35,9 @@ platformdirs = "^3.10.0"
 
 
 [tool.poetry.group.dev.dependencies]
-setuptools = "^68.2.2"
-wheel = "^0.41.3"
-pip = "^23.3.1"
+setuptools = "*"
+wheel = "*"
+pip = "*"
 cx-freeze = "^6.15.11"
 
 [build-system]
