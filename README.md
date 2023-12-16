@@ -8,8 +8,21 @@ To install and launch:
 
 ```
 ~$ poetry install
-~$ python -m pycestorieseditor -x
+~$ poetry run python -m pycestorieseditor
 ```
 
-The `-x` flag will launch the setting window if there is no settings defined
-yet. The other flags listed in the help may be broken as of now.   
+The first launch will invite you to create a configuration file. You'll have to
+save and launch the software again, until I figure out how to automate that
+process.
+
+## Build for windows
+
+It is relatively simple to create an executable for the Windows system, thanks
+to [cxFreeze](https://cx-freeze.readthedocs.io/en/stable/). The following
+commands will generate the necessary files under the `build` folder. You'll
+find a `pce.exe` executable amongst the subfolders.
+
+```
+~$ poetry install --with=dev
+~$ poetry run python setup.py build 
+```
