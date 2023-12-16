@@ -56,8 +56,7 @@ jobs:
 
       - name: Build
         run: |
-          poetry shell
-          python setup.py build
+          poetry run python setup.py build
       - name: Packaging
         run: |
           ls build
