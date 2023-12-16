@@ -3,6 +3,7 @@
 # © 2023 bicobus <bicobus@keemail.me>
 import logging
 import os
+from collections import OrderedDict
 from itertools import count
 
 import wx
@@ -36,6 +37,10 @@ class CeListPathItem(wx.ListItem):
         self.SetText(item.name)
         self.SetId(next(CeListPathItem._wid))
 
+    @staticmethod
+    def reset_wid():
+        CeListPathItem._wid = count()
+
 
 class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
     def __init__(self, *args, **kwargs):
@@ -46,8 +51,10 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
 
     def reset(self):
         self.ClearAll()
+        CeListPathItem.reset_wid()
         self.InsertColumn(0, "Path")
-        # self.setResizeColumn(0)
+        # force a column resize after clearing, otherwise the column doesn't expand
+        self.resizeColumn(1)
 
 
 class CeSettingsWindow(wx.Frame):
@@ -61,7 +68,7 @@ class CeSettingsWindow(wx.Frame):
             style=wx.DEFAULT_FRAME_STYLE,
         )
 
-        self._paths: dict[str, CePath] = {}
+        self._paths: dict[str, CePath] = OrderedDict()
         self._conffile = conffile
 
         panel = wx.Panel(self)
@@ -82,6 +89,9 @@ class CeSettingsWindow(wx.Frame):
         self._flist = CeListBox(window, wx.ID_ANY)
         buttonadd = wx.Button(window, wx.ID_ANY, "+", (50, 50))
         buttonrem = wx.Button(window, wx.ID_ANY, "-", (50, 50))
+        buttonclr = wx.Button(window, wx.ID_ANY, "CLR", (50, 50))
+        self.bup = buttonup = wx.Button(window, wx.ID_ANY, "↑", (50, 50))
+        self.bdw = buttondw = wx.Button(window, wx.ID_ANY, "↓", (50, 50))
         btnvalidate = wx.Button(window, wx.ID_ANY, "Validate", (50, 50))
         btnvalidate.SetToolTip(
             "Will try to validate all xml file present in the listed folders.\n!!!It may take a while!!!"
@@ -94,6 +104,9 @@ class CeSettingsWindow(wx.Frame):
 
         addremovesizer.Add(buttonadd, 0, wx.ALL, 5)
         addremovesizer.Add(buttonrem, 0, wx.ALL, 5)
+        addremovesizer.Add(buttonclr, 0, wx.ALL, 5)
+        addremovesizer.Add(buttonup, 0, wx.ALL, 5)
+        addremovesizer.Add(buttondw, 0, wx.ALL, 5)
         fsizer.Add(wx.StaticText(window, wx.ID_ANY, label="CE Modules"), 0, wx.LEFT, 5)
         fsizer.Add(self._flist, 1, wx.ALL | wx.EXPAND, 3)
         fsizer.Add(addremovesizer, 0, wx.RIGHT, 5)
@@ -120,6 +133,9 @@ class CeSettingsWindow(wx.Frame):
 
         self.Bind(wx.EVT_BUTTON, self._button_add_folder_pressed, buttonadd)
         self.Bind(wx.EVT_BUTTON, self._button_rem_folder_pressed, buttonrem)
+        self.Bind(wx.EVT_BUTTON, self._button_clr_folder_pressed, buttonclr)
+        self.Bind(wx.EVT_BUTTON, self._button_move_folder_pressed, buttonup)
+        self.Bind(wx.EVT_BUTTON, self._button_move_folder_pressed, buttondw)
         self.Bind(wx.EVT_BUTTON, self._button_validate_pressed, btnvalidate)
         self.Bind(wx.EVT_BUTTON, self._button_xsd_pressed, xsdbutton)
         self.Bind(wx.EVT_BUTTON, self._button_save_pressed, btnsave)
@@ -188,6 +204,33 @@ class CeSettingsWindow(wx.Frame):
             index = self._flist.GetNextSelected(index)
         return True
 
+    def _button_clr_folder_pressed(self, evt):
+        self._flist.reset()
+        for path in self._paths.values():
+            self._flist.InsertItem(CeListPathItem(path))
+        return True
+
+    def _button_move_folder_pressed(self, evt):
+        index = self._flist.GetFirstSelected()
+        if index == -1:
+            return
+        obj = evt.GetEventObject()
+        txt = None
+        while index != -1:
+            txt = self._flist.GetItem(index).GetText()
+            index = self._flist.GetNextSelected(index)
+        paths = self._paths.copy()
+        names = list(paths.keys())
+        idx = names.index(txt)
+        if obj is self.bup:
+            names[idx], names[idx - 1] = names[idx - 1], names[idx]
+        elif obj is self.bdw:
+            names[idx], names[idx + 1] = names[idx + 1], names[idx]
+        self._paths = OrderedDict(zip(names, (paths[x] for x in names)))
+        self._flist.reset()
+        for path in self._paths.values():
+            self._flist.InsertItem(CeListPathItem(path))
+
     def _button_validate_pressed(self, evt):
         create_ebucket()
         init_index()
@@ -223,9 +266,9 @@ class CeSettingsWindow(wx.Frame):
         conf.SetPath("/general")
         path_amount = conf.ReadInt("CeModulePathAmount")
         for n in range(path_amount):
-            p = conf.Read("CeModulePath%i" % n)
-            self._paths[p] = CePath(p)
-            self._flist.InsertItem(CeListPathItem(self._paths[p]))
+            p = CePath(conf.Read("CeModulePath%i" % n))
+            self._paths[p.name] = p
+            self._flist.InsertItem(CeListPathItem(p))
         self.xsdentry.SetValue(conf.Read("CE_XSDFILE"))
         init_xsdfile(conf.Read("CE_XSDFILE"))
 
