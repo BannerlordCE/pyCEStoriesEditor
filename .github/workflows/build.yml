@@ -1,0 +1,61 @@
+name: wxPython Build
+
+on:
+  push:
+    branches:
+      - master
+#    tags:
+#      - v[0-9]+.[0-9]+.[0-9]+
+#      - v[0-9]+.[0-9]+.[0-9]+-*
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHON: "3.11"
+    steps:
+      - name: Define Release Type
+        id: release_type
+        run: |
+          REF="${GITHUB_REF##*/}"
+          if [[ $REF =~ "v"([0-9]\.)+[0-9]"-beta" ]]; then
+            echo ::set-output name=RELEASE_TYPE::beta
+          elif [[ $REF =~ "v"([0-9]\.)+[0-9]$ ]]; then
+            echo ::set-output name=RELEASE_TYPE::release
+          elif [[ $ref =~ "debug"("-".*)? ]]; then
+            echo ::set-output name=RELEASE_TYPE::debug
+          fi
+          echo ::set-output name=VERSION::$REF
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON }}
+      - name: Bootstrap Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python - -y
+      - name: Update Path for windows
+        run: echo "$APPDATA\Python\Scripts" >> $GITHUB_PATH
+      - name: Enable long paths for git on Windows
+        run: git config --system core.longpaths true
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+      - name: Setup cache
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ hashFiles('**/poetry.lock') }}
+      - name: Check lock file
+        run: poetry check --lock
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Build
+        run: python setup.py build
+      - name: Packaging
+        run: |
+          ls build
