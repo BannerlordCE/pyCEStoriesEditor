@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - master
-#    tags:
-#      - v[0-9]+.[0-9]+.[0-9]+
-#      - v[0-9]+.[0-9]+.[0-9]+-*
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-*
 
 jobs:
   build:
@@ -66,28 +66,28 @@ jobs:
           cd build/exe.win-amd64-3.11
           7z a ../../pyCeStoriesViewer-win64-${GITHUB_REF##*/}.7z .
 
-#      - name: Release (debug)
-#        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'debug' }}
-#        uses: ncipollo/release-action@v1.12.0
-#        with:
-#          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
-#          prerelease: True
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          tag: ${{ steps.release_type.outputs.VERSION }}-${{ github.run_number }}
-#          body: |
-#            This is a debug build to help with development.
-#
-#      - name: Release (beta)
-#        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'beta' }}
-#        uses: ncipollo/release-action@v1.12.0
-#        with:
-#          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
-#          prerelease: True
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: Release (beta)
-#        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'release' }}
-#        uses: ncipollo/release-action@v1.12.0
-#        with:
-#          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
-#          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release (debug)
+        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'debug' }}
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
+          prerelease: True
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.release_type.outputs.VERSION }}-${{ github.run_number }}
+          body: |
+            This is a debug build to help with development.
+
+      - name: Release (beta)
+        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'beta' }}
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
+          prerelease: True
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release (beta)
+        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'release' }}
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
+          token: ${{ secrets.GITHUB_TOKEN }}
