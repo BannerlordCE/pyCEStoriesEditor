@@ -22,13 +22,14 @@ jobs:
         run: |
           REF="${GITHUB_REF##*/}"
           if [[ $REF =~ "v"([0-9]\.)+[0-9]"-beta" ]]; then
-            echo ::set-output name=RELEASE_TYPE::beta
+            echo "RELEASE_TYPE=beta" >> $GITHUB_OUTPUT
           elif [[ $REF =~ "v"([0-9]\.)+[0-9]$ ]]; then
-            echo ::set-output name=RELEASE_TYPE::release
+            echo "RELEASE_TYPE=release" >> $GITHUB_OUTPUT
           elif [[ $ref =~ "debug"("-".*)? ]]; then
-            echo ::set-output name=RELEASE_TYPE::debug
+            echo "RELEASE_TYPE=debug" >> $GITHUB_OUTPUT
           fi
-          echo ::set-output name=VERSION::$REF
+          echo "VERSION=$REF" >> $GITHUB_OUTPUT
+          echo $REF
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
@@ -57,6 +58,36 @@ jobs:
       - name: Build
         run: |
           poetry run python setup.py build
+
       - name: Packaging
         run: |
           ls build
+          ls build/exe.win-amd64-3.11
+          cd build/exe.win-amd64-3.11
+          7z a ../../pyCeStoriesViewer-win64-${GITHUB_REF##*/}.7z .
+
+#      - name: Release (debug)
+#        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'debug' }}
+#        uses: ncipollo/release-action@v1.12.0
+#        with:
+#          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
+#          prerelease: True
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          tag: ${{ steps.release_type.outputs.VERSION }}-${{ github.run_number }}
+#          body: |
+#            This is a debug build to help with development.
+#
+#      - name: Release (beta)
+#        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'beta' }}
+#        uses: ncipollo/release-action@v1.12.0
+#        with:
+#          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
+#          prerelease: True
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Release (beta)
+#        if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'release' }}
+#        uses: ncipollo/release-action@v1.12.0
+#        with:
+#          artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
+#          token: ${{ secrets.GITHUB_TOKEN }}
