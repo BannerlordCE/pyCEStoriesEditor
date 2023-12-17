@@ -83,7 +83,7 @@ jobs:
           prerelease: True
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Release (beta)
+      - name: Release (stable)
         if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'release' }}
         uses: ncipollo/release-action@v1.12.0
         with:
