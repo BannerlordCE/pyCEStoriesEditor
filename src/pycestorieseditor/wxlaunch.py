@@ -86,7 +86,16 @@ class CeSettingsWindow(wx.Frame):
         self._noticetxt = wxst.GenStaticText(panel, wx.ID_ANY, label="Lorem ipsum dolor sit amet")
         self._noticetxt.SetForegroundColour((0, 255, 0))
         self._noticetxt.Hide()
+
         self._flist = CeListBox(window, wx.ID_ANY)
+        moduleinfo = wx.StaticText(
+            window,
+            wx.ID_ANY,
+            "The order in which the modules are added determine the order\n"
+            "duplicate events are overriden. The last most module takes\n"
+            "precedence.",
+            (20, 100),
+        )
         buttonadd = wx.Button(window, wx.ID_ANY, "+", (50, 50))
         buttonrem = wx.Button(window, wx.ID_ANY, "-", (50, 50))
         buttonclr = wx.Button(window, wx.ID_ANY, "CLR", (50, 50))
@@ -107,6 +116,10 @@ class CeSettingsWindow(wx.Frame):
         addremovesizer.Add(buttonclr, 0, wx.ALL, 5)
         addremovesizer.Add(buttonup, 0, wx.ALL, 5)
         addremovesizer.Add(buttondw, 0, wx.ALL, 5)
+
+        fsizer.Add((20, 20), 0, wx.LEFT, 5)
+        fsizer.Add(moduleinfo, 0, wx.ALL | wx.EXPAND, 5)
+        fsizer.Add((20, 20), 0, wx.RIGHT, 5)
         fsizer.Add(wx.StaticText(window, wx.ID_ANY, label="CE Modules"), 0, wx.LEFT, 5)
         fsizer.Add(self._flist, 1, wx.ALL | wx.EXPAND, 3)
         fsizer.Add(addremovesizer, 0, wx.RIGHT, 5)
@@ -171,6 +184,7 @@ class CeSettingsWindow(wx.Frame):
                 self._show_warning("The selected file isn't a valid Xml Schema Document.")
                 return
             self.xsdentry.SetValue(pathname)
+            self.xsdentry.SetToolTip(pathname)
 
     def _button_add_folder_pressed(self, evt):
         # FIXME wxpython doesn't support wx.DD_MULTIPLE just yet
@@ -240,6 +254,8 @@ class CeSettingsWindow(wx.Frame):
             errs += err
         if errs > 0:
             self._show_warning(f"{errs} xml files couldn't be validated, please check the logs.")
+        else:
+            self._show_notice("All modules successfully validated.")
 
     def _button_save_pressed(self, evt):
         if not self._paths or not self.xsdentry.GetValue():
@@ -270,6 +286,7 @@ class CeSettingsWindow(wx.Frame):
             self._paths[p.name] = p
             self._flist.InsertItem(CeListPathItem(p))
         self.xsdentry.SetValue(conf.Read("CE_XSDFILE"))
+        self.xsdentry.SetToolTip(conf.Read("CE_XSDFILE"))
         init_xsdfile(conf.Read("CE_XSDFILE"))
 
     def _on_mouse_event(self, evt: wx.MouseEvent):
