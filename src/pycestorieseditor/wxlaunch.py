@@ -8,6 +8,7 @@ from itertools import count
 
 import wx
 import wx.lib.stattext as wxst
+from wx.lib.agw.multidirdialog import MultiDirDialog
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from wx.lib.scrolledpanel import ScrolledPanel
 
@@ -68,7 +69,7 @@ class CeSettingsWindow(wx.Frame):
             style=wx.DEFAULT_FRAME_STYLE,
         )
 
-        self._paths: dict[str, CePath] = OrderedDict()
+        self._paths: dict[str, CePath] = {}
         self._conffile = conffile
 
         panel = wx.Panel(self)
@@ -97,8 +98,11 @@ class CeSettingsWindow(wx.Frame):
             (20, 100),
         )
         buttonadd = wx.Button(window, wx.ID_ANY, "+", (50, 50))
+        buttonadd.SetToolTip("Add a module to the list")
         buttonrem = wx.Button(window, wx.ID_ANY, "-", (50, 50))
+        buttonrem.SetToolTip("Remove a module from the list")
         buttonclr = wx.Button(window, wx.ID_ANY, "CLR", (50, 50))
+        buttonclr.SetToolTip("Clear the list of any entry")
         self.bup = buttonup = wx.Button(window, wx.ID_ANY, "↑", (50, 50))
         self.bdw = buttondw = wx.Button(window, wx.ID_ANY, "↓", (50, 50))
         btnvalidate = wx.Button(window, wx.ID_ANY, "Validate", (50, 50))
@@ -187,16 +191,21 @@ class CeSettingsWindow(wx.Frame):
             self.xsdentry.SetToolTip(pathname)
 
     def _button_add_folder_pressed(self, evt):
-        # FIXME wxpython doesn't support wx.DD_MULTIPLE just yet
-        dlg = wx.DirDialog(
-            self, "Choose a directory:", style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST
+        # FIXME wxpython wx.DirDialog doesn't support wx.DD_MULTIPLE just yet
+        #  Must use inferior MultiDirDialog instead. Shows non-native UI.
+        dlg = MultiDirDialog(
+            self,
+            message="Chose one or more folder, they must be CEEvent story submodules.",
+            agwStyle=wx.DD_MULTIPLE | wx.DD_DIR_MUST_EXIST,
         )
 
         if dlg.ShowModal() == wx.ID_OK:
             try:
-                path = CePath(dlg.GetPath())
-                self._paths[path.name] = path
-                self._flist.InsertItem(CeListPathItem(path))
+                paths = dlg.GetPaths()
+                for path in paths:
+                    path = CePath(path)
+                    self._paths[path.name] = path
+                    self._flist.InsertItem(CeListPathItem(path))
             except (NotBannerLordModule, NotCeSubmodule):
                 self._show_warning("The selected folder isn't a valid path.")
 
@@ -220,8 +229,7 @@ class CeSettingsWindow(wx.Frame):
 
     def _button_clr_folder_pressed(self, evt):
         self._flist.reset()
-        for path in self._paths.values():
-            self._flist.InsertItem(CeListPathItem(path))
+        self._paths = {}
         return True
 
     def _button_move_folder_pressed(self, evt):
@@ -234,16 +242,19 @@ class CeSettingsWindow(wx.Frame):
             txt = self._flist.GetItem(index).GetText()
             index = self._flist.GetNextSelected(index)
         paths = self._paths.copy()
-        names = list(paths.keys())
+        names: list = list(paths.keys())
         idx = names.index(txt)
         if obj is self.bup:
             names[idx], names[idx - 1] = names[idx - 1], names[idx]
         elif obj is self.bdw:
             names[idx], names[idx + 1] = names[idx + 1], names[idx]
-        self._paths = OrderedDict(zip(names, (paths[x] for x in names)))
+        self._paths = dict(zip(names, (paths[x] for x in names)))
         self._flist.reset()
         for path in self._paths.values():
             self._flist.InsertItem(CeListPathItem(path))
+        # Reselect item
+        idx = self._flist.FindItem(-1, txt)
+        self._flist.Select(idx)
 
     def _button_validate_pressed(self, evt):
         create_ebucket()
