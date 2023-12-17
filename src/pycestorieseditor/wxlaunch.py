@@ -3,7 +3,6 @@
 # © 2023 bicobus <bicobus@keemail.me>
 import logging
 import os
-from collections import OrderedDict
 from itertools import count
 
 import wx
@@ -21,6 +20,7 @@ from pycestorieseditor.ceevents import (
     NotCeSubmodule,
     CePath,
     init_index,
+    get_xsdfile,
 )
 from pycestorieseditor.config import get_config
 from pycestorieseditor.wxui import MainWindow
@@ -257,6 +257,9 @@ class CeSettingsWindow(wx.Frame):
         self._flist.Select(idx)
 
     def _button_validate_pressed(self, evt):
+        if not get_xsdfile():
+            self._show_warning("Please select a valid XSD file before validating.")
+            return
         create_ebucket()
         init_index()
         errs = 0
