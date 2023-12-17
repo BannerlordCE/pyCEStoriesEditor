@@ -3,6 +3,8 @@
 # © 2023 bicobus <bicobus@keemail.me>
 
 import argparse
+import multiprocessing
+import sys
 
 from pycestorieseditor.wxlaunch import launch
 
@@ -20,4 +22,6 @@ def main():
 
 
 if __name__ == '__main__':
+    if getattr(sys, "frozen", False):
+        multiprocessing.freeze_support()
     main()
