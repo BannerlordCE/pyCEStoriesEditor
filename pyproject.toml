@@ -3,13 +3,6 @@ name = "pyCeStoriesEditor"
 version = "0.1"
 description = "Small stories visualizer for the Bannerlord mod Captivity Events."
 
-[tool.distutils.build_exe]
-excludes = [
-  "tkinter", "gi", "gtk", "PyQt4", "PyQt5", "PyQt6",
-  "PySide2", "PySide6", "shiboken2", "shiboken6", "lib2to3"
-]
-packages = ["xsdata_attrs.hooks"]
-
 [tool.poetry]
 name = "pycestorieseditor"
 version = "0.1.0"
