@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import re
+from collections import namedtuple
 from contextlib import suppress
 from dataclasses import dataclass
 from functools import lru_cache
@@ -20,18 +21,36 @@ from pygments import token
 from pygments.styles import get_style_by_name
 from wx import stc
 from wx.lib import expando
+from wx.lib import buttons
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 
 from pycestorieseditor import APPNAME
 from pycestorieseditor.ceevents import (
-    get_ebucket, Ceevent, init_xsdfile, process_module, CePath, create_ebucket,
-    scan_for_images, create_imgbucket, get_imgbucket, init_index, get_indexes,
+    get_ebucket,
+    Ceevent,
+    init_xsdfile,
+    process_module,
+    CePath,
+    create_ebucket,
+    scan_for_images,
+    create_imgbucket,
+    get_imgbucket,
+    init_index,
+    get_indexes,
 )
 from pycestorieseditor.ceevents_template import (
-    RestrictedListOfFlagsType, Options, Option,
-    RestrictedListOfConsequencesValue, ceevents_modal, MenuOption, MenuOptions,
+    RestrictedListOfFlagsType,
+    Options,
+    Option,
+    RestrictedListOfConsequencesValue,
+    ceevents_modal,
+    MenuOption,
+    MenuOptions,
 )
-from pycestorieseditor.pil2wx import hex2rgb, create_icon, pil2wximage, wximage2bitmap
+from pycestorieseditor.pil2wx import (
+    hex2rgb,
+    wxicon,
+)
 
 style = get_style_by_name("default")
 
@@ -1332,10 +1351,20 @@ class Legend(wx.BoxSizer):
         super().__init__(*args, **kwargs)
         self._text = text
         self._color = color
-        img = wx.StaticBitmap(parent, wx.ID_ANY, wximage2bitmap(pil2wximage(create_icon(color))))
+        img = wx.StaticBitmap(parent, wx.ID_ANY, wxicon(color))
         label = wx.StaticText(parent, wx.ID_ANY, label=text)
         self.Add(img, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         self.Add(label, 0, wx.EXPAND, 0)
+
+
+class SearchIndice(wx.BoxSizer):
+    def __init__(self, parent, term, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.term = term
+        self.text = f"{term[0]: {term[1]}}" if term[0] else f"{term[2]}"
+        bmp = wx.ArtProvider.GetBitmap(wx.ART_CLOSE, wx.ART_OTHER, (16, 16))
+        self.b = buttons.ThemedGenBitmapTextButton(parent, wx.ID_ANY, bmp, self.text)
+        self.Add(self.b, 0, wx.EXPAND, 0)
 
 
 class CeListItem(wx.ListItem):
@@ -1386,6 +1415,7 @@ def _filter_skillid(skill, stack: list[Ceevent]):
 
 
 search = re.compile(r"""(?:(?P<tag>text|skill):"(?P<value>[^"]+)")+|(\w+)""")
+indice = namedtuple("indice", "iid term button")
 
 
 class MainWindow(wx.Frame):
@@ -1394,6 +1424,8 @@ class MainWindow(wx.Frame):
         super().__init__(None, wx.ID_ANY, *args, title="CE Events Visualizer", **kwds)
         self._conffile = conffile
         self._load_conf()
+
+        self._indices: list[indice] = []
 
         self.Center()
         self.SetSizeHints(800, 400, 800, 600)
@@ -1414,11 +1446,15 @@ class MainWindow(wx.Frame):
         )
         self.panel_search = wx.Panel(self.window_1_pane_1, wx.ID_ANY, style=wx.BORDER_SIMPLE)
         self.panel_search.SetMinSize((240, -1))
+        self.panel_search_indices = wx.StaticBox(
+            self.window_1_pane_1, wx.ID_ANY, "Search indices"
+        )
 
         topsizer = wx.BoxSizer(wx.VERTICAL)
-        leftsizer = wx.BoxSizer(wx.VERTICAL)
+        self.leftsizer = wx.BoxSizer(wx.VERTICAL)
         legendsizer = wx.WrapSizer(wx.HORIZONTAL)
         searchsizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.indicessizer = wx.WrapSizer(wx.HORIZONTAL)
         rightsizer = wx.BoxSizer(wx.VERTICAL)
 
         # - Legend ---
@@ -1450,21 +1486,27 @@ class MainWindow(wx.Frame):
         self.celb = CeListBox(self.window_1_pane_2, wx.ID_ANY, cb=self.cb_toggle_enable)
 
         topsizer.Add(self.window_1, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
-        leftsizer.Add(self.panel_leg, 2, wx.EXPAND | wx.ALL, 5)
+
+        self.leftsizer.Add(self.panel_leg, 2, wx.EXPAND | wx.ALL, 5)
         legendsizer.Add(lg_one, 0, wx.EXPAND | wx.LEFT, 5)
         legendsizer.Add(lg_two, 0, wx.EXPAND | wx.LEFT, 5)
-        leftsizer.Add(self.panel_search, 0, wx.EXPAND | wx.ALL, 0)
+
+        self.leftsizer.Add(self.panel_search_indices, 1, wx.EXPAND | wx.ALL, 5)
+
+        self.leftsizer.Add(self.panel_search, 0, wx.EXPAND | wx.ALL, 0)
         searchsizer.Add(searchlbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         searchsizer.Add(
             self.searchent, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL | wx.FIXED_MINSIZE, 0
         )
         searchsizer.Add(searchbnt, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 1)
+
         rightsizer.Add(self.celb, 1, wx.EXPAND, 0)
 
         self.window_1_pane_2.SetSizer(rightsizer)
         self.panel_search.SetSizer(searchsizer)
+        self.panel_search_indices.SetSizer(self.indicessizer)
         self.panel_leg.SetSizer(legendsizer)
-        self.window_1_pane_1.SetSizer(leftsizer)
+        self.window_1_pane_1.SetSizer(self.leftsizer)
         self.window_1.SplitVertically(self.window_1_pane_1, self.window_1_pane_2, 200)
         self.panel_1.SetSizer(topsizer)
 
@@ -1473,6 +1515,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.celb.on_clicked_event, self.celb)
         self.Bind(wx.EVT_BUTTON, self.on_reset_event, searchbnt)
         self.Bind(wx.EVT_TEXT, self.on_text_event, self.searchent)
+        self.Bind(wx.EVT_SEARCH, self.on_text_enter_event, self.searchent)
         self.Bind(wx.EVT_SEARCH_CANCEL, self.on_reset_event, self.searchent)
 
     def cb_toggle_enable(self):
@@ -1502,36 +1545,69 @@ class MainWindow(wx.Frame):
     def on_reset_event(self, event):
         if event.EventType != wx.EVT_SEARCH_CANCEL.typeId:  # not EVT_BUTTON
             self.searchent.SetValue("")
+        for item in self.indicessizer.GetChildren():
+            widget = item.Sizer
+            self.indicessizer.Hide(widget)
+            self.indicessizer.Remove(widget)
+            self._indices = []
         self.celb.populate()
         event.Skip()
+
+    def build_constraints_and_populate(self, with_search_value=True):
+        filterstr = []
+        constraints = []
+        if with_search_value:
+            indices = chain(self._indices, search.findall(self.searchent.Value))
+        else:
+            indices = self._indices
+        for ind in indices:
+            match ind.term if isinstance(ind, indice) else ind:
+                case ("text", value, ""):
+                    constraints.append((_filter_text, value))
+                case ("skill", value, ""):
+                    constraints.append((_filter_skillid, value))
+                case ("", "", value):
+                    filterstr.append(value)
+
+        ebucket = get_ebucket()
+        items = ebucket.values()
+        if constraints:
+            for c, value in constraints:
+                items = c(value, items)
+        if filterstr:
+            for string in filterstr:
+                items = list(filter(lambda x: string in x.name.value, items))
+
+        self.celb.populate(list(items))
+
+    def on_remove_indice(self, event):
+        i: indice = list(filter(lambda x: event.EventObject is x.button, self._indices))[0]
+        for j, item in enumerate(self.indicessizer.GetChildren()):
+            if item is i.iid:
+                widget = item.Sizer
+                self.indicessizer.Hide(widget)
+                self.indicessizer.Remove(widget)
+                self._indices.pop(self._indices.index(i))
+        self.searchent.SetFocus()
+        self.leftsizer.Layout()
+        self.panel_search_indices.FitInside()
+        self.build_constraints_and_populate(with_search_value=False)
+
+    def on_text_enter_event(self, event):
+        for term in search.findall(self.searchent.Value):
+            lbl = SearchIndice(self.panel_search_indices, term)
+            iid = self.indicessizer.Add(lbl, 0, wx.EXPAND | wx.LEFT, 5)
+            self.Bind(wx.EVT_BUTTON, self.on_remove_indice, lbl.b)
+            self._indices.append(indice(iid, lbl.term, lbl.b))
+        self.leftsizer.Layout()
+        self.panel_search_indices.FitInside()
+        self.searchent.Clear()
+        self.searchent.SetFocus()
 
     def on_text_event(self, event):
         if self.searchent.IsEmpty() or len(self.searchent.Value) < 3:
             event.Skip()
             return
 
-        names = []
-        constraints = []
-        for term in search.findall(self.searchent.Value):
-            match term:
-                case ("text", value, ""):
-                    constraints.append((_filter_text, value))
-                case ("skill", value, ""):
-                    constraints.append((_filter_skillid, value))
-                case ("", "", value):
-                    names.append(value)
-
-        filterstr = " ".join(names)
-        ebucket = get_ebucket()
-        if filterstr:
-            items = filter(lambda x: filterstr in x.name.value, ebucket.values())
-        else:
-            if not constraints:
-                event.Skip()
-                return
-            items = ebucket.values()
-        for c, value in constraints:
-            items = c(value, items)
-
-        self.celb.populate(list(items))
+        self.build_constraints_and_populate()
         event.Skip()

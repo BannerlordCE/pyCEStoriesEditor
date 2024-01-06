@@ -14,7 +14,16 @@ def create_icon(color=None):
         color = "#2ecc71"
     img = Image.new('RGBA', (16, 16))
     draw = ImageDraw.Draw(img)
-    draw.rectangle([(1, 1), (14, 14)], fill=color, outline="black")
+    draw.rectangle(((1, 1), (14, 14)), fill=color, outline="black")
+    return img
+
+
+def pil_create_x():
+    img = Image.new('RGBA', (16, 16))
+    draw = ImageDraw.Draw(img)
+    draw.ellipse((1, 1, 15, 15), fill="#ECECEC", outline="#8C8C8C")
+    draw.line((4, 4, 11, 11), width=2, fill="black")
+    draw.line((12, 4, 4, 12), fill="black")
     return img
 
 
@@ -23,12 +32,12 @@ def default_background():
     img = Image.new('RGBA', (445, 805))
     draw = ImageDraw.Draw(img)
 
-    draw.rectangle([(0, 0), (445, 805)], fill="#ECECEC")
+    draw.rectangle(((0, 0), (445, 805)), fill="#ECECEC")
 
     for x, y in matrice:
         draw.line([(-10, x), (y, -10)], fill="#8C8C8C", width=10)
 
-    draw.rectangle([(0, 0), (444, 804)], fill=None, outline="black")
+    draw.rectangle(((0, 0), (444, 804)), fill=None, outline="black")
     return wximage2bitmap(pil2wximage(img))
 
 
@@ -46,3 +55,11 @@ def pil2wximage(img: Image.Image):
 
 def wximage2bitmap(img):
     return img.ConvertToBitmap()
+
+
+def wxicon(color=None):
+    return wximage2bitmap(pil2wximage(create_icon(color)))
+
+
+def wxcloseicon():
+    return wximage2bitmap(pil2wximage(pil_create_x()))
