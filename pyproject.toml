@@ -31,7 +31,7 @@ platformdirs = "^3.10.0"
 setuptools = "*"
 wheel = "*"
 pip = "*"
-cx-freeze = "^6.15.11"
+cx-freeze = "^6.15"
 
 [build-system]
 requires = ["poetry-core"]
