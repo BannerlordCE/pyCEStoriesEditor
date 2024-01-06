@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Licensed under the EUPL v1.2
-# © 2023 bicobus <bicobus@keemail.me>
+# © 2024 bicobus <bicobus@keemail.me>
 from __future__ import annotations
 
 import logging
@@ -15,5 +15,8 @@ APPNAME = "pyCeStoriesViewer"
 
 logging.basicConfig(
     level=logging.INFO,  # DEBUG,
+    handlers=[
+        logging.FileHandler(filename=os.path.join(os.getcwd(), "pce.log"), mode="w")
+    ],
 )
 logger = logging.getLogger(__name__)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Licensed under the EUPL v1.2
-# © 2023 bicobus <bicobus@keemail.me>
+# © 2024 bicobus <bicobus@keemail.me>
 #
 # to xml:
 #   from xml.etree import ElementTree
