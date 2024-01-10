@@ -1361,7 +1361,7 @@ class SearchIndice(wx.BoxSizer):
     def __init__(self, parent, term, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.term = term
-        self.text = f"{term[0]: {term[1]}}" if term[0] else f"{term[2]}"
+        self.text = f"{term[0]}: {term[1]}" if term[0] else f"{term[2]}"
         bmp = wx.ArtProvider.GetBitmap(wx.ART_CLOSE, wx.ART_OTHER, (16, 16))
         self.b = buttons.ThemedGenBitmapTextButton(parent, wx.ID_ANY, bmp, self.text)
         self.Add(self.b, 0, wx.EXPAND, 0)
