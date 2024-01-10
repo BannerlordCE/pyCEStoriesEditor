@@ -260,11 +260,21 @@ class CeSettingsWindow(wx.Frame):
         if not get_xsdfile():
             self._show_warning("Please select a valid XSD file before validating.")
             return
+
+        dialog = wx.ProgressDialog(
+            "Validation", "Validating xml files...", maximum=100, style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME | wx.PD_SMOOTH
+        )
+
+        def pulse():
+            wx.Yield()
+            dialog.Pulse()
+
         create_ebucket()
         init_index()
         errs = 0
         for module in self._paths.values():
-            err = process_module([str(f) for f in module.events_files])
+            dialog.Pulse("Processing module... {}".format(module.name))
+            err = process_module([str(f) for f in module.events_files], pulse)
             errs += err
         if errs > 0:
             self._show_warning(f"{errs} xml files couldn't be validated, please check the logs.")

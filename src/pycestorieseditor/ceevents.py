@@ -215,7 +215,7 @@ def filter_ceevent(ceevent: Ceevent, ceeventname):
         yield name, cname
 
 
-def process_module(xmlfiles: list):
+def process_module(xmlfiles: list, cb=None):
     """Process the various xml files present in a given module
 
     Args:
@@ -227,26 +227,32 @@ def process_module(xmlfiles: list):
     xsd = get_xsdfile()
 
     # Pool(processes) uses os.cpu_count() if none value is provided
-    with multiprocessing.Pool() as pool:
-        res = pool.starmap(
-            process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=4
-        )
-
     errcount = 0
-    for bucket, skills, errs in res:
-        errcount += errs
-        for ceevent in bucket:
-            if ceevent.name.value in ebucket.keys():
-                logger.warning(
-                    "Override of '%s' already present in bucket. (trigger: %s)",
-                    ceevent.name.value,
-                    ceevent.xmlfile,
-                )
-            ebucket[ceevent.name.value] = ceevent
-        for skill, eventname in skills:
-            for s in skill:
-                indexes['skills'].setdefault(s, [])
-                indexes['skills'][s].append(eventname)
+    with multiprocessing.Pool() as pool:
+        chunks = 1
+        if os.cpu_count() < len(xmlfiles):
+            chunks = int(len(xmlfiles) / os.cpu_count()) + 1
+        res = pool.starmap_async(
+            process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=chunks
+        )
+        for bucket, skills, errs in res.get():
+            errcount += errs
+            for ceevent in bucket:
+                if cb:
+                    cb()
+                if ceevent.name.value in ebucket.keys():
+                    logger.warning(
+                        "Override of '%s' already present in bucket. (trigger: %s)",
+                        ceevent.name.value,
+                        ceevent.xmlfile,
+                    )
+                ebucket[ceevent.name.value] = ceevent
+            for skill, eventname in skills:
+                if cb:
+                    cb()
+                for s in skill:
+                    indexes['skills'].setdefault(s, [])
+                    indexes['skills'][s].append(eventname)
 
     return errcount
 
