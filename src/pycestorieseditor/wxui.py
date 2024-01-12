@@ -23,6 +23,7 @@ from wx import stc
 from wx.lib import expando
 from wx.lib import buttons
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
+import wx.lib.stattext as wxst
 
 from pycestorieseditor import APPNAME
 from pycestorieseditor.ceevents import (
@@ -37,6 +38,8 @@ from pycestorieseditor.ceevents import (
     get_imgbucket,
     init_index,
     get_indexes,
+    init_bigbadxml,
+    get_bigbadxml,
 )
 from pycestorieseditor.ceevents_template import (
     RestrictedListOfFlagsType,
@@ -148,7 +151,6 @@ def pygment2scite(styles):
 
 def wx_label_text(parent, sizer, label: str, text: str, multiline=None):
     if not text:
-        text = ""
         return
     lbl = wx.StaticText(parent, wx.ID_ANY, label=label)
 
@@ -702,7 +704,8 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
         fsizer = wx.FlexGridSizer(2, gap=(5, 5))
 
         wx_label_text(self, fsizer, label="Event Name", text=ceevent.name.value)
-        wx_label_text(self, fsizer, label="Text", text=ceevent.text.value, multiline=True)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="Text", text=ceevent.text.value, multiline=True)
         wx_label_text(self, fsizer, label="Order to Call", text=ceevent.order_to_call)
 
         with suppress(AttributeError):
@@ -1345,6 +1348,27 @@ class PreviewEvent(wx.Panel):
         dc.DrawBitmap(self.get_bitmap(self.background_img), 0, 0)
 
 
+class BadXmlDetails(wx.Frame):
+    def __init__(self, parent, data, *args, **kwargs):
+        kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        super().__init__(parent, title="PCE: Troubleshooting", *args, **kwargs)
+        panel = wx_scrolled.ScrolledPanel(self, wx.ID_ANY)
+        panel.SetMinSize((800, -1))
+        self.SetSize((800, 600))
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        for k, v in data.bad_xml:
+            wtext = expando.ExpandoTextCtrl(
+                panel,
+                wx.ID_ANY,
+                value="File:\n\t{}\nMsg:\n\t{}".format(k, v),
+                style=wx.TE_WORDWRAP | wx.TE_READONLY,
+            )
+            sizer.Add(wtext, 0, wx.EXPAND | wx.ALL, 5)
+        panel.SetSizerAndFit(sizer)
+        panel.SetupScrolling()
+        self.Layout()
+
+
 # - Main Window ---
 class Legend(wx.BoxSizer):
     def __init__(self, parent, text, color, *args, **kwargs):
@@ -1424,6 +1448,7 @@ class MainWindow(wx.Frame):
         super().__init__(None, wx.ID_ANY, *args, title="CE Events Visualizer", **kwds)
         self._conffile = conffile
         self._load_conf()
+        bbx = get_bigbadxml()
 
         self._indices: list[indice] = []
 
@@ -1438,6 +1463,14 @@ class MainWindow(wx.Frame):
 
         self.window_1.SetMinimumPaneSize(20)
         self.window_1.SetSashGravity(0.5)
+
+        self._warningtxt = wxst.GenStaticText(self.panel_1, wx.ID_ANY, label="")
+        self._warningtxt.SetForegroundColour((255, 0, 0))
+        if bxa := bbx.amount():
+            self._warningtxt.SetLabel(f"{bxa} xml file{'s'[:bxa ^ 1]} failed validation.")
+        else:
+            self._warningtxt.Hide()
+
         # Legend panel
         self.panel_leg = wx.StaticBox(
             self.window_1_pane_1,
@@ -1485,6 +1518,7 @@ class MainWindow(wx.Frame):
 
         self.celb = CeListBox(self.window_1_pane_2, wx.ID_ANY, cb=self.cb_toggle_enable)
 
+        topsizer.Add(self._warningtxt, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.LEFT | wx.RIGHT, 3)
         topsizer.Add(self.window_1, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         self.leftsizer.Add(self.panel_leg, 2, wx.EXPAND | wx.ALL, 5)
@@ -1517,6 +1551,9 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_TEXT, self.on_text_event, self.searchent)
         self.Bind(wx.EVT_SEARCH, self.on_text_enter_event, self.searchent)
         self.Bind(wx.EVT_SEARCH_CANCEL, self.on_reset_event, self.searchent)
+        self._warningtxt.Bind(wx.EVT_ENTER_WINDOW, self._on_mouse_event, self._warningtxt)
+        self._warningtxt.Bind(wx.EVT_LEAVE_WINDOW, self._on_mouse_event, self._warningtxt)
+        self._warningtxt.Bind(wx.EVT_LEFT_DOWN, self._on_mouse_event, self._warningtxt)
 
     def cb_toggle_enable(self):
         if self.IsEnabled():
@@ -1540,6 +1577,7 @@ class MainWindow(wx.Frame):
             xmlfiles.extend(p.events_files)
             scan_for_images(str(p))
         init_xsdfile(conf.Read("CE_XSDFILE"))
+        init_bigbadxml()
         process_module(xmlfiles)
 
     def on_reset_event(self, event):
@@ -1611,3 +1649,14 @@ class MainWindow(wx.Frame):
 
         self.build_constraints_and_populate()
         event.Skip()
+
+    def _on_mouse_event(self, evt):
+        obj: wxst.GenStaticText = evt.GetEventObject()
+        match obj, evt.Entering(), evt.Leaving():
+            case self._warningtxt, True, False:
+                obj.SetForegroundColour((200, 0, 0))
+            case self._warningtxt, False, True:
+                obj.SetForegroundColour((255, 0, 0))
+            case _:
+                x = BadXmlDetails(self, get_bigbadxml())
+                x.Show()

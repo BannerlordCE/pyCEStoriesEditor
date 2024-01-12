@@ -21,6 +21,7 @@ from pycestorieseditor.ceevents import (
     CePath,
     init_index,
     get_xsdfile,
+    init_bigbadxml,
 )
 from pycestorieseditor.config import get_config
 from pycestorieseditor.wxui import MainWindow
@@ -262,7 +263,10 @@ class CeSettingsWindow(wx.Frame):
             return
 
         dialog = wx.ProgressDialog(
-            "Validation", "Validating xml files...", maximum=100, style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME | wx.PD_SMOOTH
+            "Validation",
+            "Validating xml files...",
+            maximum=100,
+            style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME | wx.PD_SMOOTH,
         )
 
         def pulse():
@@ -271,6 +275,7 @@ class CeSettingsWindow(wx.Frame):
 
         create_ebucket()
         init_index()
+        init_bigbadxml()
         errs = 0
         for module in self._paths.values():
             dialog.Pulse("Processing module... {}".format(module.name))

@@ -98,7 +98,7 @@ class ChildNotFound(Exception):
 
 @lru_cache
 def cpackage(size):
-    return int(size / os.cpu_count()) - 1
+    return int(size / os.cpu_count()) + 1
 
 
 def find_by_name(name: str):
@@ -215,11 +215,47 @@ def filter_ceevent(ceevent: Ceevent, ceeventname):
         yield name, cname
 
 
+class BigBagXml:
+    def __init__(self):
+        self._bad_xml = []
+
+    def add_bad_xmlfile(self, xmlfile, msg):
+        self._bad_xml.append((xmlfile, msg))
+
+    def to_dict(self):
+        return dict(zip(*zip(*self._bad_xml)))
+
+    @property
+    def bad_xml(self):
+        return self._bad_xml
+
+    def has_badxml(self):
+        return False if not self._bad_xml else True
+
+    def amount(self):
+        return len(self._bad_xml)
+
+
+def init_bigbadxml():
+    global big_bad_xml
+    big_bad_xml = BigBagXml()
+    return big_bad_xml
+
+
+def get_bigbadxml():
+    global big_bad_xml
+    return big_bad_xml
+
+
+big_bad_xml: BigBagXml | None = None
+
+
 def process_module(xmlfiles: list, cb=None):
     """Process the various xml files present in a given module
 
     Args:
         xmlfiles (list): list of paths leading to xml files
+        cb: callback function
     """
     global ebucket, indexes
 
@@ -229,14 +265,17 @@ def process_module(xmlfiles: list, cb=None):
     # Pool(processes) uses os.cpu_count() if none value is provided
     errcount = 0
     with multiprocessing.Pool() as pool:
-        chunks = 1
-        if os.cpu_count() < len(xmlfiles):
-            chunks = int(len(xmlfiles) / os.cpu_count()) + 1
+        chunks = cpackage(len(xmlfiles))
+        logger.info("Multiprocessing using %s chunks.", chunks)
         res = pool.starmap_async(
             process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=chunks
         )
         for bucket, skills, errs in res.get():
-            errcount += errs
+            if errs:
+                errcount += 1
+                bbx = get_bigbadxml()
+                bbx.add_bad_xmlfile(errs[0], errs[1])
+                continue
             for ceevent in bucket:
                 if cb:
                     cb()
@@ -257,7 +296,7 @@ def process_module(xmlfiles: list, cb=None):
     return errcount
 
 
-def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, int]:
+def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, tuple | bool]:
     x = Path(xmlfile)
     logger.info(f"-start- {x.name}: {time.strftime('%X')}")
     bucket = []
@@ -266,7 +305,7 @@ def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, int]:
     except (xmlschema.validators.exceptions.XMLSchemaChildrenValidationError, xmlParseError) as e:
         msg = e.reason if hasattr(e, 'reason') else e.msg
         logger.error("Invalid xml file: %s. Msg: %s", xmlfile, msg)
-        return [], [], 1
+        return [], [], (xmlfile, msg)
     skills = []
     for event in xsobjects:
         string = event.tostring()
@@ -276,7 +315,7 @@ def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, int]:
         skills = skills + [x for x in filter_ceevent(ceevent, ceevent.name.value)]
         bucket.append(ceevent)
     logger.info(f"-stop- {x.name}: {time.strftime('%X')}")
-    return bucket, skills, 0
+    return bucket, skills, False
 
 
 class NotBannerLordModule(Exception):
