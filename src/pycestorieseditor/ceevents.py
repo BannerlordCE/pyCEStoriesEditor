@@ -277,6 +277,7 @@ def process_module(xmlfiles: list, cb=None):
     with multiprocessing.Pool() as pool:
         chunks = cpackage(len(xmlfiles))
         logger.info("Multiprocessing using %s chunks.", chunks)
+        cb("Analyzing xml files...")
         res = pool.starmap_async(
             process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=chunks
         )
@@ -288,7 +289,7 @@ def process_module(xmlfiles: list, cb=None):
                 continue
             for ceevent in bucket:
                 if cb:
-                    cb()
+                    cb(f"Munching {ceevent.name.value} ...")
                 if ceevent.name.value in ebucket.keys():
                     logger.warning(
                         "Override of '%s' already present in bucket. (trigger: %s)",
@@ -296,6 +297,7 @@ def process_module(xmlfiles: list, cb=None):
                         ceevent.xmlfile,
                     )
                 ebucket[ceevent.name.value] = ceevent
+            cb("Munching skills...")
             for skill, eventname in skills:
                 if cb:
                     cb()

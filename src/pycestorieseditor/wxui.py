@@ -1564,9 +1564,22 @@ class MainWindow(wx.Frame):
             self.Enable(True)
 
     def _load_conf(self):
+        dialog = wx.ProgressDialog(
+            "Validation",
+            "Validating xml files...",
+            maximum=1,
+            style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME | wx.PD_SMOOTH,
+        )
+
+        def pulse(m=None):
+            dialog.Pulse(m or "")
+            wx.MilliSleep(1)
+            wx.Yield()
+
         create_ebucket()
         create_imgbucket()
         init_index()
+        pulse("Reading config file...")
         conf = wx.FileConfig(
             APPNAME, localFilename=str(self._conffile), style=wx.CONFIG_USE_LOCAL_FILE
         )
@@ -1576,11 +1589,16 @@ class MainWindow(wx.Frame):
         xmlfiles = []
         for n in range(path_amount):
             p = CePath(conf.Read("CeModulePath%i" % n))
+            pulse("Populating xmlfiles to parse...")
             xmlfiles.extend(p.events_files)
+            pulse("Populating images for module %s..." % p.name)
             scan_for_images(str(p))
+        pulse("Init xsd file...")
         init_xsdfile(conf.Read("CE_XSDFILE"))
+        pulse("Big Bad XML...")
         init_bigbadxml()
-        process_module(xmlfiles)
+        process_module(xmlfiles, pulse)
+        dialog.Close()
 
     def on_reset_event(self, event):
         if event.EventType != wx.EVT_SEARCH_CANCEL.typeId:  # not EVT_BUTTON

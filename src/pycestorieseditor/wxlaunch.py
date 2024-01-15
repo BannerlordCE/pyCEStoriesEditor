@@ -269,16 +269,17 @@ class CeSettingsWindow(wx.Frame):
             style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME | wx.PD_SMOOTH,
         )
 
-        def pulse():
+        def pulse(m=None):
+            dialog.Pulse(m or "")
+            wx.MilliSleep(1)
             wx.Yield()
-            dialog.Pulse()
 
         create_ebucket()
         init_index()
         init_bigbadxml()
         errs = 0
         for module in self._paths.values():
-            dialog.Pulse("Processing module... {}".format(module.name))
+            pulse("Processing module... {}".format(module.name))
             err = process_module([str(f) for f in module.events_files], pulse)
             errs += err
         if errs > 0:
@@ -363,7 +364,6 @@ class CeStoriesViewer(wx.App):
                 window = MainWindow(conf)
             else:
                 window = CeSettingsWindow(None, conf)
-            # window = CeSettingsWindow(None, conf)
         else:
             raise Exception("Non portable version not written yet.")
 
