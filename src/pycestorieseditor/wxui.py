@@ -40,6 +40,7 @@ from pycestorieseditor.ceevents import (
     get_indexes,
     init_bigbadxml,
     get_bigbadxml,
+    ce_abbr_path,
 )
 from pycestorieseditor.ceevents_template import (
     RestrictedListOfFlagsType,
@@ -149,7 +150,7 @@ def pygment2scite(styles):
             yield scitoken, properties
 
 
-def wx_label_text(parent, sizer, label: str, text: str, multiline=None):
+def wx_label_text(parent, sizer, label: str, text: str, multiline=None, tooltip=None):
     if not text:
         return
     lbl = wx.StaticText(parent, wx.ID_ANY, label=label)
@@ -161,6 +162,9 @@ def wx_label_text(parent, sizer, label: str, text: str, multiline=None):
         wtext.SetMaxHeight(200)
     else:
         wtext = wx.TextCtrl(parent, wx.ID_ANY, value=text, style=wx.TE_READONLY)
+
+    if tooltip:
+        wtext.SetToolTipString(tooltip)
 
     sizer.Add(lbl, 0, wx.LEFT, 5)
     sizer.Add(wtext, 1, wx.ALL | wx.EXPAND, 3)
@@ -1355,15 +1359,13 @@ class BadXmlDetails(wx.Frame):
         panel = wx_scrolled.ScrolledPanel(self, wx.ID_ANY)
         panel.SetMinSize((800, -1))
         self.SetSize((800, 600))
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer = wx.FlexGridSizer(2, (5, 5))
+        sizer.AddGrowableCol(1)
         for k, v in data.bad_xml:
-            wtext = expando.ExpandoTextCtrl(
-                panel,
-                wx.ID_ANY,
-                value="File:\n\t{}\nMsg:\n\t{}".format(k, v),
-                style=wx.TE_WORDWRAP | wx.TE_READONLY,
-            )
-            sizer.Add(wtext, 0, wx.EXPAND | wx.ALL, 5)
+            wx_label_text(panel, sizer, "File:", ce_abbr_path(k), tooltip=k)
+            wx_label_text(panel, sizer, "Error:", v, True)
+            sizer.AddSpacer(10)
+            sizer.AddSpacer(10)
         panel.SetSizerAndFit(sizer)
         panel.SetupScrolling()
         self.Layout()

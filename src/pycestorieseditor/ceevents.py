@@ -215,6 +215,16 @@ def filter_ceevent(ceevent: Ceevent, ceeventname):
         yield name, cname
 
 
+def ce_module_name(path):
+    p = Path(path)
+    return p.parts[-3]
+
+
+def ce_abbr_path(path):
+    p = Path(path)
+    return str(Path(*p.parts[-3:]))
+
+
 class BigBagXml:
     def __init__(self):
         self._bad_xml = []
