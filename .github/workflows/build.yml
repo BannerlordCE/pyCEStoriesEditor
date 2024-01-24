@@ -62,7 +62,6 @@ jobs:
       - name: Packaging
         run: |
           cd build/exe.win-amd64-3.11
-          rm {api,API}-*.dll
           cp ../../LICENSE .
           7z a ../../pyCeStoriesViewer-win64-${GITHUB_REF##*/}.7z .
 
