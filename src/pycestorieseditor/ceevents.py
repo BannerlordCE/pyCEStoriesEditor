@@ -175,7 +175,7 @@ def filter_and_yield_skills(members, ceevent, cname):
             lambda x: x is not None,
             (get_skill_value(ceevent, skillname) for skillname in SKILLNAMES),
         ):
-            yield [x for x in get_skill_text_value(value)], cname
+            yield (x for x in get_skill_text_value(value)), cname
 
 
 def filter_and_yield_from_options(members, ceevent, cname):
@@ -192,9 +192,9 @@ def filter_and_yield_from_options(members, ceevent, cname):
             ):
                 if otree == "menu_options":
                     for skill in value:
-                        yield [x for x in get_skill_text_value(skill)], cname
+                        yield (x for x in get_skill_text_value(skill)), cname
                 else:
-                    yield [x for x in get_skill_text_value(value)], cname
+                    yield (x for x in get_skill_text_value(value)), cname
 
 
 def filter_ceevent(ceevent: Ceevent, ceeventname):
@@ -310,7 +310,7 @@ def process_module(xmlfiles: list, cb=None):
 
 def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, tuple | bool]:
     x = Path(xmlfile)
-    logger.info(f"-start- {x.name}: {time.strftime('%X')}")
+    logger.info("-start- %s: %s", x.name, time.strftime('%X'))
     bucket = []
     try:
         xsobjects = xsd.to_objects(xmlfile)
@@ -324,9 +324,9 @@ def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, tuple | boo
         ceevent: Ceevent = parser.from_string(string, Ceevent)
         ceevent.xmlsource = string
         ceevent.xmlfile = xmlfile
-        skills = skills + [x for x in filter_ceevent(ceevent, ceevent.name.value)]
+        skills = skills + list(filter_ceevent(ceevent, ceevent.name.value))
         bucket.append(ceevent)
-    logger.info(f"-stop- {x.name}: {time.strftime('%X')}")
+    logger.info("-stop- %s: %s", x.name, time.strftime('%X'))
     return bucket, skills, False
 
 
