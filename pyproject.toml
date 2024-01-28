@@ -23,7 +23,7 @@ xsdata-attrs = {extras = ["cli"], version = "^23.8"}
 lxml = "^4.9"
 pygments = "^2.15"
 wxpython = "^4.2"
-pillow = "^9.5"
+pillow = "^10"
 platformdirs = "^3.10.0"
 
 
