@@ -3,6 +3,7 @@
 # © 2024 bicobus <bicobus@keemail.me>
 from __future__ import annotations
 
+import logging
 import os
 import re
 from collections import namedtuple
@@ -56,6 +57,7 @@ from pycestorieseditor.pil2wx import (
     wxicon,
 )
 
+logger = logging.getLogger(__name__)
 style = get_style_by_name("default")
 
 if wx.Platform == '__WXMSW__':
@@ -1372,6 +1374,10 @@ class BadXmlDetails(wx.Frame):
 
 
 # - Main Window ---
+class ModuleProcessingError(Exception):
+    ...
+
+
 class Legend(wx.BoxSizer):
     def __init__(self, parent, text, color, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1597,7 +1603,11 @@ class MainWindow(wx.Frame):
         init_xsdfile(conf.Read("CE_XSDFILE"))
         pulse("Big Bad XML...")
         init_bigbadxml()
-        process_module(xmlfiles, pulse)
+        try:
+            process_module(xmlfiles, pulse)
+        except Exception as e:
+            logger.error(e)
+            raise ModuleProcessingError from e
         dialog.Close()
 
     def on_reset_event(self, event):

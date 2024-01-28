@@ -163,9 +163,11 @@ def get_skill_value(ceevent, skill):
 
 def get_skill_text_value(element):
     if isinstance(element, SkillsRequired):
-        return (skill.id for skill in element.skill_required)
+        return [skill.id for skill in element.skill_required]
     if isinstance(element, SkillsToLevel):
-        return (skill.id for skill in element.skill)
+        return [skill.id for skill in element.skill]
+    if isinstance(element, str):
+        return [element]
     raise Exception("element of type '%s' not handled" % type(element))
 
 
@@ -175,7 +177,7 @@ def filter_and_yield_skills(members, ceevent, cname):
             lambda x: x is not None,
             (get_skill_value(ceevent, skillname) for skillname in SKILLNAMES),
         ):
-            yield (x for x in get_skill_text_value(value)), cname
+            yield get_skill_text_value(value), cname
 
 
 def filter_and_yield_from_options(members, ceevent, cname):
@@ -192,9 +194,9 @@ def filter_and_yield_from_options(members, ceevent, cname):
             ):
                 if otree == "menu_options":
                     for skill in value:
-                        yield (x for x in get_skill_text_value(skill)), cname
+                        yield get_skill_text_value(skill), cname
                 else:
-                    yield (x for x in get_skill_text_value(value)), cname
+                    yield get_skill_text_value(value), cname
 
 
 def filter_ceevent(ceevent: Ceevent, ceeventname):
