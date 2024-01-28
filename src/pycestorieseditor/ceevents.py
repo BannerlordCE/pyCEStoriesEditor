@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import inspect
 import logging
+import logging.handlers
 import multiprocessing
 import os
 import time
@@ -273,6 +274,7 @@ def process_module(xmlfiles: list, cb=None):
 
     parser = XmlParser()
     xsd = get_xsdfile()
+    queue = multiprocessing.Manager().Queue(-1)
 
     # Pool(processes) uses os.cpu_count() if none value is provided
     errcount = 0
@@ -281,7 +283,9 @@ def process_module(xmlfiles: list, cb=None):
         logger.info("Multiprocessing using %s chunks.", chunks)
         cb("Analyzing xml files...")
         res = pool.starmap_async(
-            process_file, ((xmlfile, xsd, parser) for xmlfile in xmlfiles), chunksize=chunks
+            process_file,
+            ((xmlfile, xsd, parser, queue) for xmlfile in xmlfiles),
+            chunksize=chunks,
         )
         for bucket, skills, errs in res.get():
             if errs:
@@ -293,7 +297,10 @@ def process_module(xmlfiles: list, cb=None):
                 if cb:
                     cb(f"Munching {ceevent.name.value} ...")
                 if ceevent.name.value in ebucket.keys():
-                    logger.warning(
+                    qh = logging.handlers.QueueHandler(queue)
+                    mlogger = logging.getLogger(__name__)
+                    mlogger.addHandler(qh)
+                    mlogger.warning(
                         "Override of '%s' already present in bucket. (trigger: %s)",
                         ceevent.name.value,
                         ceevent.xmlfile,
@@ -310,15 +317,19 @@ def process_module(xmlfiles: list, cb=None):
     return errcount
 
 
-def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, tuple | bool]:
+def process_file(xmlfile, xsd, parser, queue) -> tuple[list[Ceevent], list, tuple | bool]:
     x = Path(xmlfile)
-    logger.info("-start- %s: %s", x.name, time.strftime('%X'))
+    qh = logging.handlers.QueueHandler(queue)
+    mlogger = logging.getLogger(__name__)
+    mlogger.addHandler(qh)
+    mlogger.info("-start- %s", x.name)
     bucket = []
     try:
         xsobjects = xsd.to_objects(xmlfile)
     except (xmlschema.validators.exceptions.XMLSchemaChildrenValidationError, xmlParseError) as e:
         msg = e.reason if hasattr(e, 'reason') else e.msg
-        logger.error("Invalid xml file: %s. Msg: %s", xmlfile, msg)
+        mlogger.error("Invalid xml file: %s. Msg: %s", xmlfile, msg)
+        mlogger.info("-stop- %s", x.name)
         return [], [], (xmlfile, msg)
     skills = []
     for event in xsobjects:
@@ -328,7 +339,7 @@ def process_file(xmlfile, xsd, parser) -> tuple[list[Ceevent], list, tuple | boo
         ceevent.xmlfile = xmlfile
         skills = skills + list(filter_ceevent(ceevent, ceevent.name.value))
         bucket.append(ceevent)
-    logger.info("-stop- %s: %s", x.name, time.strftime('%X'))
+    mlogger.info("-stop- %s", x.name)
     return bucket, skills, False
 
 

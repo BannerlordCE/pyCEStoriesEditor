@@ -16,7 +16,9 @@ APPNAME = "pyCeStoriesViewer"
 logging.basicConfig(
     level=logging.INFO,  # DEBUG,
     handlers=[
-        logging.FileHandler(filename=os.path.join(os.getcwd(), "pce.log"), mode="w")
+        logging.FileHandler(filename=os.path.join(os.getcwd(), "pce.log"), mode="w"),
+        # logging.StreamHandler()
     ],
+    format="%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s"
 )
 logger = logging.getLogger(__name__)
