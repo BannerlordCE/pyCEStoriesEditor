@@ -105,7 +105,7 @@ def cpackage(size):
 def find_by_name(name: str):
     global ebucket
     for cevent in ebucket.values():
-        if cevent.name.value == name:
+        if cevent.name == name:
             return cevent
     return None
 

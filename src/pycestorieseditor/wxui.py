@@ -929,7 +929,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
         self._option = option
 
         if not delay_widgets:
-            self.__add_widgets()
+            self._add_widgets()
 
     def get_sizers(self):
         if not self.core:
@@ -1150,8 +1150,8 @@ class DwTabMenuOption(DwTabOption):
 
     def _add_widgets(self):
         core, fsizer = self.get_sizers()
-        wx_label_text(self, fsizer, label="Option text", text=self._option.menu_id)
-        wx_label_text(self, fsizer, label="Option text", text=self._option.option_id)
+        wx_label_text(self, fsizer, label="Menu ID", text=self._option.menu_id)
+        wx_label_text(self, fsizer, label="Option ID", text=self._option.option_id)
         super()._add_widgets()
 
 
@@ -1193,7 +1193,6 @@ class DetailWindow(wx.Frame):
         taboptions, tabmoptions = None, None
         if ceevent.options:
             taboptions = DwTabOptions(nb, ceevent.options)
-        # FIXME: menu options are currently broken, waiting on PR merge to activate
         if ceevent.menu_options:
             tabmoptions = DwTabMenuOptions(nb, ceevent.menu_options)
 
@@ -1237,7 +1236,7 @@ class DetailWindow(wx.Frame):
         self.previewframe.Bind(wx.EVT_CLOSE, self.preview_on_close)
         self.previewframe.SetMinSize(size)
         self.previewframe.SetMaxSize(size)
-        self.previewframe.SetTitle(ceevent.name.value)
+        self.previewframe.SetTitle(ceevent.name)
         preview = PreviewEvent(self.previewframe, ceevent)
         self.previewframe.Center()
         self.previewframe.Show()
@@ -1430,7 +1429,7 @@ class CeListBox(wx.ListCtrl, ListCtrlAutoWidthMixin):
         if not items:
             items = get_ebucket().values()
 
-        # self.autocomplete_data = [item.name.value for item in items]
+        # self.autocomplete_data = [item.name for item in items]
         for n, item in enumerate(items):
             self.InsertItem(CeListItem(item, n))
 
