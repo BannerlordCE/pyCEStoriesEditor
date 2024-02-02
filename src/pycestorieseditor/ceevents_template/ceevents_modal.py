@@ -23,7 +23,7 @@ class AgreeResultText:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -33,7 +33,7 @@ class AgreeText:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -44,21 +44,21 @@ class Background:
         metadata={
             "name": "Name",
             "type": "Attribute",
-        }
+        },
     )
     weight: Optional[str] = field(
         default=None,
         metadata={
             "name": "Weight",
             "type": "Attribute",
-        }
+        },
     )
     use_conditions: Optional[str] = field(
         default=None,
         metadata={
             "name": "UseConditions",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -68,7 +68,7 @@ class BackgroundAnimationSpeed:
         default=None,
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -78,7 +78,7 @@ class BackgroundName:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -90,7 +90,7 @@ class BackgroundNames:
             "name": "BackgroundName",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
 
 
@@ -100,7 +100,7 @@ class CanOnlyHappenNrOfTimes:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -110,7 +110,7 @@ class CancelText:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -120,7 +120,7 @@ class CaptorGoldTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -131,28 +131,28 @@ class ClanOption:
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     action: Optional[str] = field(
         default=None,
         metadata={
             "name": "Action",
             "type": "Attribute",
-        }
+        },
     )
     clan: Optional[str] = field(
         default=None,
         metadata={
             "name": "Clan",
             "type": "Attribute",
-        }
+        },
     )
     hide_notification: Optional[bool] = field(
         default=None,
         metadata={
             "name": "HideNotification",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -164,7 +164,7 @@ class CustomFlags:
             "name": "CustomFlag",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
 
 
@@ -175,28 +175,28 @@ class DamageParty:
         metadata={
             "name": "Number",
             "type": "Attribute",
-        }
+        },
     )
     wounded_number: Optional[str] = field(
         default=None,
         metadata={
             "name": "WoundedNumber",
             "type": "Attribute",
-        }
+        },
     )
     include_heroes: Optional[str] = field(
         default=None,
         metadata={
             "name": "IncludeHeroes",
             "type": "Attribute",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -206,7 +206,7 @@ class EscapeChance:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -216,7 +216,7 @@ class Flag:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -226,7 +226,7 @@ class GoldTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -236,7 +236,7 @@ class HealthTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -246,7 +246,7 @@ class IsCancelOptional:
         default=None,
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -256,7 +256,7 @@ class ItemToGive:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -267,28 +267,28 @@ class KingdomOption:
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     action: Optional[str] = field(
         default=None,
         metadata={
             "name": "Action",
             "type": "Attribute",
-        }
+        },
     )
     kingdom: Optional[str] = field(
         default=None,
         metadata={
             "name": "Kingdom",
             "type": "Attribute",
-        }
+        },
     )
     hide_notification: Optional[bool] = field(
         default=None,
         metadata={
             "name": "HideNotification",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -298,7 +298,7 @@ class MoraleTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -308,7 +308,7 @@ class Name:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -318,7 +318,7 @@ class NotificationName:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -328,7 +328,7 @@ class OrderToCall:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -338,7 +338,7 @@ class PregnancyRiskModifier:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -348,7 +348,7 @@ class ProstitutionTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -358,7 +358,7 @@ class RelationTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -368,7 +368,7 @@ class RenownTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -378,7 +378,7 @@ class ReqCaptivesAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -388,7 +388,7 @@ class ReqCaptivesBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -398,7 +398,7 @@ class ReqCaptorPartyHaveItem:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -408,7 +408,7 @@ class ReqCaptorSkill:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -418,7 +418,7 @@ class ReqCaptorSkillLevelAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -428,7 +428,7 @@ class ReqCaptorSkillLevelBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -438,7 +438,7 @@ class ReqCaptorTrait:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -448,7 +448,7 @@ class ReqCaptorTraitLevelAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -458,7 +458,7 @@ class ReqCaptorTraitLevelBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -468,7 +468,7 @@ class ReqCustomCode:
         default=None,
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -478,7 +478,7 @@ class ReqFemaleCaptivesAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -488,7 +488,7 @@ class ReqFemaleCaptivesBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -498,7 +498,7 @@ class ReqFemaleTroopsAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -508,7 +508,7 @@ class ReqFemaleTroopsBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -518,7 +518,7 @@ class ReqGoldAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -528,7 +528,7 @@ class ReqGoldBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -538,7 +538,7 @@ class ReqHeroCaptivesAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -548,7 +548,7 @@ class ReqHeroCaptivesBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -558,7 +558,7 @@ class ReqHeroCaptorRelationAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -568,7 +568,7 @@ class ReqHeroCaptorRelationBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -578,7 +578,7 @@ class ReqHeroFemaleCaptivesAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -588,7 +588,7 @@ class ReqHeroFemaleCaptivesBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -598,7 +598,7 @@ class ReqHeroFemaleTroopsAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -608,7 +608,7 @@ class ReqHeroFemaleTroopsBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -618,7 +618,7 @@ class ReqHeroHealthAbovePercentage:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -628,7 +628,7 @@ class ReqHeroHealthBelowPercentage:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -638,7 +638,7 @@ class ReqHeroMaleCaptivesAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -648,7 +648,7 @@ class ReqHeroMaleCaptivesBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -658,7 +658,7 @@ class ReqHeroMaleTroopsAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -668,7 +668,7 @@ class ReqHeroMaleTroopsBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -678,7 +678,7 @@ class ReqHeroMaxAge:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -688,7 +688,7 @@ class ReqHeroMinAge:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -698,7 +698,7 @@ class ReqHeroPartyHaveItem:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -708,7 +708,7 @@ class ReqHeroProstituteLevelAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -718,7 +718,7 @@ class ReqHeroProstituteLevelBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -728,7 +728,7 @@ class ReqHeroSkill:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -738,7 +738,7 @@ class ReqHeroSkillLevelAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -748,7 +748,7 @@ class ReqHeroSkillLevelBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -758,7 +758,7 @@ class ReqHeroSlaveLevelAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -768,7 +768,7 @@ class ReqHeroSlaveLevelBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -778,7 +778,7 @@ class ReqHeroTrait:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -788,7 +788,7 @@ class ReqHeroTraitLevelAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -798,7 +798,7 @@ class ReqHeroTraitLevelBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -808,7 +808,7 @@ class ReqHeroTroopsAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -818,7 +818,7 @@ class ReqHeroTroopsBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -828,7 +828,7 @@ class ReqMaleCaptivesAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -838,7 +838,7 @@ class ReqMaleCaptivesBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -848,7 +848,7 @@ class ReqMaleTroopsAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -858,7 +858,7 @@ class ReqMaleTroopsBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -868,7 +868,7 @@ class ReqMoraleAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -878,7 +878,7 @@ class ReqMoraleBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -888,7 +888,7 @@ class ReqTroopsAbove:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -898,7 +898,7 @@ class ReqTroopsBelow:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1089,10 +1089,7 @@ class RestrictedListOfFlagsType(Enum):
         return FlagsColors[self.name].value
 
 
-ColourFlags = [
-    ("CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT", "#007500"),
-    ("WAITING_MENU", "#11d116")
-]
+ColourFlags = [("CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT", "#007500"), ("WAITING_MENU", "#11d116")]
 
 
 @define
@@ -1102,14 +1099,14 @@ class SceneSettings:
         metadata={
             "name": "TalkTo",
             "type": "Attribute",
-        }
+        },
     )
     scene_name: Optional[str] = field(
         default=None,
         metadata={
             "name": "SceneName",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1119,7 +1116,7 @@ class SceneToPlay:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1129,7 +1126,7 @@ class SexualContent:
         default=None,
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1140,42 +1137,42 @@ class Skill:
         metadata={
             "name": "Id",
             "type": "Attribute",
-        }
+        },
     )
     by_level: Optional[str] = field(
         default=None,
         metadata={
             "name": "ByLevel",
             "type": "Attribute",
-        }
+        },
     )
     by_xp: Optional[str] = field(
         default=None,
         metadata={
             "name": "ByXP",
             "type": "Attribute",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     color: Optional[str] = field(
         default=None,
         metadata={
             "name": "Color",
             "type": "Attribute",
-        }
+        },
     )
     hide_notification: Optional[bool] = field(
         default=None,
         metadata={
             "name": "HideNotification",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1186,28 +1183,28 @@ class SkillRequired:
         metadata={
             "name": "Id",
             "type": "Attribute",
-        }
+        },
     )
     max: Optional[str] = field(
         default=None,
         metadata={
             "name": "Max",
             "type": "Attribute",
-        }
+        },
     )
     min: Optional[str] = field(
         default=None,
         metadata={
             "name": "Min",
             "type": "Attribute",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1217,7 +1214,7 @@ class SkillToLevel:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1227,7 +1224,7 @@ class SkillTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1240,7 +1237,7 @@ class SkillXptotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1250,7 +1247,7 @@ class SlaveryTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1260,7 +1257,7 @@ class SoundName:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1271,28 +1268,28 @@ class SpawnTroop:
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     id: Optional[str] = field(
         default=None,
         metadata={
             "name": "Id",
             "type": "Attribute",
-        }
+        },
     )
     number: Optional[str] = field(
         default=None,
         metadata={
             "name": "Number",
             "type": "Attribute",
-        }
+        },
     )
     wounded_number: Optional[str] = field(
         default=None,
         metadata={
             "name": "WoundedNumber",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1302,7 +1299,7 @@ class StringContent:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1314,7 +1311,7 @@ class StripSettings:
             "name": "CustomBody",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     custom_cape: List[str] = field(
         factory=list,
@@ -1322,7 +1319,7 @@ class StripSettings:
             "name": "CustomCape",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     custom_gloves: List[str] = field(
         factory=list,
@@ -1330,7 +1327,7 @@ class StripSettings:
             "name": "CustomGloves",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     custom_legs: List[str] = field(
         factory=list,
@@ -1338,7 +1335,7 @@ class StripSettings:
             "name": "CustomLegs",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     custom_head: List[str] = field(
         factory=list,
@@ -1346,7 +1343,7 @@ class StripSettings:
             "name": "CustomHead",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     clothing: List[str] = field(
         factory=list,
@@ -1354,7 +1351,7 @@ class StripSettings:
             "name": "Clothing",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     mount: List[str] = field(
         factory=list,
@@ -1362,7 +1359,7 @@ class StripSettings:
             "name": "Mount",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     melee: List[str] = field(
         factory=list,
@@ -1370,7 +1367,7 @@ class StripSettings:
             "name": "Melee",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     ranged: List[str] = field(
         factory=list,
@@ -1378,21 +1375,21 @@ class StripSettings:
             "name": "Ranged",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     forced: Optional[bool] = field(
         default=None,
         metadata={
             "name": "Forced",
             "type": "Attribute",
-        }
+        },
     )
     quest_enabled: Optional[bool] = field(
         default=None,
         metadata={
             "name": "QuestEnabled",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1403,28 +1400,28 @@ class TeleportSettings:
         metadata={
             "name": "Location",
             "type": "Attribute",
-        }
+        },
     )
     location_name: Optional[str] = field(
         default=None,
         metadata={
             "name": "LocationName",
             "type": "Attribute",
-        }
+        },
     )
     distance: Optional[str] = field(
         default=None,
         metadata={
             "name": "Distance",
             "type": "Attribute",
-        }
+        },
     )
     faction: Optional[str] = field(
         default=None,
         metadata={
             "name": "Faction",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1452,7 +1449,7 @@ class Text:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1463,42 +1460,42 @@ class Trait:
         metadata={
             "name": "Id",
             "type": "Attribute",
-        }
+        },
     )
     by_level: Optional[str] = field(
         default=None,
         metadata={
             "name": "ByLevel",
             "type": "Attribute",
-        }
+        },
     )
     by_xp: Optional[str] = field(
         default=None,
         metadata={
             "name": "ByXP",
             "type": "Attribute",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     color: Optional[str] = field(
         default=None,
         metadata={
             "name": "Color",
             "type": "Attribute",
-        }
+        },
     )
     hide_notification: Optional[bool] = field(
         default=None,
         metadata={
             "name": "HideNotification",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1509,28 +1506,28 @@ class TraitRequired:
         metadata={
             "name": "Id",
             "type": "Attribute",
-        }
+        },
     )
     max: Optional[str] = field(
         default=None,
         metadata={
             "name": "Max",
             "type": "Attribute",
-        }
+        },
     )
     min: Optional[str] = field(
         default=None,
         metadata={
             "name": "Min",
             "type": "Attribute",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1540,7 +1537,7 @@ class TraitToLevel:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1550,7 +1547,7 @@ class TraitTotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1563,7 +1560,7 @@ class TraitXptotal:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1576,7 +1573,7 @@ class TriggerEvent:
             "type": "Element",
             "namespace": "",
             "required": True,
-        }
+        },
     )
     event_weight: Optional[str] = field(
         default=None,
@@ -1584,7 +1581,7 @@ class TriggerEvent:
             "name": "EventWeight",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     event_use_conditions: Optional[str] = field(
         default=None,
@@ -1592,7 +1589,7 @@ class TriggerEvent:
             "name": "EventUseConditions",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
 
 
@@ -1602,7 +1599,7 @@ class WeightedChanceOfOccurring:
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1619,7 +1616,7 @@ class Backgrounds:
             "name": "Background",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1631,7 +1628,7 @@ class ClanOptions:
             "name": "ClanOption",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1643,7 +1640,7 @@ class KingdomOptions:
             "name": "KingdomOption",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1660,7 +1657,7 @@ class MultipleRestrictedListOfConsequences:
             "name": "RestrictedListOfConsequences",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1672,15 +1669,13 @@ class MultipleRestrictedListOfFlags:
             "name": "RestrictedListOfFlags",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
 @define
 class RestrictedListOfConsequences:
-    value: Optional[RestrictedListOfConsequencesValue] = field(
-        default=None
-    )
+    value: Optional[RestrictedListOfConsequencesValue] = field(default=None)
 
 
 @define
@@ -1689,7 +1684,7 @@ class RestrictedListOfFlags:
         default=None,
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -1701,7 +1696,7 @@ class SkillsRequired:
             "name": "SkillRequired",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1713,7 +1708,7 @@ class SkillsToLevel:
             "name": "Skill",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1725,15 +1720,13 @@ class SpawnTroops:
             "name": "SpawnTroop",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
 @define
 class TerrainType:
-    value: Optional[TerrainTypeValue] = field(
-        default=None
-    )
+    value: Optional[TerrainTypeValue] = field(default=None)
 
 
 @define
@@ -1744,7 +1737,7 @@ class TerrainTypes:
             "name": "TerrainType",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1756,7 +1749,7 @@ class TraitsRequired:
             "name": "TraitRequired",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1768,7 +1761,7 @@ class TraitsToLevel:
             "name": "Trait",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1780,7 +1773,7 @@ class TriggerEvents:
             "name": "TriggerEvent",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -1791,172 +1784,174 @@ class BattleSettings:
         metadata={
             "name": "SpawnTroops",
             "type": "Element",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     victory: Optional[str] = field(
         default=None,
         metadata={
             "name": "Victory",
             "type": "Attribute",
-        }
+        },
     )
     defeat: Optional[str] = field(
         default=None,
         metadata={
             "name": "Defeat",
             "type": "Attribute",
-        }
+        },
     )
     enemy_name: Optional[str] = field(
         default=None,
         metadata={
             "name": "EnemyName",
             "type": "Attribute",
-        }
+        },
     )
     player_troops: Optional[str] = field(
         default=None,
         metadata={
             "name": "PlayerTroops",
             "type": "Attribute",
-        }
+        },
     )
 
 
 @define
 class Companion:
-    multiple_restricted_list_of_consequences: Optional[MultipleRestrictedListOfConsequences] = field(
+    multiple_restricted_list_of_consequences: Optional[
+        MultipleRestrictedListOfConsequences
+    ] = field(
         default=None,
         metadata={
             "name": "MultipleRestrictedListOfConsequences",
             "type": "Element",
-        }
+        },
     )
     pregnancy_risk_modifier: Optional[str] = field(
         default=None,
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
-        }
+        },
     )
     escape_chance: Optional[str] = field(
         default=None,
         metadata={
             "name": "EscapeChance",
             "type": "Element",
-        }
+        },
     )
     gold_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "GoldTotal",
             "type": "Element",
-        }
+        },
     )
     captor_gold_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
-        }
+        },
     )
     relation_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "RelationTotal",
             "type": "Element",
-        }
+        },
     )
     morale_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
-        }
+        },
     )
     health_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "HealthTotal",
             "type": "Element",
-        }
+        },
     )
     renown_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "RenownTotal",
             "type": "Element",
-        }
+        },
     )
     skills_to_level: Optional[SkillsToLevel] = field(
         default=None,
         metadata={
             "name": "SkillsToLevel",
             "type": "Element",
-        }
+        },
     )
     traits_to_level: Optional[TraitsToLevel] = field(
         default=None,
         metadata={
             "name": "TraitsToLevel",
             "type": "Element",
-        }
+        },
     )
     kingdom_options: Optional[KingdomOptions] = field(
         default=None,
         metadata={
             "name": "KingdomOptions",
             "type": "Element",
-        }
+        },
     )
     clan_options: Optional[ClanOptions] = field(
         default=None,
         metadata={
             "name": "ClanOptions",
             "type": "Element",
-        }
+        },
     )
     id: Optional[str] = field(
         default=None,
         metadata={
             "name": "Id",
             "type": "Attribute",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     type_value: Optional[str] = field(
         default=None,
         metadata={
             "name": "Type",
             "type": "Attribute",
-        }
+        },
     )
     location: Optional[str] = field(
         default=None,
         metadata={
             "name": "Location",
             "type": "Attribute",
-        }
+        },
     )
     use_other_conditions: Optional[str] = field(
         default=None,
         metadata={
             "name": "UseOtherConditions",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -1968,7 +1963,7 @@ class DelayEvent:
             "name": "UseConditions",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     time_to_take: Optional[str] = field(
         default=None,
@@ -1976,7 +1971,7 @@ class DelayEvent:
             "name": "TimeToTake",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     trigger_event_name: Optional[str] = field(
         default=None,
@@ -1984,14 +1979,14 @@ class DelayEvent:
             "name": "TriggerEventName",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     trigger_events: Optional[TriggerEvents] = field(
         default=None,
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
-        }
+        },
     )
 
 
@@ -2003,7 +1998,7 @@ class ProgressEvent:
             "name": "ShouldStopMoving",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     display_progress_mode: Optional[str] = field(
         default=None,
@@ -2011,7 +2006,7 @@ class ProgressEvent:
             "name": "DisplayProgressMode",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     time_to_take: Optional[str] = field(
         default=None,
@@ -2019,7 +2014,7 @@ class ProgressEvent:
             "name": "TimeToTake",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     trigger_event_name: Optional[str] = field(
         default=None,
@@ -2027,14 +2022,14 @@ class ProgressEvent:
             "name": "TriggerEventName",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     trigger_events: Optional[TriggerEvents] = field(
         default=None,
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
-        }
+        },
     )
 
 
@@ -2045,35 +2040,35 @@ class SpawnHero:
         metadata={
             "name": "SkillsToLevel",
             "type": "Element",
-        }
+        },
     )
     ref: Optional[str] = field(
         default=None,
         metadata={
             "name": "Ref",
             "type": "Attribute",
-        }
+        },
     )
     culture: Optional[str] = field(
         default=None,
         metadata={
             "name": "Culture",
             "type": "Attribute",
-        }
+        },
     )
     gender: Optional[str] = field(
         default=None,
         metadata={
             "name": "Gender",
             "type": "Attribute",
-        }
+        },
     )
     clan: Optional[str] = field(
         default=None,
         metadata={
             "name": "Clan",
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -2085,7 +2080,7 @@ class TerrainTypesRequirements:
             "name": "TerrainTypes",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -2097,7 +2092,7 @@ class Companions:
             "name": "Companion",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -2109,653 +2104,660 @@ class SpawnHeroes:
             "name": "SpawnHero",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
 @define
 class MenuOption:
-    order: List[str] = field(
-        factory=list,
+    order: Optional[str] = field(
+        default=None,
         metadata={
             "name": "Order",
             "type": "Element",
             "namespace": "",
-        }
+            "required": True,
+        },
     )
-    menu_id: List[str] = field(
-        factory=list,
+    menu_id: Optional[str] = field(
+        default=None,
         metadata={
             "name": "MenuID",
             "type": "Element",
             "namespace": "",
-        }
+            "required": True,
+        },
     )
-    option_id: List[str] = field(
-        factory=list,
+    option_id: Optional[str] = field(
+        default=None,
         metadata={
             "name": "OptionID",
             "type": "Element",
             "namespace": "",
-        }
+            "required": True,
+        },
     )
-    multiple_restricted_list_of_consequences: List[MultipleRestrictedListOfConsequences] = field(
-        factory=list,
+    multiple_restricted_list_of_consequences: Optional[
+        MultipleRestrictedListOfConsequences
+    ] = field(
+        default=None,
         metadata={
             "name": "MultipleRestrictedListOfConsequences",
             "type": "Element",
-        }
+            "required": True,
+        },
     )
-    option_text: List[str] = field(
-        factory=list,
+    option_text: Optional[str] = field(
+        default=None,
         metadata={
             "name": "OptionText",
             "type": "Element",
             "namespace": "",
-        }
+            "required": True,
+        },
     )
-    trigger_event_name: List[str] = field(
-        factory=list,
+    trigger_event_name: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TriggerEventName",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
-    sound_name: List[str] = field(
-        factory=list,
+    sound_name: Optional[str] = field(
+        default=None,
         metadata={
             "name": "SoundName",
             "type": "Element",
-        }
+        },
     )
-    scene_to_play: List[str] = field(
-        factory=list,
+    scene_to_play: Optional[str] = field(
+        default=None,
         metadata={
             "name": "SceneToPlay",
             "type": "Element",
-        }
+        },
     )
-    pregnancy_risk_modifier: List[str] = field(
-        factory=list,
+    pregnancy_risk_modifier: Optional[str] = field(
+        default=None,
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
-        }
+        },
     )
-    escape_chance: List[str] = field(
-        factory=list,
+    escape_chance: Optional[str] = field(
+        default=None,
         metadata={
             "name": "EscapeChance",
             "type": "Element",
-        }
+        },
     )
-    req_hero_party_have_item: List[str] = field(
-        factory=list,
+    req_hero_party_have_item: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroPartyHaveItem",
             "type": "Element",
-        }
+        },
     )
-    req_captor_party_have_item: List[str] = field(
-        factory=list,
+    req_captor_party_have_item: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptorPartyHaveItem",
             "type": "Element",
-        }
+        },
     )
-    req_hero_health_below_percentage: List[str] = field(
-        factory=list,
+    req_hero_health_below_percentage: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroHealthBelowPercentage",
             "type": "Element",
-        }
+        },
     )
-    req_hero_health_above_percentage: List[str] = field(
-        factory=list,
+    req_hero_health_above_percentage: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroHealthAbovePercentage",
             "type": "Element",
-        }
+        },
     )
-    req_hero_captor_relation_above: List[str] = field(
-        factory=list,
+    req_hero_captor_relation_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroCaptorRelationAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_captor_relation_below: List[str] = field(
-        factory=list,
+    req_hero_captor_relation_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroCaptorRelationBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_prostitute_level_above: List[str] = field(
-        factory=list,
+    req_hero_prostitute_level_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroProstituteLevelAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_prostitute_level_below: List[str] = field(
-        factory=list,
+    req_hero_prostitute_level_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroProstituteLevelBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_slave_level_above: List[str] = field(
-        factory=list,
+    req_hero_slave_level_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroSlaveLevelAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_slave_level_below: List[str] = field(
-        factory=list,
+    req_hero_slave_level_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroSlaveLevelBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_trait_level_above: List[str] = field(
-        factory=list,
+    req_hero_trait_level_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroTraitLevelAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_trait_level_below: List[str] = field(
-        factory=list,
+    req_hero_trait_level_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroTraitLevelBelow",
             "type": "Element",
-        }
+        },
     )
-    req_captor_trait_level_above: List[str] = field(
-        factory=list,
+    req_captor_trait_level_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptorTraitLevelAbove",
             "type": "Element",
-        }
+        },
     )
-    req_captor_trait_level_below: List[str] = field(
-        factory=list,
+    req_captor_trait_level_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptorTraitLevelBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_skill_level_above: List[str] = field(
-        factory=list,
+    req_hero_skill_level_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroSkillLevelAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_skill_level_below: List[str] = field(
-        factory=list,
+    req_hero_skill_level_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroSkillLevelBelow",
             "type": "Element",
-        }
+        },
     )
-    req_captor_skill_level_above: List[str] = field(
-        factory=list,
+    req_captor_skill_level_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptorSkillLevelAbove",
             "type": "Element",
-        }
+        },
     )
-    req_captor_skill_level_below: List[str] = field(
-        factory=list,
+    req_captor_skill_level_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptorSkillLevelBelow",
             "type": "Element",
-        }
+        },
     )
-    req_troops_above: List[str] = field(
-        factory=list,
+    req_troops_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqTroopsAbove",
             "type": "Element",
-        }
+        },
     )
-    req_troops_below: List[str] = field(
-        factory=list,
+    req_troops_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqTroopsBelow",
             "type": "Element",
-        }
+        },
     )
-    req_captives_above: List[str] = field(
-        factory=list,
+    req_captives_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
-    req_captives_below: List[str] = field(
-        factory=list,
+    req_captives_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
-    req_female_troops_above: List[str] = field(
-        factory=list,
+    req_female_troops_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqFemaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
-    req_female_troops_below: List[str] = field(
-        factory=list,
+    req_female_troops_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqFemaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
-    req_female_captives_above: List[str] = field(
-        factory=list,
+    req_female_captives_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqFemaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
-    req_female_captives_below: List[str] = field(
-        factory=list,
+    req_female_captives_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqFemaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
-    req_male_troops_above: List[str] = field(
-        factory=list,
+    req_male_troops_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqMaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
-    req_male_troops_below: List[str] = field(
-        factory=list,
+    req_male_troops_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqMaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
-    req_male_captives_above: List[str] = field(
-        factory=list,
+    req_male_captives_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqMaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
-    req_male_captives_below: List[str] = field(
-        factory=list,
+    req_male_captives_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqMaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_troops_above: List[str] = field(
-        factory=list,
+    req_hero_troops_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroTroopsAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_troops_below: List[str] = field(
-        factory=list,
+    req_hero_troops_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroTroopsBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_captives_above: List[str] = field(
-        factory=list,
+    req_hero_captives_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_captives_below: List[str] = field(
-        factory=list,
+    req_hero_captives_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_female_troops_above: List[str] = field(
-        factory=list,
+    req_hero_female_troops_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_female_troops_below: List[str] = field(
-        factory=list,
+    req_hero_female_troops_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_female_captives_above: List[str] = field(
-        factory=list,
+    req_hero_female_captives_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_female_captives_below: List[str] = field(
-        factory=list,
+    req_hero_female_captives_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_male_troops_above: List[str] = field(
-        factory=list,
+    req_hero_male_troops_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroMaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_male_troops_below: List[str] = field(
-        factory=list,
+    req_hero_male_troops_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroMaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
-    req_hero_male_captives_above: List[str] = field(
-        factory=list,
+    req_hero_male_captives_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
-    req_hero_male_captives_below: List[str] = field(
-        factory=list,
+    req_hero_male_captives_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
-    req_morale_below: List[str] = field(
-        factory=list,
+    req_morale_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqMoraleBelow",
             "type": "Element",
-        }
+        },
     )
-    req_morale_above: List[str] = field(
-        factory=list,
+    req_morale_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqMoraleAbove",
             "type": "Element",
-        }
+        },
     )
-    req_gold_above: List[str] = field(
-        factory=list,
+    req_gold_above: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqGoldAbove",
             "type": "Element",
-        }
+        },
     )
-    req_gold_below: List[str] = field(
-        factory=list,
+    req_gold_below: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqGoldBelow",
             "type": "Element",
-        }
+        },
     )
-    item_to_give: List[str] = field(
-        factory=list,
+    item_to_give: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ItemToGive",
             "type": "Element",
-        }
+        },
     )
-    gold_total: List[str] = field(
-        factory=list,
+    gold_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "GoldTotal",
             "type": "Element",
-        }
+        },
     )
-    captor_gold_total: List[str] = field(
-        factory=list,
+    captor_gold_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
-        }
+        },
     )
-    relation_total: List[str] = field(
-        factory=list,
+    relation_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "RelationTotal",
             "type": "Element",
-        }
+        },
     )
-    morale_total: List[str] = field(
-        factory=list,
+    morale_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
-        }
+        },
     )
-    health_total: List[str] = field(
-        factory=list,
+    health_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "HealthTotal",
             "type": "Element",
-        }
+        },
     )
-    renown_total: List[str] = field(
-        factory=list,
+    renown_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "RenownTotal",
             "type": "Element",
-        }
+        },
     )
-    prostitution_total: List[str] = field(
-        factory=list,
+    prostitution_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ProstitutionTotal",
             "type": "Element",
-        }
+        },
     )
-    slavery_total: List[str] = field(
-        factory=list,
+    slavery_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "SlaveryTotal",
             "type": "Element",
-        }
+        },
     )
-    trait_total: List[str] = field(
-        factory=list,
+    trait_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TraitTotal",
             "type": "Element",
-        }
+        },
     )
-    skill_total: List[str] = field(
-        factory=list,
+    skill_total: Optional[str] = field(
+        default=None,
         metadata={
             "name": "SkillTotal",
             "type": "Element",
-        }
+        },
     )
-    trait_xptotal: List[str] = field(
-        factory=list,
+    trait_xptotal: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TraitXPTotal",
             "type": "Element",
-        }
+        },
     )
-    skill_xptotal: List[str] = field(
-        factory=list,
+    skill_xptotal: Optional[str] = field(
+        default=None,
         metadata={
             "name": "SkillXPTotal",
             "type": "Element",
-        }
+        },
     )
-    skill_to_level: List[str] = field(
-        factory=list,
+    skill_to_level: Optional[str] = field(
+        default=None,
         metadata={
             "name": "SkillToLevel",
             "type": "Element",
-        }
+        },
     )
-    req_captor_skill: List[str] = field(
-        factory=list,
+    req_captor_skill: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptorSkill",
             "type": "Element",
-        }
+        },
     )
-    req_hero_skill: List[str] = field(
-        factory=list,
+    req_hero_skill: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroSkill",
             "type": "Element",
-        }
+        },
     )
-    trait_to_level: List[str] = field(
-        factory=list,
+    trait_to_level: Optional[str] = field(
+        default=None,
         metadata={
             "name": "TraitToLevel",
             "type": "Element",
-        }
+        },
     )
-    req_captor_trait: List[str] = field(
-        factory=list,
+    req_captor_trait: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqCaptorTrait",
             "type": "Element",
-        }
+        },
     )
-    req_hero_trait: List[str] = field(
-        factory=list,
+    req_hero_trait: Optional[str] = field(
+        default=None,
         metadata={
             "name": "ReqHeroTrait",
             "type": "Element",
-        }
+        },
     )
-    trigger_events: List[TriggerEvents] = field(
-        factory=list,
+    trigger_events: Optional[TriggerEvents] = field(
+        default=None,
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
-        }
+        },
     )
-    skills_to_level: List[SkillsToLevel] = field(
-        factory=list,
+    skills_to_level: Optional[SkillsToLevel] = field(
+        default=None,
         metadata={
             "name": "SkillsToLevel",
             "type": "Element",
-        }
+        },
     )
-    traits_to_level: List[TraitsToLevel] = field(
-        factory=list,
+    traits_to_level: Optional[TraitsToLevel] = field(
+        default=None,
         metadata={
             "name": "TraitsToLevel",
             "type": "Element",
-        }
+        },
     )
-    skills_required: List[SkillsRequired] = field(
-        factory=list,
+    skills_required: Optional[SkillsRequired] = field(
+        default=None,
         metadata={
             "name": "SkillsRequired",
             "type": "Element",
-        }
+        },
     )
-    traits_required: List[TraitsRequired] = field(
-        factory=list,
+    traits_required: Optional[TraitsRequired] = field(
+        default=None,
         metadata={
             "name": "TraitsRequired",
             "type": "Element",
-        }
+        },
     )
-    companions: List[Companions] = field(
-        factory=list,
+    companions: Optional[Companions] = field(
+        default=None,
         metadata={
             "name": "Companions",
             "type": "Element",
-        }
+        },
     )
-    strip_settings: List[StripSettings] = field(
-        factory=list,
+    strip_settings: Optional[StripSettings] = field(
+        default=None,
         metadata={
             "name": "StripSettings",
             "type": "Element",
-        }
+        },
     )
-    battle_settings: List[BattleSettings] = field(
-        factory=list,
+    battle_settings: Optional[BattleSettings] = field(
+        default=None,
         metadata={
             "name": "BattleSettings",
             "type": "Element",
-        }
+        },
     )
-    kingdom_options: List[KingdomOptions] = field(
-        factory=list,
+    kingdom_options: Optional[KingdomOptions] = field(
+        default=None,
         metadata={
             "name": "KingdomOptions",
             "type": "Element",
-        }
+        },
     )
-    clan_options: List[ClanOptions] = field(
-        factory=list,
+    clan_options: Optional[ClanOptions] = field(
+        default=None,
         metadata={
             "name": "ClanOptions",
             "type": "Element",
-        }
+        },
     )
-    spawn_troops: List[SpawnTroops] = field(
-        factory=list,
+    spawn_troops: Optional[SpawnTroops] = field(
+        default=None,
         metadata={
             "name": "SpawnTroops",
             "type": "Element",
-        }
+        },
     )
-    spawn_heroes: List[SpawnHeroes] = field(
-        factory=list,
+    spawn_heroes: Optional[SpawnHeroes] = field(
+        default=None,
         metadata={
             "name": "SpawnHeroes",
             "type": "Element",
-        }
+        },
     )
-    delay_event: List[DelayEvent] = field(
-        factory=list,
+    delay_event: Optional[DelayEvent] = field(
+        default=None,
         metadata={
             "name": "DelayEvent",
             "type": "Element",
-        }
+        },
     )
-    scene_settings: List[SceneSettings] = field(
-        factory=list,
+    scene_settings: Optional[SceneSettings] = field(
+        default=None,
         metadata={
             "name": "SceneSettings",
             "type": "Element",
-        }
+        },
     )
-    teleport_settings: List[TeleportSettings] = field(
-        factory=list,
+    teleport_settings: Optional[TeleportSettings] = field(
+        default=None,
         metadata={
             "name": "TeleportSettings",
             "type": "Element",
-        }
+        },
     )
-    damage_party: List[DamageParty] = field(
-        factory=list,
+    damage_party: Optional[DamageParty] = field(
+        default=None,
         metadata={
             "name": "DamageParty",
             "type": "Element",
-        }
+        },
     )
 
 
@@ -2768,15 +2770,17 @@ class Option:
             "type": "Element",
             "namespace": "",
             "required": True,
-        }
+        },
     )
-    multiple_restricted_list_of_consequences: Optional[MultipleRestrictedListOfConsequences] = field(
+    multiple_restricted_list_of_consequences: Optional[
+        MultipleRestrictedListOfConsequences
+    ] = field(
         default=None,
         metadata={
             "name": "MultipleRestrictedListOfConsequences",
             "type": "Element",
             "required": True,
-        }
+        },
     )
     option_text: Optional[str] = field(
         default=None,
@@ -2785,7 +2789,7 @@ class Option:
             "type": "Element",
             "namespace": "",
             "required": True,
-        }
+        },
     )
     trigger_event_name: Optional[str] = field(
         default=None,
@@ -2793,602 +2797,602 @@ class Option:
             "name": "TriggerEventName",
             "type": "Element",
             "namespace": "",
-        }
+        },
     )
     sound_name: Optional[str] = field(
         default=None,
         metadata={
             "name": "SoundName",
             "type": "Element",
-        }
+        },
     )
     scene_to_play: Optional[str] = field(
         default=None,
         metadata={
             "name": "SceneToPlay",
             "type": "Element",
-        }
+        },
     )
     pregnancy_risk_modifier: Optional[str] = field(
         default=None,
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
-        }
+        },
     )
     escape_chance: Optional[str] = field(
         default=None,
         metadata={
             "name": "EscapeChance",
             "type": "Element",
-        }
+        },
     )
     req_hero_party_have_item: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroPartyHaveItem",
             "type": "Element",
-        }
+        },
     )
     req_captor_party_have_item: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorPartyHaveItem",
             "type": "Element",
-        }
+        },
     )
     req_hero_health_below_percentage: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthBelowPercentage",
             "type": "Element",
-        }
+        },
     )
     req_hero_health_above_percentage: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthAbovePercentage",
             "type": "Element",
-        }
+        },
     )
     req_hero_captor_relation_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_captor_relation_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_prostitute_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_prostitute_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_slave_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_slave_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_trait_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_trait_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_captor_trait_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_captor_trait_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_skill_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_skill_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_captor_skill_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_captor_skill_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_female_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_female_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_female_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_female_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_male_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_male_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_male_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_male_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_morale_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMoraleBelow",
             "type": "Element",
-        }
+        },
     )
     req_morale_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMoraleAbove",
             "type": "Element",
-        }
+        },
     )
     req_gold_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqGoldAbove",
             "type": "Element",
-        }
+        },
     )
     req_gold_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqGoldBelow",
             "type": "Element",
-        }
+        },
     )
     item_to_give: Optional[str] = field(
         default=None,
         metadata={
             "name": "ItemToGive",
             "type": "Element",
-        }
+        },
     )
     gold_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "GoldTotal",
             "type": "Element",
-        }
+        },
     )
     captor_gold_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
-        }
+        },
     )
     relation_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "RelationTotal",
             "type": "Element",
-        }
+        },
     )
     morale_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
-        }
+        },
     )
     health_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "HealthTotal",
             "type": "Element",
-        }
+        },
     )
     renown_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "RenownTotal",
             "type": "Element",
-        }
+        },
     )
     prostitution_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "ProstitutionTotal",
             "type": "Element",
-        }
+        },
     )
     slavery_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "SlaveryTotal",
             "type": "Element",
-        }
+        },
     )
     trait_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "TraitTotal",
             "type": "Element",
-        }
+        },
     )
     skill_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "SkillTotal",
             "type": "Element",
-        }
+        },
     )
     trait_xptotal: Optional[str] = field(
         default=None,
         metadata={
             "name": "TraitXPTotal",
             "type": "Element",
-        }
+        },
     )
     skill_xptotal: Optional[str] = field(
         default=None,
         metadata={
             "name": "SkillXPTotal",
             "type": "Element",
-        }
+        },
     )
     skill_to_level: Optional[str] = field(
         default=None,
         metadata={
             "name": "SkillToLevel",
             "type": "Element",
-        }
+        },
     )
     req_captor_skill: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkill",
             "type": "Element",
-        }
+        },
     )
     req_hero_skill: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkill",
             "type": "Element",
-        }
+        },
     )
     trait_to_level: Optional[str] = field(
         default=None,
         metadata={
             "name": "TraitToLevel",
             "type": "Element",
-        }
+        },
     )
     req_captor_trait: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTrait",
             "type": "Element",
-        }
+        },
     )
     req_hero_trait: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTrait",
             "type": "Element",
-        }
+        },
     )
     trigger_events: Optional[TriggerEvents] = field(
         default=None,
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
-        }
+        },
     )
     skills_to_level: Optional[SkillsToLevel] = field(
         default=None,
         metadata={
             "name": "SkillsToLevel",
             "type": "Element",
-        }
+        },
     )
     traits_to_level: Optional[TraitsToLevel] = field(
         default=None,
         metadata={
             "name": "TraitsToLevel",
             "type": "Element",
-        }
+        },
     )
     skills_required: Optional[SkillsRequired] = field(
         default=None,
         metadata={
             "name": "SkillsRequired",
             "type": "Element",
-        }
+        },
     )
     traits_required: Optional[TraitsRequired] = field(
         default=None,
         metadata={
             "name": "TraitsRequired",
             "type": "Element",
-        }
+        },
     )
     companions: Optional[Companions] = field(
         default=None,
         metadata={
             "name": "Companions",
             "type": "Element",
-        }
+        },
     )
     strip_settings: Optional[StripSettings] = field(
         default=None,
         metadata={
             "name": "StripSettings",
             "type": "Element",
-        }
+        },
     )
     battle_settings: Optional[BattleSettings] = field(
         default=None,
         metadata={
             "name": "BattleSettings",
             "type": "Element",
-        }
+        },
     )
     kingdom_options: Optional[KingdomOptions] = field(
         default=None,
         metadata={
             "name": "KingdomOptions",
             "type": "Element",
-        }
+        },
     )
     clan_options: Optional[ClanOptions] = field(
         default=None,
         metadata={
             "name": "ClanOptions",
             "type": "Element",
-        }
+        },
     )
     spawn_troops: Optional[SpawnTroops] = field(
         default=None,
         metadata={
             "name": "SpawnTroops",
             "type": "Element",
-        }
+        },
     )
     spawn_heroes: Optional[SpawnHeroes] = field(
         default=None,
         metadata={
             "name": "SpawnHeroes",
             "type": "Element",
-        }
+        },
     )
     delay_event: Optional[DelayEvent] = field(
         default=None,
         metadata={
             "name": "DelayEvent",
             "type": "Element",
-        }
+        },
     )
     scene_settings: Optional[SceneSettings] = field(
         default=None,
         metadata={
             "name": "SceneSettings",
             "type": "Element",
-        }
+        },
     )
     teleport_settings: Optional[TeleportSettings] = field(
         default=None,
         metadata={
             "name": "TeleportSettings",
             "type": "Element",
-        }
+        },
     )
     damage_party: Optional[DamageParty] = field(
         default=None,
         metadata={
             "name": "DamageParty",
             "type": "Element",
-        }
+        },
     )
 
 
@@ -3400,7 +3404,7 @@ class MenuOptions:
             "name": "MenuOption",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -3412,7 +3416,7 @@ class Options:
             "name": "Option",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )
 
 
@@ -3421,69 +3425,69 @@ class Ceevent:
     class Meta:
         name = "CEEvent"
 
-    name: Name = field(
+    name: Optional[str] = field(
         default=None,
         metadata={
             "name": "Name",
             "type": "Element",
             "required": True,
-        }
+        },
     )
     text: Optional[Text] = field(
         default=None,
         metadata={
             "name": "Text",
             "type": "Element",
-        }
+        },
     )
     background_name: Optional[BackgroundName] = field(
         default=None,
         metadata={
             "name": "BackgroundName",
             "type": "Element",
-        }
+        },
     )
     notification_name: Optional[NotificationName] = field(
         default=None,
         metadata={
             "name": "NotificationName",
             "type": "Element",
-        }
+        },
     )
     sound_name: Optional[SoundName] = field(
         default=None,
         metadata={
             "name": "SoundName",
             "type": "Element",
-        }
+        },
     )
     background_animation: Optional[BackgroundAnimation] = field(
         default=None,
         metadata={
             "name": "BackgroundAnimation",
             "type": "Element",
-        }
+        },
     )
     background_animation_speed: Optional[BackgroundAnimationSpeed] = field(
         default=None,
         metadata={
             "name": "BackgroundAnimationSpeed",
             "type": "Element",
-        }
+        },
     )
     backgrounds: Optional[Backgrounds] = field(
         default=None,
         metadata={
             "name": "Backgrounds",
             "type": "Element",
-        }
+        },
     )
     multiple_list_of_custom_flags: Optional[MultipleListOfCustomFlags] = field(
         default=None,
         metadata={
             "name": "MultipleListOfCustomFlags",
             "type": "Element",
-        }
+        },
     )
     multiple_restricted_list_of_flags: Optional[MultipleRestrictedListOfFlags] = field(
         default=None,
@@ -3491,28 +3495,28 @@ class Ceevent:
             "name": "MultipleRestrictedListOfFlags",
             "type": "Element",
             "required": True,
-        }
+        },
     )
     options: Optional[Options] = field(
         default=None,
         metadata={
             "name": "Options",
             "type": "Element",
-        }
+        },
     )
     progress_event: Optional[ProgressEvent] = field(
         default=None,
         metadata={
             "name": "ProgressEvent",
             "type": "Element",
-        }
+        },
     )
     order_to_call: Optional[str] = field(
         default=None,
         metadata={
             "name": "OrderToCall",
             "type": "Element",
-        }
+        },
     )
     req_custom_code: Optional[bool] = field(
         default=None,
@@ -3520,14 +3524,14 @@ class Ceevent:
             "name": "ReqCustomCode",
             "type": "Element",
             "required": True,
-        }
+        },
     )
     can_only_happen_nr_of_times: Optional[CanOnlyHappenNrOfTimes] = field(
         default=None,
         metadata={
             "name": "CanOnlyHappenNrOfTimes",
             "type": "Element",
-        }
+        },
     )
     sexual_content: Optional[SexualContent] = field(
         default=None,
@@ -3535,549 +3539,549 @@ class Ceevent:
             "name": "SexualContent",
             "type": "Element",
             "required": True,
-        }
+        },
     )
     pregnancy_risk_modifier: Optional[str] = field(
         default=None,
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
-        }
+        },
     )
     escape_chance: Optional[str] = field(
         default=None,
         metadata={
             "name": "EscapeChance",
             "type": "Element",
-        }
+        },
     )
     weighted_chance_of_occurring: Optional[str] = field(
         default=None,
         metadata={
             "name": "WeightedChanceOfOccurring",
             "type": "Element",
-        }
+        },
     )
     req_hero_min_age: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMinAge",
             "type": "Element",
-        }
+        },
     )
     req_hero_max_age: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaxAge",
             "type": "Element",
-        }
+        },
     )
     req_hero_party_have_item: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroPartyHaveItem",
             "type": "Element",
-        }
+        },
     )
     req_captor_party_have_item: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorPartyHaveItem",
             "type": "Element",
-        }
+        },
     )
     req_hero_health_below_percentage: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthBelowPercentage",
             "type": "Element",
-        }
+        },
     )
     req_hero_health_above_percentage: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthAbovePercentage",
             "type": "Element",
-        }
+        },
     )
     req_hero_captor_relation_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_captor_relation_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_prostitute_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_prostitute_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_slave_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_slave_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_trait_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_trait_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_captor_trait_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_captor_trait_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_skill_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_skill_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_captor_skill_level_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelAbove",
             "type": "Element",
-        }
+        },
     )
     req_captor_skill_level_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelBelow",
             "type": "Element",
-        }
+        },
     )
     req_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_female_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_female_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_female_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_female_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_male_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_male_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_male_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_male_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_female_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_troops_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_troops_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsBelow",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_captives_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesAbove",
             "type": "Element",
-        }
+        },
     )
     req_hero_male_captives_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesBelow",
             "type": "Element",
-        }
+        },
     )
     req_morale_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMoraleBelow",
             "type": "Element",
-        }
+        },
     )
     req_morale_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqMoraleAbove",
             "type": "Element",
-        }
+        },
     )
     req_gold_above: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqGoldAbove",
             "type": "Element",
-        }
+        },
     )
     req_gold_below: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqGoldBelow",
             "type": "Element",
-        }
+        },
     )
     gold_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "GoldTotal",
             "type": "Element",
-        }
+        },
     )
     captor_gold_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
-        }
+        },
     )
     relation_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "RelationTotal",
             "type": "Element",
-        }
+        },
     )
     morale_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
-        }
+        },
     )
     health_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "HealthTotal",
             "type": "Element",
-        }
+        },
     )
     renown_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "RenownTotal",
             "type": "Element",
-        }
+        },
     )
     prostitution_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "ProstitutionTotal",
             "type": "Element",
-        }
+        },
     )
     slavery_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "SlaveryTotal",
             "type": "Element",
-        }
+        },
     )
     trait_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "TraitTotal",
             "type": "Element",
-        }
+        },
     )
     skill_total: Optional[str] = field(
         default=None,
         metadata={
             "name": "SkillTotal",
             "type": "Element",
-        }
+        },
     )
     trait_xptotal: Optional[str] = field(
         default=None,
         metadata={
             "name": "TraitXPTotal",
             "type": "Element",
-        }
+        },
     )
     skill_xptotal: Optional[str] = field(
         default=None,
         metadata={
             "name": "SkillXPTotal",
             "type": "Element",
-        }
+        },
     )
     skill_to_level: Optional[str] = field(
         default=None,
         metadata={
             "name": "SkillToLevel",
             "type": "Element",
-        }
+        },
     )
     req_captor_skill: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkill",
             "type": "Element",
-        }
+        },
     )
     req_hero_skill: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkill",
             "type": "Element",
-        }
+        },
     )
     trait_to_level: Optional[str] = field(
         default=None,
         metadata={
             "name": "TraitToLevel",
             "type": "Element",
-        }
+        },
     )
     req_captor_trait: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTrait",
             "type": "Element",
-        }
+        },
     )
     req_hero_trait: Optional[str] = field(
         default=None,
         metadata={
             "name": "ReqHeroTrait",
             "type": "Element",
-        }
+        },
     )
     skills_to_level: Optional[SkillsToLevel] = field(
         default=None,
         metadata={
             "name": "SkillsToLevel",
             "type": "Element",
-        }
+        },
     )
     traits_to_level: Optional[TraitsToLevel] = field(
         default=None,
         metadata={
             "name": "TraitsToLevel",
             "type": "Element",
-        }
+        },
     )
     skills_required: Optional[SkillsRequired] = field(
         default=None,
         metadata={
             "name": "SkillsRequired",
             "type": "Element",
-        }
+        },
     )
     traits_required: Optional[TraitsRequired] = field(
         default=None,
         metadata={
             "name": "TraitsRequired",
             "type": "Element",
-        }
+        },
     )
     companions: Optional[Companions] = field(
         default=None,
         metadata={
             "name": "Companions",
             "type": "Element",
-        }
+        },
     )
     terrain_types_requirements: Optional[TerrainTypesRequirements] = field(
         default=None,
         metadata={
             "name": "TerrainTypesRequirements",
             "type": "Element",
-        }
+        },
     )
     menu_options: Optional[MenuOptions] = field(
         default=None,
         metadata={
             "name": "MenuOptions",
             "type": "Element",
-        }
+        },
     )
     xmlsource: str = field(
         default=None,
         validator=validators.optional(validators.instance_of(str)),
-        metadata={"type": XmlType.IGNORE}
+        metadata={"type": XmlType.IGNORE},
     )
     xmlfile: str = field(
         default=None,
         validator=validators.optional(validators.instance_of(str)),
-        metadata={"type": XmlType.IGNORE}
+        metadata={"type": XmlType.IGNORE},
     )
     _parents: list = field(default=[], alias="__parents", metadata={"type": XmlType.IGNORE})
     _children: list = field(default=[], alias="__children", metadata={"type": XmlType.IGNORE})
@@ -4098,7 +4102,9 @@ class Ceevent:
         return outbound_events
 
     def has_restricted_flag(self, flag: RestrictedListOfFlagsType):
-        return any(flag == x for x in self.multiple_restricted_list_of_flags.restricted_list_of_flags)
+        return any(
+            flag == x for x in self.multiple_restricted_list_of_flags.restricted_list_of_flags
+        )
 
     def get_color(self):
         flags = self.multiple_restricted_list_of_flags.restricted_list_of_flags
@@ -4135,5 +4141,5 @@ class Ceevents:
             "name": "CEEvent",
             "type": "Element",
             "min_occurs": 1,
-        }
+        },
     )

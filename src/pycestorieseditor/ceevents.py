@@ -152,14 +152,21 @@ SKILLNAMES = (
     'req_hero_skill',
     'skill_to_level',  # XXX: is a list in MenuOptions?!? Not used in the wild.
     'skills_required',
-    'skills_to_level',
+    ('skills_to_level', "id"),
+    ('skill', "id"),
 )
 SKIPELEM = ('value', 'restricted_list_of_flags')
 
 
 def get_skill_value(ceevent, skill):
-    if elem := getattr(ceevent, skill):
-        return elem
+    if isinstance(skill, tuple):
+        if not hasattr(ceevent, skill[0]):
+            return None
+        ceevent, skill = getattr(ceevent, skill[0]), skill[1]
+
+    if hasattr(ceevent, skill):
+        return getattr(ceevent, skill)
+    return None
 
 
 def get_skill_text_value(element):
@@ -293,20 +300,21 @@ def process_module(xmlfiles: list, cb=None):
                 bbx = get_bigbadxml()
                 bbx.add_bad_xmlfile(errs[0], errs[1])
                 continue
+            if cb:
+                cb(f"Munching events ...")
             for ceevent in bucket:
-                if cb:
-                    cb(f"Munching {ceevent.name.value} ...")
-                if ceevent.name.value in ebucket.keys():
+                if ceevent.name in ebucket.keys():
                     qh = logging.handlers.QueueHandler(queue)
                     mlogger = logging.getLogger(__name__)
                     mlogger.addHandler(qh)
                     mlogger.warning(
                         "Override of '%s' already present in bucket. (trigger: %s)",
-                        ceevent.name.value,
+                        ceevent.name,
                         ceevent.xmlfile,
                     )
-                ebucket[ceevent.name.value] = ceevent
-            cb("Munching skills...")
+                ebucket[ceevent.name] = ceevent
+            if cb:
+                cb("Munching skills...")
             for skill, eventname in skills:
                 if cb:
                     cb()
@@ -337,7 +345,7 @@ def process_file(xmlfile, xsd, parser, queue) -> tuple[list[Ceevent], list, tupl
         ceevent: Ceevent = parser.from_string(string, Ceevent)
         ceevent.xmlsource = string
         ceevent.xmlfile = xmlfile
-        skills = skills + list(filter_ceevent(ceevent, ceevent.name.value))
+        skills = skills + list(filter_ceevent(ceevent, ceevent.name))
         bucket.append(ceevent)
     mlogger.info("-stop- %s", x.name)
     return bucket, skills, False

@@ -709,7 +709,7 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
         core = wx.BoxSizer(wx.VERTICAL)
         fsizer = wx.FlexGridSizer(2, gap=(5, 5))
 
-        wx_label_text(self, fsizer, label="Event Name", text=ceevent.name.value)
+        wx_label_text(self, fsizer, label="Event Name", text=ceevent.name)
         with suppress(AttributeError):
             wx_label_text(self, fsizer, label="Text", text=ceevent.text.value, multiline=True)
         wx_label_text(self, fsizer, label="Order to Call", text=ceevent.order_to_call)
@@ -922,13 +922,14 @@ class DwTabXml(wx.Panel):
 
 
 class DwTabOption(wx_scrolled.ScrolledPanel):
-    def __init__(self, parent, option: Option):
+    def __init__(self, parent, option: Option | MenuOption, delay_widgets=False):
         wx_scrolled.ScrolledPanel.__init__(self, parent, -1)
         self.SetMinSize((800, -1))
         self.core, self.fsizer = None, None
         self._option = option
 
-        self.__add_widgets()
+        if not delay_widgets:
+            self.__add_widgets()
 
     def get_sizers(self):
         if not self.core:
@@ -1145,10 +1146,13 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
 
 class DwTabMenuOption(DwTabOption):
     def __init__(self, parent, moption: MenuOption):
+        super().__init__(parent, moption, False)
+
+    def _add_widgets(self):
         core, fsizer = self.get_sizers()
-        wx_label_text(self, fsizer, label="Option text", text=moption.menu_id)
-        wx_label_text(self, fsizer, label="Option text", text=moption.option_id)
-        super().__init__(parent, moption)
+        wx_label_text(self, fsizer, label="Option text", text=self._option.menu_id)
+        wx_label_text(self, fsizer, label="Option text", text=self._option.option_id)
+        super()._add_widgets()
 
 
 class DwTabOptions(wx.Panel):
@@ -1175,7 +1179,7 @@ class DwTabMenuOptions(wx.Panel):
 
 class DetailWindow(wx.Frame):
     def __init__(self, parent, ceevent: Ceevent, *args, **kwargs):
-        title = ceevent.name.value
+        title = ceevent.name
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title=title, *args, **kwargs)
         # self.SetSizeHints((800, 600), (1024, 800))
@@ -1186,15 +1190,19 @@ class DetailWindow(wx.Frame):
 
         tabone = DwTabOne(nb, ceevent)
         tabxml = DwTabXml(nb, ceevent.xmlsource)
+        taboptions, tabmoptions = None, None
         if ceevent.options:
             taboptions = DwTabOptions(nb, ceevent.options)
         # FIXME: menu options are currently broken, waiting on PR merge to activate
-        # tabmoptions = DwTabMenuOptions(nb, ceevent.menu_options)
+        if ceevent.menu_options:
+            tabmoptions = DwTabMenuOptions(nb, ceevent.menu_options)
 
         nb.AddPage(tabone, "Main")
         nb.AddPage(tabxml, "Xml Source")
-        if ceevent.options:
+        if taboptions:
             nb.AddPage(taboptions, "Options")
+        if tabmoptions:
+            nb.AddPage(tabmoptions, "Menu Options")
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
@@ -1402,7 +1410,7 @@ class SearchIndice(wx.BoxSizer):
 class CeListItem(wx.ListItem):
     def __init__(self, item, wxid: int):
         super().__init__()
-        self.SetText(item.name.value)
+        self.SetText(item.name)
         self.SetId(wxid)
         if color := item.get_color():
             self.SetBackgroundColour(wx.Colour(hex2rgb(color)))
@@ -1644,7 +1652,7 @@ class MainWindow(wx.Frame):
                 items = c(value, items)
         if filterstr:
             for string in filterstr:
-                items = list(filter(lambda x: string in x.name.value, items))
+                items = list(filter(lambda x: string in x.name, items))
 
         self.celb.populate(list(items))
 
