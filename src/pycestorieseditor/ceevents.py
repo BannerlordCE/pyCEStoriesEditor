@@ -11,6 +11,7 @@ import inspect
 import logging
 import logging.handlers
 import multiprocessing
+import queue
 import os
 import time
 from xml.etree.ElementTree import ParseError as xmlParseError
@@ -281,7 +282,8 @@ def process_module(xmlfiles: list, cb=None):
 
     parser = XmlParser()
     xsd = get_xsdfile()
-    queue = multiprocessing.Manager().Queue(-1)
+    queuelog = multiprocessing.Manager().Queue(-1)
+    queuecb = multiprocessing.Manager().Queue(-1)
 
     # Pool(processes) uses os.cpu_count() if none value is provided
     errcount = 0
@@ -291,9 +293,15 @@ def process_module(xmlfiles: list, cb=None):
         cb("Analyzing xml files...")
         res = pool.starmap_async(
             process_file,
-            ((xmlfile, xsd, parser, queue) for xmlfile in xmlfiles),
+            ((xmlfile, xsd, parser, queuelog, queuecb) for xmlfile in xmlfiles),
             chunksize=chunks,
         )
+        try:
+            while fn := queuecb.get(True, 2):
+                cb(f"Processing {fn}...")
+        except queue.Empty:
+            ...
+
         for bucket, skills, errs in res.get():
             if errs:
                 errcount += 1
@@ -304,7 +312,7 @@ def process_module(xmlfiles: list, cb=None):
                 cb(f"Munching events ...")
             for ceevent in bucket:
                 if ceevent.name in ebucket.keys():
-                    qh = logging.handlers.QueueHandler(queue)
+                    qh = logging.handlers.QueueHandler(queuelog)
                     mlogger = logging.getLogger(__name__)
                     mlogger.addHandler(qh)
                     mlogger.warning(
@@ -316,8 +324,6 @@ def process_module(xmlfiles: list, cb=None):
             if cb:
                 cb("Munching skills...")
             for skill, eventname in skills:
-                if cb:
-                    cb()
                 for s in skill:
                     indexes['skills'].setdefault(s, [])
                     indexes['skills'][s].append(eventname)
@@ -325,12 +331,15 @@ def process_module(xmlfiles: list, cb=None):
     return errcount
 
 
-def process_file(xmlfile, xsd, parser, queue) -> tuple[list[Ceevent], list, tuple | bool]:
+def process_file(
+    xmlfile, xsd, parser, queuelog, queuecb
+) -> tuple[list[Ceevent], list, tuple | bool]:
     x = Path(xmlfile)
-    qh = logging.handlers.QueueHandler(queue)
+    qh = logging.handlers.QueueHandler(queuelog)
     mlogger = logging.getLogger(__name__)
     mlogger.addHandler(qh)
     mlogger.info("-start- %s", x.name)
+    queuecb.put(x.name)
     bucket = []
     try:
         xsobjects = xsd.to_objects(xmlfile)
