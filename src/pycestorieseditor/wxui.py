@@ -1393,7 +1393,7 @@ class AncestryTable(ABCtrl):
                 rdata.child,
             ]
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
-        self.SetColumnWidth(1, 55)
+        self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
         self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
 
 
@@ -1402,7 +1402,7 @@ class AncestryDetails(wx.Frame):
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title="PCE: Troubleshooting ancestry", *args, **kwargs)
         panel = wx_scrolled.ScrolledPanel(self, wx.ID_ANY)
-        self.SetMinSize((800, 600))
+        self.SetMinSize((1250, 600))
         vsizer = wx.BoxSizer(wx.VERTICAL)
         txt = (
             "The following is a list of TriggerEvent, it is sorted by file.\nThe event source is the point of "
