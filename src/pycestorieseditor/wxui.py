@@ -43,6 +43,7 @@ from pycestorieseditor.ceevents import (
     ce_abbr_path,
     populate_children,
     event_ancestry_errors,
+    find_by_name,
 )
 from pycestorieseditor.ceevents_template import (
     RestrictedListOfFlagsType,
@@ -1238,7 +1239,7 @@ class DetailWindow(wx.Frame):
         self.previewframe.Bind(wx.EVT_CLOSE, self.preview_on_close)
         self.previewframe.SetMinSize(size)
         self.previewframe.SetMaxSize(size)
-        self.previewframe.SetTitle(ceevent.name)
+        self.previewframe.SetTitle(f"Preview: {ceevent.name}")
         preview = PreviewEvent(self.previewframe, ceevent)
         self.previewframe.Center()
         self.previewframe.Show()
@@ -1299,17 +1300,18 @@ class PreviewEvent(wx.Panel):
         text.SetMaxHeight(400)
         vsizer.Add(text, 0, wx.EXPAND | wx.ALL, 5)
         vsizer.Add((1, 1), 1, wx.EXPAND)
+        buttonsize = (-1, 20)
         for opt in ceevent.options.option:
             if not opt.trigger_event_name and not opt.trigger_events:
                 btn = wx.Button(
-                    self, label=filter_text(opt.option_text, True), style=wx.BORDER_STATIC
+                    self, label=filter_text(opt.option_text, True), style=wx.BORDER_STATIC, size=buttonsize
                 )
                 btn.SetBackgroundColour("#FF6666")
                 btn.Bind(wx.EVT_BUTTON, lambda evt: self.GetParent().Close(), btn)
                 sizer.Add(btn, 0, wx.ALL, 5)
             elif not opt.trigger_events:
                 btn = wx.Button(
-                    self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC
+                    self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC, size=buttonsize
                 )
                 btn.event_name = opt.trigger_event_name
                 self.Bind(wx.EVT_BUTTON, self.on_button_clicked, btn)
@@ -1319,7 +1321,7 @@ class PreviewEvent(wx.Panel):
                     ssizer = wx.BoxSizer(wx.VERTICAL)
 
                     btn = wx.Button(
-                        self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC
+                        self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC, size=buttonsize
                     )
                     btn.event_name = event.event_name
                     btn.Bind(wx.EVT_BUTTON, self.on_button_clicked, btn)
@@ -1337,9 +1339,14 @@ class PreviewEvent(wx.Panel):
         self.SetSizer(vsizer)
 
     def on_button_clicked(self, evt):
-        bucket = get_ebucket()
         wdg = evt.GetEventObject()
-        ceevent = bucket[wdg.event_name]
+        ceevent = find_by_name(wdg.event_name)
+        if not ceevent:
+            dialog = wx.MessageDialog(
+                self, f"Event {wdg.event_name} does not exists.", "Warning: event missing", style=wx.OK | wx.CENTER | wx.ICON_WARNING
+            )
+            dialog.ShowModal()
+            return False
         self.DestroyChildren()
         self.ClearBackground()
         self.set_bgimg(ceevent)
@@ -1414,7 +1421,7 @@ class AncestryDetails(wx.Frame):
             panel,
             event_ancestry_errors.groupby("filename"),
             ("Filename", "Event Source", "Event Target"),
-            AncestryTable
+            AncestryTable,
         )
         vsizer.Add(table, 1, wx.ALL | wx.EXPAND, 5)
 
