@@ -137,32 +137,32 @@ def find_by_name(name: str):
     return ebucket[name]
 
 
-def _outboundevents(cevent: Ceevent):
+def _outboundevents(cevent: Ceevent, errors):
     """Yield outbout events from event ceevent"""
     for outboundevent in cevent.outboundevents:
-        child = find_by_name(outboundevent.strip())
-        if not child:
-            raise ChildNotFound(outboundevent)
-        yield child
-
-
-def populate_children():
-    print(f"start: {time.strftime('%X')}")
-    errors = count()
-    bucket = get_ebucket()
-    for cevent in bucket.values():
         try:
-            for child in _outboundevents(cevent):
-                cevent.set_child_node(child)
+            child = find_by_name(outboundevent.strip())
+            if not child:
+                raise ChildNotFound(outboundevent)
+            yield child
         except ChildNotFound as e:
-            event_ancestry_errors.register(event_ancestry_error(cevent.name, e.outboundevent, cevent.xmlfile))
+            event_ancestry_errors.register(
+                event_ancestry_error(cevent.name, e.outboundevent, cevent.xmlfile)
+            )
             next(errors)
             logger.error(
                 "Child Not Found: Cannot find event with name '%s' in the bucket. (bound file '%s')",
                 e.outboundevent,
                 cevent.xmlfile,
             )
-    print(f"end: {time.strftime('%X')}")
+
+
+def populate_children():
+    errors = count()
+    bucket = get_ebucket()
+    for cevent in bucket.values():
+        for child in _outboundevents(cevent, errors):
+            cevent.set_child_node(child)
     return next(errors)
 
 
