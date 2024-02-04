@@ -132,10 +132,9 @@ event_ancestry_errors = EventAncestryErrors()
 
 def find_by_name(name: str):
     global ebucket
-    for cevent in ebucket.values():
-        if cevent.name == name:
-            return cevent
-    return None
+    if name not in ebucket:
+        return None
+    return ebucket[name]
 
 
 def _outboundevents(cevent: Ceevent):
