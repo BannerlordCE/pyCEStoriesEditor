@@ -14,6 +14,7 @@ import multiprocessing
 import queue
 import os
 import time
+from collections import namedtuple
 from xml.etree.ElementTree import ParseError as xmlParseError
 from functools import lru_cache
 from itertools import count, dropwhile
@@ -103,6 +104,32 @@ def cpackage(size):
     return int(size / os.cpu_count()) + 1
 
 
+event_ancestry_error = namedtuple("event_ancestry_error", ["source", "child", "filename"])
+
+
+class EventAncestryErrors:
+    def __init__(self):
+        self._errors = []
+        self._count = count()
+        self._len = next(self._count)
+
+    def register(self, error: event_ancestry_error):
+        self._errors.append(error)
+        self._len = next(self._count)
+
+    def groupby(self, mode=None) -> list[event_ancestry_error]:
+        if mode == "filename":
+            return sorted(self._errors, key=lambda err: err.filename)
+        return sorted(self._errors, key=lambda err: err.source)
+
+    @property
+    def len(self):
+        return self._len
+
+
+event_ancestry_errors = EventAncestryErrors()
+
+
 def find_by_name(name: str):
     global ebucket
     for cevent in ebucket.values():
@@ -112,6 +139,7 @@ def find_by_name(name: str):
 
 
 def _outboundevents(cevent: Ceevent):
+    """Yield outbout events from event ceevent"""
     for outboundevent in cevent.outboundevents:
         child = find_by_name(outboundevent.strip())
         if not child:
@@ -119,14 +147,17 @@ def _outboundevents(cevent: Ceevent):
         yield child
 
 
-def populate_children(bucket):
+def populate_children():
     print(f"start: {time.strftime('%X')}")
     errors = count()
+    bucket = get_ebucket()
     for cevent in bucket.values():
         try:
             for child in _outboundevents(cevent):
                 cevent.set_child_node(child)
         except ChildNotFound as e:
+            event_ancestry_errors.register(event_ancestry_error(cevent.name, e.outboundevent, cevent.xmlfile))
+            next(errors)
             logger.error(
                 "Child Not Found: Cannot find event with name '%s' in the bucket. (bound file '%s')",
                 e.outboundevent,

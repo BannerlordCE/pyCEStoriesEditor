@@ -21,10 +21,9 @@ from attrs import fields
 from pygments import token
 from pygments.styles import get_style_by_name
 from wx import stc
-from wx.lib import expando
 from wx.lib import buttons
+from wx.lib import expando
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
-import wx.lib.stattext as wxst
 
 from pycestorieseditor import APPNAME
 from pycestorieseditor.ceevents import (
@@ -42,6 +41,8 @@ from pycestorieseditor.ceevents import (
     init_bigbadxml,
     get_bigbadxml,
     ce_abbr_path,
+    populate_children,
+    event_ancestry_errors,
 )
 from pycestorieseditor.ceevents_template import (
     RestrictedListOfFlagsType,
@@ -166,7 +167,7 @@ def wx_label_text(parent, sizer, label: str, text: str, multiline=None, tooltip=
         wtext = wx.TextCtrl(parent, wx.ID_ANY, value=text, style=wx.TE_READONLY)
 
     if tooltip:
-        wtext.SetToolTipString(tooltip)
+        wtext.SetToolTip(tooltip)
 
     sizer.Add(lbl, 0, wx.LEFT, 5)
     sizer.Add(wtext, 1, wx.ALL | wx.EXPAND, 3)
@@ -381,7 +382,7 @@ class CeCollapsible2ColPanel(ABCCollapsiblePanel):
 
 class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
     def _post_init(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _first_flex(self, pane):
         cp_flex = wx.FlexGridSizer(4, (5, 5))
@@ -705,10 +706,11 @@ class CeStripSettings(CeCollapsiblePanel):
 class DwTabOne(wx_scrolled.ScrolledPanel):
     def __init__(self, parent, ceevent: Ceevent):
         wx_scrolled.ScrolledPanel.__init__(self, parent, style=wx.TAB_TRAVERSAL)
-        self.SetMinSize((800, -1))
+        self.SetMinSize((1024, -1))
         core = wx.BoxSizer(wx.VERTICAL)
         fsizer = wx.FlexGridSizer(2, gap=(5, 5))
 
+        wx_label_text(self, fsizer, label="Filename", text=ceevent.xmlfile)
         wx_label_text(self, fsizer, label="Event Name", text=ceevent.name)
         with suppress(AttributeError):
             wx_label_text(self, fsizer, label="Text", text=ceevent.text.value, multiline=True)
@@ -1182,7 +1184,6 @@ class DetailWindow(wx.Frame):
         title = ceevent.name
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title=title, *args, **kwargs)
-        # self.SetSizeHints((800, 600), (1024, 800))
         self.SetMinSize((800, 600))
         self.previewframe = None
 
@@ -1217,6 +1218,7 @@ class DetailWindow(wx.Frame):
         closebutton.Realize()
 
         self.SetSizerAndFit(sizer)
+        self.SetSize((800, 600))
         self.CenterOnScreen()
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
@@ -1269,7 +1271,6 @@ class PreviewEvent(wx.Panel):
         super().__init__(parent)
         self.SetBackgroundStyle(wx.BG_STYLE_ERASE)
         self.frame = parent
-        self.SetSize(445, 805)
         self.background_img: Optional[os.PathLike] = None
 
         self.set_bgimg(ceevent)
@@ -1364,10 +1365,10 @@ class PreviewEvent(wx.Panel):
 class BadXmlDetails(wx.Frame):
     def __init__(self, parent, data, *args, **kwargs):
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        super().__init__(parent, title="PCE: Troubleshooting", *args, **kwargs)
+        super().__init__(parent, title="PCE: Troubleshooting xml files", *args, **kwargs)
         panel = wx_scrolled.ScrolledPanel(self, wx.ID_ANY)
         panel.SetMinSize((800, -1))
-        self.SetSize((800, 600))
+
         sizer = wx.FlexGridSizer(2, (5, 5))
         sizer.AddGrowableCol(1)
         for k, v in data.bad_xml:
@@ -1378,6 +1379,48 @@ class BadXmlDetails(wx.Frame):
         panel.SetSizerAndFit(sizer)
         panel.SetupScrolling()
         self.Layout()
+
+
+class AncestryTable(ABCtrl):
+    def populate(self):
+        for ri, rdata in enumerate(self._data):
+            idx = self.InsertItem(ri, ce_abbr_path(rdata.filename))
+            self.SetItem(idx, 1, rdata.source)
+            self.SetItem(idx, 2, rdata.child)
+            yield ri, idx, [
+                rdata.filename,
+                rdata.source,
+                rdata.child,
+            ]
+        self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        self.SetColumnWidth(1, 55)
+        self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
+
+
+class AncestryDetails(wx.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        super().__init__(parent, title="PCE: Troubleshooting ancestry", *args, **kwargs)
+        panel = wx_scrolled.ScrolledPanel(self, wx.ID_ANY)
+        self.SetMinSize((800, 600))
+        vsizer = wx.BoxSizer(wx.VERTICAL)
+        txt = (
+            "The following is a list of TriggerEvent, it is sorted by file.\nThe event source is the point of "
+            "reference, where as the event target is the missing event."
+        )
+        vsizer.Add(wx.StaticText(panel, wx.ID_ANY, txt), 0, wx.ALL | wx.EXPAND, 10)
+
+        table = ListCtrlPanel(
+            panel,
+            event_ancestry_errors.groupby("filename"),
+            ("Filename", "Event Source", "Event Target"),
+            AncestryTable
+        )
+        vsizer.Add(table, 1, wx.ALL | wx.EXPAND, 5)
+
+        panel.SetSizerAndFit(vsizer)
+        panel.SetupScrolling()
+        # self.SetSize((800, -1))
 
 
 # - Main Window ---
@@ -1468,7 +1511,7 @@ class MainWindow(wx.Frame):
         self._indices: list[indice] = []
 
         self.Center()
-        self.SetSizeHints(800, 400, 800, 600)
+        self.SetSizeHints(800, 400, 1024, 768)
 
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
         self.window_1 = wx.SplitterWindow(self.panel_1, wx.ID_ANY)
@@ -1479,12 +1522,21 @@ class MainWindow(wx.Frame):
         self.window_1.SetMinimumPaneSize(20)
         self.window_1.SetSashGravity(0.5)
 
-        self._warningtxt = wxst.GenStaticText(self.panel_1, wx.ID_ANY, label="")
-        self._warningtxt.SetForegroundColour((255, 0, 0))
+        self.bad_xml_btn = wx.Button(self.panel_1, label="", size=(-1, 30))
+        self.bad_xml_btn.SetBackgroundColour((100, 41, 38))
         if bxa := bbx.amount():
-            self._warningtxt.SetLabel(f"{bxa} xml file{'s'[:bxa ^ 1]} failed validation.")
+            self.bad_xml_btn.SetLabelText(f"{bxa} xml file{'s'[:bxa ^ 1]} failed validation")
         else:
-            self._warningtxt.Hide()
+            self.bad_xml_btn.Hide()
+
+        self.ancestry_btn = wx.Button(self.panel_1, label="", size=(-1, 30))
+        self.ancestry_btn.SetBackgroundColour((100, 41, 38))
+        if event_ancestry_errors.len > 1:
+            self.ancestry_btn.SetLabelText(
+                f"{event_ancestry_errors.len} trigger events coulnd't be found"
+            )
+        else:
+            self.ancestry_btn.Hide()
 
         # Legend panel
         self.panel_leg = wx.StaticBox(
@@ -1499,6 +1551,7 @@ class MainWindow(wx.Frame):
         )
 
         topsizer = wx.BoxSizer(wx.VERTICAL)
+        warningsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.leftsizer = wx.BoxSizer(wx.VERTICAL)
         legendsizer = wx.WrapSizer(wx.HORIZONTAL)
         searchsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -1533,7 +1586,9 @@ class MainWindow(wx.Frame):
 
         self.celb = CeListBox(self.window_1_pane_2, wx.ID_ANY, cb=self.cb_toggle_enable)
 
-        topsizer.Add(self._warningtxt, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.LEFT | wx.RIGHT, 3)
+        warningsizer.Add(self.bad_xml_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 3)
+        warningsizer.Add(self.ancestry_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 3)
+        topsizer.Add(warningsizer, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.LEFT, wx.RIGHT, 3)
         topsizer.Add(self.window_1, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         self.leftsizer.Add(self.panel_leg, 2, wx.EXPAND | wx.ALL, 5)
@@ -1566,9 +1621,12 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_TEXT, self.on_text_event, self.searchent)
         self.Bind(wx.EVT_SEARCH, self.on_text_enter_event, self.searchent)
         self.Bind(wx.EVT_SEARCH_CANCEL, self.on_reset_event, self.searchent)
-        self._warningtxt.Bind(wx.EVT_ENTER_WINDOW, self._on_mouse_event, self._warningtxt)
-        self._warningtxt.Bind(wx.EVT_LEAVE_WINDOW, self._on_mouse_event, self._warningtxt)
-        self._warningtxt.Bind(wx.EVT_LEFT_DOWN, self._on_mouse_event, self._warningtxt)
+        self.bad_xml_btn.Bind(wx.EVT_BUTTON, self._on_bad_xml_clicked, self.bad_xml_btn)
+        self.ancestry_btn.Bind(wx.EVT_BUTTON, self._on_ancestry_btn_clicked, self.ancestry_btn)
+        self.bad_xml_btn.Bind(wx.EVT_ENTER_WINDOW, self._on_button_hover, self.bad_xml_btn)
+        self.ancestry_btn.Bind(wx.EVT_ENTER_WINDOW, self._on_button_hover, self.ancestry_btn)
+        self.bad_xml_btn.Bind(wx.EVT_LEAVE_WINDOW, self._on_button_hover, self.bad_xml_btn)
+        self.ancestry_btn.Bind(wx.EVT_LEAVE_WINDOW, self._on_button_hover, self.ancestry_btn)
 
     def cb_toggle_enable(self):
         if self.IsEnabled():
@@ -1585,7 +1643,10 @@ class MainWindow(wx.Frame):
         )
 
         def pulse(m=None):
-            dialog.Pulse(m or "")
+            if not m:
+                dialog.Pulse()
+            else:
+                dialog.Pulse(m)
             wx.MilliSleep(1)
             wx.Yield()
 
@@ -1615,6 +1676,8 @@ class MainWindow(wx.Frame):
         except Exception as e:
             logger.error(e)
             raise ModuleProcessingError from e
+        pulse("Creating events ancestry...")
+        errors = populate_children()
         dialog.Close()
 
     def on_reset_event(self, event):
@@ -1687,13 +1750,18 @@ class MainWindow(wx.Frame):
         self.build_constraints_and_populate()
         event.Skip()
 
-    def _on_mouse_event(self, evt):
-        obj: wxst.GenStaticText = evt.GetEventObject()
-        match obj, evt.Entering(), evt.Leaving():
-            case self._warningtxt, True, False:
-                obj.SetForegroundColour((200, 0, 0))
-            case self._warningtxt, False, True:
-                obj.SetForegroundColour((255, 0, 0))
-            case _:
-                x = BadXmlDetails(self, get_bigbadxml())
-                x.Show()
+    def _on_bad_xml_clicked(self, evt):
+        x = BadXmlDetails(self, get_bigbadxml())
+        x.Show()
+
+    def _on_ancestry_btn_clicked(self, evt):
+        x = AncestryDetails(self)
+        x.Show()
+
+    def _on_button_hover(self, evt):
+        obj: wx.Button = evt.GetEventObject()
+        match evt.Entering(), evt.Leaving():
+            case True, False:
+                obj.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+            case False, True:
+                obj.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
