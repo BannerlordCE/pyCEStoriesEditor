@@ -13,7 +13,6 @@ import logging.handlers
 import multiprocessing
 import queue
 import os
-import time
 from collections import namedtuple
 from xml.etree.ElementTree import ParseError as xmlParseError
 from functools import lru_cache
