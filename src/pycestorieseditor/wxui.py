@@ -1537,6 +1537,7 @@ class MainWindow(wx.Frame):
     def __init__(self, conffile, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         super().__init__(None, wx.ID_ANY, *args, title="CE Events Visualizer", **kwds)
+        self.SetIcon(wx.ArtProvider.GetIcon('ICON'))
         self._conffile = conffile
         self._load_conf()
         bbx = get_bigbadxml()
@@ -1674,6 +1675,7 @@ class MainWindow(wx.Frame):
             maximum=1,
             style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME | wx.PD_SMOOTH,
         )
+        dialog.SetIcon(wx.ArtProvider.GetIcon('ICON'))
 
         def pulse(m=None):
             if not m:
