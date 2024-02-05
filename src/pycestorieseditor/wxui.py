@@ -44,6 +44,7 @@ from pycestorieseditor.ceevents import (
     populate_children,
     event_ancestry_errors,
     find_by_name,
+    ancestry_instance,
 )
 from pycestorieseditor.ceevents_template import (
     RestrictedListOfFlagsType,
@@ -54,6 +55,7 @@ from pycestorieseditor.ceevents_template import (
     MenuOption,
     MenuOptions,
 )
+from pycestorieseditor.ancestrygraph import graph_event
 from pycestorieseditor.pil2wx import (
     hex2rgb,
     wxicon,
@@ -1180,9 +1182,15 @@ class DwTabMenuOptions(wx.Panel):
         self.SetSizerAndFit(sizer)
 
 
+class DwTabAncestry(wx.Panel):
+    def __init__(self, parent, ceevent: Ceevent):
+        super().__init__(parent)
+        graph_event(self, ceevent)
+
+
 class DetailWindow(wx.Frame):
     def __init__(self, parent, ceevent: Ceevent, *args, **kwargs):
-        title = ceevent.name
+        title = f"Event details: {ceevent.name}"
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title=title, *args, **kwargs)
         self.SetMinSize((800, 600))
@@ -1204,6 +1212,12 @@ class DetailWindow(wx.Frame):
             nb.AddPage(taboptions, "Options")
         if tabmoptions:
             nb.AddPage(tabmoptions, "Menu Options")
+        ancestry = ancestry_instance.get(ceevent.name)
+        if ancestry.is_graphable():
+            tabancestry = DwTabAncestry(nb, ceevent)
+            nb.AddPage(tabancestry, "Ancestry Graph")
+        else:
+            print(len(ancestry.children), len(ancestry.parents))
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
@@ -1304,14 +1318,20 @@ class PreviewEvent(wx.Panel):
         for opt in ceevent.options.option:
             if not opt.trigger_event_name and not opt.trigger_events:
                 btn = wx.Button(
-                    self, label=filter_text(opt.option_text, True), style=wx.BORDER_STATIC, size=buttonsize
+                    self,
+                    label=filter_text(opt.option_text, True),
+                    style=wx.BORDER_STATIC,
+                    size=buttonsize,
                 )
                 btn.SetBackgroundColour("#FF6666")
                 btn.Bind(wx.EVT_BUTTON, lambda evt: self.GetParent().Close(), btn)
                 sizer.Add(btn, 0, wx.ALL, 5)
             elif not opt.trigger_events:
                 btn = wx.Button(
-                    self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC, size=buttonsize
+                    self,
+                    label=filter_text(opt.option_text, False),
+                    style=wx.BORDER_STATIC,
+                    size=buttonsize,
                 )
                 btn.event_name = opt.trigger_event_name
                 self.Bind(wx.EVT_BUTTON, self.on_button_clicked, btn)
@@ -1321,7 +1341,10 @@ class PreviewEvent(wx.Panel):
                     ssizer = wx.BoxSizer(wx.VERTICAL)
 
                     btn = wx.Button(
-                        self, label=filter_text(opt.option_text, False), style=wx.BORDER_STATIC, size=buttonsize
+                        self,
+                        label=filter_text(opt.option_text, False),
+                        style=wx.BORDER_STATIC,
+                        size=buttonsize,
                     )
                     btn.event_name = event.event_name
                     btn.Bind(wx.EVT_BUTTON, self.on_button_clicked, btn)
@@ -1343,7 +1366,10 @@ class PreviewEvent(wx.Panel):
         ceevent = find_by_name(wdg.event_name)
         if not ceevent:
             dialog = wx.MessageDialog(
-                self, f"Event {wdg.event_name} does not exists.", "Warning: event missing", style=wx.OK | wx.CENTER | wx.ICON_WARNING
+                self,
+                f"Event {wdg.event_name} does not exists.",
+                "Warning: event missing",
+                style=wx.OK | wx.CENTER | wx.ICON_WARNING,
             )
             dialog.ShowModal()
             return False

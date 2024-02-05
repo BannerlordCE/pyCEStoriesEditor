@@ -126,7 +126,63 @@ class EventAncestryErrors:
         return self._len
 
 
+class AncestryNode:
+    def __init__(self, ceeventref):
+        self.name = ceeventref.name
+        self._ceevent = ceeventref
+        self._parents = []
+        self._children = []
+
+    def set_parent(self, node: AncestryNode):
+        self._parents.append(node)
+
+    def set_child(self, node: AncestryNode):
+        if node in self._children:
+            return
+        self._children.append(node)
+        node.set_parent(self)
+
+    def is_graphable(self):
+        return len(self._children) + len(self._parents) > 0
+
+    @property
+    def children(self):
+        return self._children
+
+    @property
+    def parents(self):
+        return self._parents
+
+    @lru_cache
+    def children_names(self):
+        return [n.name for n in self._children]
+
+    @lru_cache
+    def parents_names(self):
+        return [n.name for n in self._parents]
+
+
+class Ancestry:
+    def __init__(self):
+        self._nodes: dict[str, AncestryNode] = {}
+
+    def register(self, node: AncestryNode):
+        """Register a Ceevent object, does nothing if it already exists"""
+        if node.name not in self._nodes:
+            self._nodes[node.name] = node
+
+    def get(self, name: str):
+        return self._nodes[name]
+
+    def set_child_node(self, name: str, node: AncestryNode):
+        self._nodes[name].set_child(node)
+
+    def set_child_node_from_name(self, name_parent: str, name_child: str):
+        self._nodes[name_parent].set_child(self._nodes[name_child])
+
+
 event_ancestry_errors = EventAncestryErrors()
+ancestry_instance = Ancestry()
 
 
 def find_by_name(name: str):
@@ -161,7 +217,7 @@ def populate_children():
     bucket = get_ebucket()
     for cevent in bucket.values():
         for child in _outboundevents(cevent, errors):
-            cevent.set_child_node(child)
+            ancestry_instance.set_child_node_from_name(cevent.name, child.name)
     return next(errors)
 
 
@@ -350,6 +406,7 @@ def process_module(xmlfiles: list, cb=None):
                         ceevent.xmlfile,
                     )
                 ebucket[ceevent.name] = ceevent
+                ancestry_instance.register(AncestryNode(ceevent))
             if cb:
                 cb("Munching skills...")
             for skill, eventname in skills:

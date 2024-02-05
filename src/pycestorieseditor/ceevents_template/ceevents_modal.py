@@ -4083,8 +4083,6 @@ class Ceevent:
         validator=validators.optional(validators.instance_of(str)),
         metadata={"type": XmlType.IGNORE},
     )
-    _parents: list = field(default=[], alias="__parents", metadata={"type": XmlType.IGNORE})
-    _children: list = field(default=[], alias="__children", metadata={"type": XmlType.IGNORE})
 
     @property
     def outboundevents(self) -> list[str]:
@@ -4118,16 +4116,6 @@ class Ceevent:
                     return flag.color
                 except KeyError:
                     continue
-
-    def set_parent_node(self, parent: Ceevent):
-        self._parents.append(parent)
-
-    def set_child_node(self, child: Ceevent):
-        if child in self._children:
-            # logger.info("Event '%s' already set as child for %s", child.name.value, self.name.value)
-            return
-        self._children.append(child)
-        child.set_parent_node(self)
 
 
 @define
