@@ -50,9 +50,9 @@ def graph_event(panel, ceevent: Ceevent):
     G = Graph(
         edges,
         nodes=range(len(nodes)),
-        node_layout="radial",
+        node_layout="spring",
         node_labels=labels,
-        node_label_offset=0.1,
+        node_label_offset=0.05,
         node_label_fontdict={'size': 10},
         node_color=colors,
         arrows=True,
