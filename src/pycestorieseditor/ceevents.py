@@ -382,10 +382,16 @@ def process_module(xmlfiles: list, cb=None):
             chunksize=chunks,
         )
         try:
-            while fn := queuecb.get(True, 2):
+            timeout = None
+            while fn := queuecb.get(timeout=timeout):
+                timeout = 0.2
                 cb(f"Processing {fn}...")
         except queue.Empty:
             ...
+
+        qh = logging.handlers.QueueHandler(queuelog)
+        mlogger = logging.getLogger(__name__)
+        mlogger.addHandler(qh)
 
         for bucket, skills, errs in res.get():
             if errs:
@@ -394,12 +400,9 @@ def process_module(xmlfiles: list, cb=None):
                 bbx.add_bad_xmlfile(errs[0], errs[1])
                 continue
             if cb:
-                cb(f"Munching events ...")
+                cb("Munching events ...")
             for ceevent in bucket:
                 if ceevent.name in ebucket.keys():
-                    qh = logging.handlers.QueueHandler(queuelog)
-                    mlogger = logging.getLogger(__name__)
-                    mlogger.addHandler(qh)
                     mlogger.warning(
                         "Override of '%s' already present in bucket. (trigger: %s)",
                         ceevent.name,
