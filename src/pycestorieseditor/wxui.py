@@ -13,11 +13,15 @@ from functools import lru_cache
 from itertools import chain
 from typing import Callable, TypeVar, Optional
 
+import matplotlib.pyplot as plt
 import wx
 import wx.grid
 import wx.lib.mixins.inspection
 import wx.lib.scrolledpanel as wx_scrolled
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 from attrs import fields
+from netgraph import Graph
 from pygments import token
 from pygments.styles import get_style_by_name
 from wx import stc
@@ -55,7 +59,7 @@ from pycestorieseditor.ceevents_template import (
     MenuOption,
     MenuOptions,
 )
-from pycestorieseditor.ancestrygraph import graph_event
+from pycestorieseditor.ancestrygraph import build_graph
 from pycestorieseditor.pil2wx import (
     hex2rgb,
     wxicon,
@@ -1185,7 +1189,29 @@ class DwTabMenuOptions(wx.Panel):
 class DwTabAncestry(wx.Panel):
     def __init__(self, parent, ceevent: Ceevent):
         super().__init__(parent)
-        graph_event(self, ceevent)
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        self.toolbar = NavigationToolbar(self.canvas)
+        self.toolbar.Realize()
+        edges, nodes, colors, labels = build_graph(ceevent)
+
+        Graph(
+            edges,
+            nodes=range(len(nodes)),
+            node_layout="spring",
+            node_labels=labels,
+            node_label_offset=0.05,
+            node_label_fontdict={'size': 10},
+            node_color=colors,
+            arrows=True,
+            edge_layout="curved",
+        )
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
+        sizer.Add(self.toolbar, 0, wx.EXPAND)
+        self.toolbar.update()
+        self.SetSizer(sizer)
 
 
 class DetailWindow(wx.Frame):
@@ -1214,10 +1240,10 @@ class DetailWindow(wx.Frame):
             nb.AddPage(tabmoptions, "Menu Options")
         ancestry = ancestry_instance.get(ceevent.name)
         if ancestry.is_graphable():
-            tabancestry = DwTabAncestry(nb, ceevent)
-            nb.AddPage(tabancestry, "Ancestry Graph")
+            self.tabancestry = DwTabAncestry(nb, ceevent)
+            nb.AddPage(self.tabancestry, "Ancestry Graph")
         else:
-            print(len(ancestry.children), len(ancestry.parents))
+            logger.warning(f"Event {ceevent.name} doesn't have children nor parents.")
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
@@ -1236,12 +1262,20 @@ class DetailWindow(wx.Frame):
         self.SetSize((800, 600))
         self.CenterOnScreen()
 
-        self.Bind(wx.EVT_CLOSE, self.on_close)
+        self.Bind(wx.EVT_CLOSE, self.on_close2)
         self.Bind(wx.EVT_BUTTON, self.on_close, self.button_close)
         self.Bind(wx.EVT_BUTTON, lambda evt: self.on_preview_click(evt, ceevent), button_preview)
 
+    def on_close2(self, evt):
+        plt.close('all')
+        parent = self.GetParent()
+        parent._cb_toggle()
+        evt.Skip()
+
     def on_close(self, event):
-        self.GetParent()._cb_toggle()
+        plt.close('all')
+        parent = self.GetParent()
+        parent._cb_toggle()
         self.Destroy()
 
     def on_preview_click(self, evt, ceevent):
