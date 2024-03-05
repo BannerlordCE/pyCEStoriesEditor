@@ -432,8 +432,16 @@ def process_file(
     bucket = []
     try:
         xsobjects = xsd.to_objects(xmlfile)
-    except (xmlschema.validators.exceptions.XMLSchemaChildrenValidationError, xmlParseError) as e:
+    except (
+            xmlschema.validators.exceptions.XMLSchemaChildrenValidationError,
+            xmlschema.validators.exceptions.XMLSchemaValidationError,
+            xmlParseError
+    ) as e:
         msg = e.reason if hasattr(e, 'reason') else e.msg
+        # TODO: e.msg may not properly be displayed in wxString
+        # print(e.msg)
+        # print(e.path)
+        # print(e.reason)
         mlogger.error("Invalid xml file: %s. Msg: %s", xmlfile, msg)
         mlogger.info("-stop- %s", x.name)
         return [], [], (xmlfile, msg)
