@@ -22,7 +22,7 @@ attrs = "^23.1"
 xsdata-attrs = {extras = ["cli"], version = "^23.8"}
 pygments = "^2.15"
 wxpython = "^4.2"
-pillow = "^10"
+pillow = ">=10.3,<11.0"
 platformdirs = "^4.2"
 matplotlib = "^3.8"
 netgraph = "^4.13"
