@@ -9,10 +9,11 @@ from __future__ import annotations
 
 import logging
 
-from attrs import define, field, validators
 from enum import Enum
 from typing import List, Optional
 from xsdata.formats.dataclass.models.elements import XmlType
+
+from attrs import define, field, validators
 
 logger = logging.getLogger(__name__)
 
@@ -1650,30 +1651,6 @@ class MultipleListOfCustomFlags(CustomFlags):
 
 
 @define
-class MultipleRestrictedListOfConsequences:
-    restricted_list_of_consequences: List[RestrictedListOfConsequencesValue] = field(
-        factory=list,
-        metadata={
-            "name": "RestrictedListOfConsequences",
-            "type": "Element",
-            "min_occurs": 1,
-        },
-    )
-
-
-@define
-class MultipleRestrictedListOfFlags:
-    restricted_list_of_flags: List[RestrictedListOfFlagsType] = field(
-        factory=list,
-        metadata={
-            "name": "RestrictedListOfFlags",
-            "type": "Element",
-            "min_occurs": 1,
-        },
-    )
-
-
-@define
 class RestrictedListOfConsequences:
     value: Optional[RestrictedListOfConsequencesValue] = field(default=None)
 
@@ -1727,18 +1704,6 @@ class SpawnTroops:
 @define
 class TerrainType:
     value: Optional[TerrainTypeValue] = field(default=None)
-
-
-@define
-class TerrainTypes:
-    terrain_type: List[TerrainTypeValue] = field(
-        factory=list,
-        metadata={
-            "name": "TerrainType",
-            "type": "Element",
-            "min_occurs": 1,
-        },
-    )
 
 
 @define
@@ -1824,138 +1789,6 @@ class BattleSettings:
 
 
 @define
-class Companion:
-    multiple_restricted_list_of_consequences: Optional[
-        MultipleRestrictedListOfConsequences
-    ] = field(
-        default=None,
-        metadata={
-            "name": "MultipleRestrictedListOfConsequences",
-            "type": "Element",
-        },
-    )
-    pregnancy_risk_modifier: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "PregnancyRiskModifier",
-            "type": "Element",
-        },
-    )
-    escape_chance: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "EscapeChance",
-            "type": "Element",
-        },
-    )
-    gold_total: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "GoldTotal",
-            "type": "Element",
-        },
-    )
-    captor_gold_total: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "CaptorGoldTotal",
-            "type": "Element",
-        },
-    )
-    relation_total: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "RelationTotal",
-            "type": "Element",
-        },
-    )
-    morale_total: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "MoraleTotal",
-            "type": "Element",
-        },
-    )
-    health_total: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "HealthTotal",
-            "type": "Element",
-        },
-    )
-    renown_total: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "RenownTotal",
-            "type": "Element",
-        },
-    )
-    skills_to_level: Optional[SkillsToLevel] = field(
-        default=None,
-        metadata={
-            "name": "SkillsToLevel",
-            "type": "Element",
-        },
-    )
-    traits_to_level: Optional[TraitsToLevel] = field(
-        default=None,
-        metadata={
-            "name": "TraitsToLevel",
-            "type": "Element",
-        },
-    )
-    kingdom_options: Optional[KingdomOptions] = field(
-        default=None,
-        metadata={
-            "name": "KingdomOptions",
-            "type": "Element",
-        },
-    )
-    clan_options: Optional[ClanOptions] = field(
-        default=None,
-        metadata={
-            "name": "ClanOptions",
-            "type": "Element",
-        },
-    )
-    id: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "Id",
-            "type": "Attribute",
-        },
-    )
-    ref: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "Ref",
-            "type": "Attribute",
-        },
-    )
-    type_value: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "Type",
-            "type": "Attribute",
-        },
-    )
-    location: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "Location",
-            "type": "Attribute",
-        },
-    )
-    use_other_conditions: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "UseOtherConditions",
-            "type": "Attribute",
-        },
-    )
-
-
-@define
 class DelayEvent:
     use_conditions: Optional[str] = field(
         default=None,
@@ -1986,6 +1819,30 @@ class DelayEvent:
         metadata={
             "name": "TriggerEvents",
             "type": "Element",
+        },
+    )
+
+
+@define
+class MultipleRestrictedListOfConsequences:
+    restricted_list_of_consequences: List[RestrictedListOfConsequences] = field(
+        factory=list,
+        metadata={
+            "name": "RestrictedListOfConsequences",
+            "type": "Element",
+            "min_occurs": 1,
+        },
+    )
+
+
+@define
+class MultipleRestrictedListOfFlags:
+    restricted_list_of_flags: List[RestrictedListOfFlags] = field(
+        factory=list,
+        metadata={
+            "name": "RestrictedListOfFlags",
+            "type": "Element",
+            "min_occurs": 1,
         },
     )
 
@@ -2073,6 +1930,162 @@ class SpawnHero:
 
 
 @define
+class TerrainTypes:
+    terrain_type: List[TerrainType] = field(
+        factory=list,
+        metadata={
+            "name": "TerrainType",
+            "type": "Element",
+            "min_occurs": 1,
+        },
+    )
+
+
+@define
+class Companion:
+    multiple_restricted_list_of_consequences: Optional[MultipleRestrictedListOfConsequences] = (
+        field(
+            default=None,
+            metadata={
+                "name": "MultipleRestrictedListOfConsequences",
+                "type": "Element",
+            },
+        )
+    )
+    pregnancy_risk_modifier: Optional[PregnancyRiskModifier] = field(
+        default=None,
+        metadata={
+            "name": "PregnancyRiskModifier",
+            "type": "Element",
+        },
+    )
+    escape_chance: Optional[EscapeChance] = field(
+        default=None,
+        metadata={
+            "name": "EscapeChance",
+            "type": "Element",
+        },
+    )
+    gold_total: Optional[GoldTotal] = field(
+        default=None,
+        metadata={
+            "name": "GoldTotal",
+            "type": "Element",
+        },
+    )
+    captor_gold_total: Optional[CaptorGoldTotal] = field(
+        default=None,
+        metadata={
+            "name": "CaptorGoldTotal",
+            "type": "Element",
+        },
+    )
+    relation_total: Optional[RelationTotal] = field(
+        default=None,
+        metadata={
+            "name": "RelationTotal",
+            "type": "Element",
+        },
+    )
+    morale_total: Optional[MoraleTotal] = field(
+        default=None,
+        metadata={
+            "name": "MoraleTotal",
+            "type": "Element",
+        },
+    )
+    health_total: Optional[HealthTotal] = field(
+        default=None,
+        metadata={
+            "name": "HealthTotal",
+            "type": "Element",
+        },
+    )
+    renown_total: Optional[RenownTotal] = field(
+        default=None,
+        metadata={
+            "name": "RenownTotal",
+            "type": "Element",
+        },
+    )
+    skills_to_level: Optional[SkillsToLevel] = field(
+        default=None,
+        metadata={
+            "name": "SkillsToLevel",
+            "type": "Element",
+        },
+    )
+    traits_to_level: Optional[TraitsToLevel] = field(
+        default=None,
+        metadata={
+            "name": "TraitsToLevel",
+            "type": "Element",
+        },
+    )
+    kingdom_options: Optional[KingdomOptions] = field(
+        default=None,
+        metadata={
+            "name": "KingdomOptions",
+            "type": "Element",
+        },
+    )
+    clan_options: Optional[ClanOptions] = field(
+        default=None,
+        metadata={
+            "name": "ClanOptions",
+            "type": "Element",
+        },
+    )
+    id: Optional[str] = field(
+        default=None,
+        metadata={
+            "name": "Id",
+            "type": "Attribute",
+        },
+    )
+    ref: Optional[str] = field(
+        default=None,
+        metadata={
+            "name": "Ref",
+            "type": "Attribute",
+        },
+    )
+    type_value: Optional[str] = field(
+        default=None,
+        metadata={
+            "name": "Type",
+            "type": "Attribute",
+        },
+    )
+    location: Optional[str] = field(
+        default=None,
+        metadata={
+            "name": "Location",
+            "type": "Attribute",
+        },
+    )
+    use_other_conditions: Optional[str] = field(
+        default=None,
+        metadata={
+            "name": "UseOtherConditions",
+            "type": "Attribute",
+        },
+    )
+
+
+@define
+class SpawnHeroes:
+    spawn_hero: List[SpawnHero] = field(
+        factory=list,
+        metadata={
+            "name": "SpawnHero",
+            "type": "Element",
+            "min_occurs": 1,
+        },
+    )
+
+
+@define
 class TerrainTypesRequirements:
     terrain_types: List[TerrainTypes] = field(
         factory=list,
@@ -2090,18 +2103,6 @@ class Companions:
         factory=list,
         metadata={
             "name": "Companion",
-            "type": "Element",
-            "min_occurs": 1,
-        },
-    )
-
-
-@define
-class SpawnHeroes:
-    spawn_hero: List[SpawnHero] = field(
-        factory=list,
-        metadata={
-            "name": "SpawnHero",
             "type": "Element",
             "min_occurs": 1,
         },
@@ -2137,15 +2138,15 @@ class MenuOption:
             "required": True,
         },
     )
-    multiple_restricted_list_of_consequences: Optional[
-        MultipleRestrictedListOfConsequences
-    ] = field(
-        default=None,
-        metadata={
-            "name": "MultipleRestrictedListOfConsequences",
-            "type": "Element",
-            "required": True,
-        },
+    multiple_restricted_list_of_consequences: Optional[MultipleRestrictedListOfConsequences] = (
+        field(
+            default=None,
+            metadata={
+                "name": "MultipleRestrictedListOfConsequences",
+                "type": "Element",
+                "required": True,
+            },
+        )
     )
     option_text: Optional[str] = field(
         default=None,
@@ -2164,483 +2165,483 @@ class MenuOption:
             "namespace": "",
         },
     )
-    sound_name: Optional[str] = field(
+    sound_name: Optional[SoundName] = field(
         default=None,
         metadata={
             "name": "SoundName",
             "type": "Element",
         },
     )
-    scene_to_play: Optional[str] = field(
+    scene_to_play: Optional[SceneToPlay] = field(
         default=None,
         metadata={
             "name": "SceneToPlay",
             "type": "Element",
         },
     )
-    pregnancy_risk_modifier: Optional[str] = field(
+    pregnancy_risk_modifier: Optional[PregnancyRiskModifier] = field(
         default=None,
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
         },
     )
-    escape_chance: Optional[str] = field(
+    escape_chance: Optional[EscapeChance] = field(
         default=None,
         metadata={
             "name": "EscapeChance",
             "type": "Element",
         },
     )
-    req_hero_party_have_item: Optional[str] = field(
+    req_hero_party_have_item: Optional[ReqHeroPartyHaveItem] = field(
         default=None,
         metadata={
             "name": "ReqHeroPartyHaveItem",
             "type": "Element",
         },
     )
-    req_captor_party_have_item: Optional[str] = field(
+    req_captor_party_have_item: Optional[ReqCaptorPartyHaveItem] = field(
         default=None,
         metadata={
             "name": "ReqCaptorPartyHaveItem",
             "type": "Element",
         },
     )
-    req_hero_health_below_percentage: Optional[str] = field(
+    req_hero_health_below_percentage: Optional[ReqHeroHealthBelowPercentage] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthBelowPercentage",
             "type": "Element",
         },
     )
-    req_hero_health_above_percentage: Optional[str] = field(
+    req_hero_health_above_percentage: Optional[ReqHeroHealthAbovePercentage] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthAbovePercentage",
             "type": "Element",
         },
     )
-    req_hero_captor_relation_above: Optional[str] = field(
+    req_hero_captor_relation_above: Optional[ReqHeroCaptorRelationAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationAbove",
             "type": "Element",
         },
     )
-    req_hero_captor_relation_below: Optional[str] = field(
+    req_hero_captor_relation_below: Optional[ReqHeroCaptorRelationBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationBelow",
             "type": "Element",
         },
     )
-    req_hero_prostitute_level_above: Optional[str] = field(
+    req_hero_prostitute_level_above: Optional[ReqHeroProstituteLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_prostitute_level_below: Optional[str] = field(
+    req_hero_prostitute_level_below: Optional[ReqHeroProstituteLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_slave_level_above: Optional[str] = field(
+    req_hero_slave_level_above: Optional[ReqHeroSlaveLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_slave_level_below: Optional[str] = field(
+    req_hero_slave_level_below: Optional[ReqHeroSlaveLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_trait_level_above: Optional[str] = field(
+    req_hero_trait_level_above: Optional[ReqHeroTraitLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_trait_level_below: Optional[str] = field(
+    req_hero_trait_level_below: Optional[ReqHeroTraitLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelBelow",
             "type": "Element",
         },
     )
-    req_captor_trait_level_above: Optional[str] = field(
+    req_captor_trait_level_above: Optional[ReqCaptorTraitLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelAbove",
             "type": "Element",
         },
     )
-    req_captor_trait_level_below: Optional[str] = field(
+    req_captor_trait_level_below: Optional[ReqCaptorTraitLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_skill_level_above: Optional[str] = field(
+    req_hero_skill_level_above: Optional[ReqHeroSkillLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_skill_level_below: Optional[str] = field(
+    req_hero_skill_level_below: Optional[ReqHeroSkillLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelBelow",
             "type": "Element",
         },
     )
-    req_captor_skill_level_above: Optional[str] = field(
+    req_captor_skill_level_above: Optional[ReqCaptorSkillLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelAbove",
             "type": "Element",
         },
     )
-    req_captor_skill_level_below: Optional[str] = field(
+    req_captor_skill_level_below: Optional[ReqCaptorSkillLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelBelow",
             "type": "Element",
         },
     )
-    req_troops_above: Optional[str] = field(
+    req_troops_above: Optional[ReqTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqTroopsAbove",
             "type": "Element",
         },
     )
-    req_troops_below: Optional[str] = field(
+    req_troops_below: Optional[ReqTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqTroopsBelow",
             "type": "Element",
         },
     )
-    req_captives_above: Optional[str] = field(
+    req_captives_above: Optional[ReqCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesAbove",
             "type": "Element",
         },
     )
-    req_captives_below: Optional[str] = field(
+    req_captives_below: Optional[ReqCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesBelow",
             "type": "Element",
         },
     )
-    req_female_troops_above: Optional[str] = field(
+    req_female_troops_above: Optional[ReqFemaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_female_troops_below: Optional[str] = field(
+    req_female_troops_below: Optional[ReqFemaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_female_captives_above: Optional[str] = field(
+    req_female_captives_above: Optional[ReqFemaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_female_captives_below: Optional[str] = field(
+    req_female_captives_below: Optional[ReqFemaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_male_troops_above: Optional[str] = field(
+    req_male_troops_above: Optional[ReqMaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_male_troops_below: Optional[str] = field(
+    req_male_troops_below: Optional[ReqMaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_male_captives_above: Optional[str] = field(
+    req_male_captives_above: Optional[ReqMaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_male_captives_below: Optional[str] = field(
+    req_male_captives_below: Optional[ReqMaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_troops_above: Optional[str] = field(
+    req_hero_troops_above: Optional[ReqHeroTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_troops_below: Optional[str] = field(
+    req_hero_troops_below: Optional[ReqHeroTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_captives_above: Optional[str] = field(
+    req_hero_captives_above: Optional[ReqHeroCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_captives_below: Optional[str] = field(
+    req_hero_captives_below: Optional[ReqHeroCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_female_troops_above: Optional[str] = field(
+    req_hero_female_troops_above: Optional[ReqHeroFemaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_female_troops_below: Optional[str] = field(
+    req_hero_female_troops_below: Optional[ReqHeroFemaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_female_captives_above: Optional[str] = field(
+    req_hero_female_captives_above: Optional[ReqHeroFemaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_female_captives_below: Optional[str] = field(
+    req_hero_female_captives_below: Optional[ReqHeroFemaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_male_troops_above: Optional[str] = field(
+    req_hero_male_troops_above: Optional[ReqHeroMaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_male_troops_below: Optional[str] = field(
+    req_hero_male_troops_below: Optional[ReqHeroMaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_male_captives_above: Optional[str] = field(
+    req_hero_male_captives_above: Optional[ReqHeroMaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_male_captives_below: Optional[str] = field(
+    req_hero_male_captives_below: Optional[ReqHeroMaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_morale_below: Optional[str] = field(
+    req_morale_below: Optional[ReqMoraleBelow] = field(
         default=None,
         metadata={
             "name": "ReqMoraleBelow",
             "type": "Element",
         },
     )
-    req_morale_above: Optional[str] = field(
+    req_morale_above: Optional[ReqMoraleAbove] = field(
         default=None,
         metadata={
             "name": "ReqMoraleAbove",
             "type": "Element",
         },
     )
-    req_gold_above: Optional[str] = field(
+    req_gold_above: Optional[ReqGoldAbove] = field(
         default=None,
         metadata={
             "name": "ReqGoldAbove",
             "type": "Element",
         },
     )
-    req_gold_below: Optional[str] = field(
+    req_gold_below: Optional[ReqGoldBelow] = field(
         default=None,
         metadata={
             "name": "ReqGoldBelow",
             "type": "Element",
         },
     )
-    item_to_give: Optional[str] = field(
+    item_to_give: Optional[ItemToGive] = field(
         default=None,
         metadata={
             "name": "ItemToGive",
             "type": "Element",
         },
     )
-    gold_total: Optional[str] = field(
+    gold_total: Optional[GoldTotal] = field(
         default=None,
         metadata={
             "name": "GoldTotal",
             "type": "Element",
         },
     )
-    captor_gold_total: Optional[str] = field(
+    captor_gold_total: Optional[CaptorGoldTotal] = field(
         default=None,
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
         },
     )
-    relation_total: Optional[str] = field(
+    relation_total: Optional[RelationTotal] = field(
         default=None,
         metadata={
             "name": "RelationTotal",
             "type": "Element",
         },
     )
-    morale_total: Optional[str] = field(
+    morale_total: Optional[MoraleTotal] = field(
         default=None,
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
         },
     )
-    health_total: Optional[str] = field(
+    health_total: Optional[HealthTotal] = field(
         default=None,
         metadata={
             "name": "HealthTotal",
             "type": "Element",
         },
     )
-    renown_total: Optional[str] = field(
+    renown_total: Optional[RenownTotal] = field(
         default=None,
         metadata={
             "name": "RenownTotal",
             "type": "Element",
         },
     )
-    prostitution_total: Optional[str] = field(
+    prostitution_total: Optional[ProstitutionTotal] = field(
         default=None,
         metadata={
             "name": "ProstitutionTotal",
             "type": "Element",
         },
     )
-    slavery_total: Optional[str] = field(
+    slavery_total: Optional[SlaveryTotal] = field(
         default=None,
         metadata={
             "name": "SlaveryTotal",
             "type": "Element",
         },
     )
-    trait_total: Optional[str] = field(
+    trait_total: Optional[TraitTotal] = field(
         default=None,
         metadata={
             "name": "TraitTotal",
             "type": "Element",
         },
     )
-    skill_total: Optional[str] = field(
+    skill_total: Optional[SkillTotal] = field(
         default=None,
         metadata={
             "name": "SkillTotal",
             "type": "Element",
         },
     )
-    trait_xptotal: Optional[str] = field(
+    trait_xptotal: Optional[TraitXptotal] = field(
         default=None,
         metadata={
             "name": "TraitXPTotal",
             "type": "Element",
         },
     )
-    skill_xptotal: Optional[str] = field(
+    skill_xptotal: Optional[SkillXptotal] = field(
         default=None,
         metadata={
             "name": "SkillXPTotal",
             "type": "Element",
         },
     )
-    skill_to_level: Optional[str] = field(
+    skill_to_level: Optional[SkillToLevel] = field(
         default=None,
         metadata={
             "name": "SkillToLevel",
             "type": "Element",
         },
     )
-    req_captor_skill: Optional[str] = field(
+    req_captor_skill: Optional[ReqCaptorSkill] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkill",
             "type": "Element",
         },
     )
-    req_hero_skill: Optional[str] = field(
+    req_hero_skill: Optional[ReqHeroSkill] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkill",
             "type": "Element",
         },
     )
-    trait_to_level: Optional[str] = field(
+    trait_to_level: Optional[TraitToLevel] = field(
         default=None,
         metadata={
             "name": "TraitToLevel",
             "type": "Element",
         },
     )
-    req_captor_trait: Optional[str] = field(
+    req_captor_trait: Optional[ReqCaptorTrait] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTrait",
             "type": "Element",
         },
     )
-    req_hero_trait: Optional[str] = field(
+    req_hero_trait: Optional[ReqHeroTrait] = field(
         default=None,
         metadata={
             "name": "ReqHeroTrait",
@@ -2772,15 +2773,15 @@ class Option:
             "required": True,
         },
     )
-    multiple_restricted_list_of_consequences: Optional[
-        MultipleRestrictedListOfConsequences
-    ] = field(
-        default=None,
-        metadata={
-            "name": "MultipleRestrictedListOfConsequences",
-            "type": "Element",
-            "required": True,
-        },
+    multiple_restricted_list_of_consequences: Optional[MultipleRestrictedListOfConsequences] = (
+        field(
+            default=None,
+            metadata={
+                "name": "MultipleRestrictedListOfConsequences",
+                "type": "Element",
+                "required": True,
+            },
+        )
     )
     option_text: Optional[str] = field(
         default=None,
@@ -2799,483 +2800,483 @@ class Option:
             "namespace": "",
         },
     )
-    sound_name: Optional[str] = field(
+    sound_name: Optional[SoundName] = field(
         default=None,
         metadata={
             "name": "SoundName",
             "type": "Element",
         },
     )
-    scene_to_play: Optional[str] = field(
+    scene_to_play: Optional[SceneToPlay] = field(
         default=None,
         metadata={
             "name": "SceneToPlay",
             "type": "Element",
         },
     )
-    pregnancy_risk_modifier: Optional[str] = field(
+    pregnancy_risk_modifier: Optional[PregnancyRiskModifier] = field(
         default=None,
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
         },
     )
-    escape_chance: Optional[str] = field(
+    escape_chance: Optional[EscapeChance] = field(
         default=None,
         metadata={
             "name": "EscapeChance",
             "type": "Element",
         },
     )
-    req_hero_party_have_item: Optional[str] = field(
+    req_hero_party_have_item: Optional[ReqHeroPartyHaveItem] = field(
         default=None,
         metadata={
             "name": "ReqHeroPartyHaveItem",
             "type": "Element",
         },
     )
-    req_captor_party_have_item: Optional[str] = field(
+    req_captor_party_have_item: Optional[ReqCaptorPartyHaveItem] = field(
         default=None,
         metadata={
             "name": "ReqCaptorPartyHaveItem",
             "type": "Element",
         },
     )
-    req_hero_health_below_percentage: Optional[str] = field(
+    req_hero_health_below_percentage: Optional[ReqHeroHealthBelowPercentage] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthBelowPercentage",
             "type": "Element",
         },
     )
-    req_hero_health_above_percentage: Optional[str] = field(
+    req_hero_health_above_percentage: Optional[ReqHeroHealthAbovePercentage] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthAbovePercentage",
             "type": "Element",
         },
     )
-    req_hero_captor_relation_above: Optional[str] = field(
+    req_hero_captor_relation_above: Optional[ReqHeroCaptorRelationAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationAbove",
             "type": "Element",
         },
     )
-    req_hero_captor_relation_below: Optional[str] = field(
+    req_hero_captor_relation_below: Optional[ReqHeroCaptorRelationBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationBelow",
             "type": "Element",
         },
     )
-    req_hero_prostitute_level_above: Optional[str] = field(
+    req_hero_prostitute_level_above: Optional[ReqHeroProstituteLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_prostitute_level_below: Optional[str] = field(
+    req_hero_prostitute_level_below: Optional[ReqHeroProstituteLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_slave_level_above: Optional[str] = field(
+    req_hero_slave_level_above: Optional[ReqHeroSlaveLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_slave_level_below: Optional[str] = field(
+    req_hero_slave_level_below: Optional[ReqHeroSlaveLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_trait_level_above: Optional[str] = field(
+    req_hero_trait_level_above: Optional[ReqHeroTraitLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_trait_level_below: Optional[str] = field(
+    req_hero_trait_level_below: Optional[ReqHeroTraitLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelBelow",
             "type": "Element",
         },
     )
-    req_captor_trait_level_above: Optional[str] = field(
+    req_captor_trait_level_above: Optional[ReqCaptorTraitLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelAbove",
             "type": "Element",
         },
     )
-    req_captor_trait_level_below: Optional[str] = field(
+    req_captor_trait_level_below: Optional[ReqCaptorTraitLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_skill_level_above: Optional[str] = field(
+    req_hero_skill_level_above: Optional[ReqHeroSkillLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_skill_level_below: Optional[str] = field(
+    req_hero_skill_level_below: Optional[ReqHeroSkillLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelBelow",
             "type": "Element",
         },
     )
-    req_captor_skill_level_above: Optional[str] = field(
+    req_captor_skill_level_above: Optional[ReqCaptorSkillLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelAbove",
             "type": "Element",
         },
     )
-    req_captor_skill_level_below: Optional[str] = field(
+    req_captor_skill_level_below: Optional[ReqCaptorSkillLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelBelow",
             "type": "Element",
         },
     )
-    req_troops_above: Optional[str] = field(
+    req_troops_above: Optional[ReqTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqTroopsAbove",
             "type": "Element",
         },
     )
-    req_troops_below: Optional[str] = field(
+    req_troops_below: Optional[ReqTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqTroopsBelow",
             "type": "Element",
         },
     )
-    req_captives_above: Optional[str] = field(
+    req_captives_above: Optional[ReqCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesAbove",
             "type": "Element",
         },
     )
-    req_captives_below: Optional[str] = field(
+    req_captives_below: Optional[ReqCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesBelow",
             "type": "Element",
         },
     )
-    req_female_troops_above: Optional[str] = field(
+    req_female_troops_above: Optional[ReqFemaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_female_troops_below: Optional[str] = field(
+    req_female_troops_below: Optional[ReqFemaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_female_captives_above: Optional[str] = field(
+    req_female_captives_above: Optional[ReqFemaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_female_captives_below: Optional[str] = field(
+    req_female_captives_below: Optional[ReqFemaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_male_troops_above: Optional[str] = field(
+    req_male_troops_above: Optional[ReqMaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_male_troops_below: Optional[str] = field(
+    req_male_troops_below: Optional[ReqMaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_male_captives_above: Optional[str] = field(
+    req_male_captives_above: Optional[ReqMaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_male_captives_below: Optional[str] = field(
+    req_male_captives_below: Optional[ReqMaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_troops_above: Optional[str] = field(
+    req_hero_troops_above: Optional[ReqHeroTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_troops_below: Optional[str] = field(
+    req_hero_troops_below: Optional[ReqHeroTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_captives_above: Optional[str] = field(
+    req_hero_captives_above: Optional[ReqHeroCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_captives_below: Optional[str] = field(
+    req_hero_captives_below: Optional[ReqHeroCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_female_troops_above: Optional[str] = field(
+    req_hero_female_troops_above: Optional[ReqHeroFemaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_female_troops_below: Optional[str] = field(
+    req_hero_female_troops_below: Optional[ReqHeroFemaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_female_captives_above: Optional[str] = field(
+    req_hero_female_captives_above: Optional[ReqHeroFemaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_female_captives_below: Optional[str] = field(
+    req_hero_female_captives_below: Optional[ReqHeroFemaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_male_troops_above: Optional[str] = field(
+    req_hero_male_troops_above: Optional[ReqHeroMaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_male_troops_below: Optional[str] = field(
+    req_hero_male_troops_below: Optional[ReqHeroMaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_male_captives_above: Optional[str] = field(
+    req_hero_male_captives_above: Optional[ReqHeroMaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_male_captives_below: Optional[str] = field(
+    req_hero_male_captives_below: Optional[ReqHeroMaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_morale_below: Optional[str] = field(
+    req_morale_below: Optional[ReqMoraleBelow] = field(
         default=None,
         metadata={
             "name": "ReqMoraleBelow",
             "type": "Element",
         },
     )
-    req_morale_above: Optional[str] = field(
+    req_morale_above: Optional[ReqMoraleAbove] = field(
         default=None,
         metadata={
             "name": "ReqMoraleAbove",
             "type": "Element",
         },
     )
-    req_gold_above: Optional[str] = field(
+    req_gold_above: Optional[ReqGoldAbove] = field(
         default=None,
         metadata={
             "name": "ReqGoldAbove",
             "type": "Element",
         },
     )
-    req_gold_below: Optional[str] = field(
+    req_gold_below: Optional[ReqGoldBelow] = field(
         default=None,
         metadata={
             "name": "ReqGoldBelow",
             "type": "Element",
         },
     )
-    item_to_give: Optional[str] = field(
+    item_to_give: Optional[ItemToGive] = field(
         default=None,
         metadata={
             "name": "ItemToGive",
             "type": "Element",
         },
     )
-    gold_total: Optional[str] = field(
+    gold_total: Optional[GoldTotal] = field(
         default=None,
         metadata={
             "name": "GoldTotal",
             "type": "Element",
         },
     )
-    captor_gold_total: Optional[str] = field(
+    captor_gold_total: Optional[CaptorGoldTotal] = field(
         default=None,
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
         },
     )
-    relation_total: Optional[str] = field(
+    relation_total: Optional[RelationTotal] = field(
         default=None,
         metadata={
             "name": "RelationTotal",
             "type": "Element",
         },
     )
-    morale_total: Optional[str] = field(
+    morale_total: Optional[MoraleTotal] = field(
         default=None,
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
         },
     )
-    health_total: Optional[str] = field(
+    health_total: Optional[HealthTotal] = field(
         default=None,
         metadata={
             "name": "HealthTotal",
             "type": "Element",
         },
     )
-    renown_total: Optional[str] = field(
+    renown_total: Optional[RenownTotal] = field(
         default=None,
         metadata={
             "name": "RenownTotal",
             "type": "Element",
         },
     )
-    prostitution_total: Optional[str] = field(
+    prostitution_total: Optional[ProstitutionTotal] = field(
         default=None,
         metadata={
             "name": "ProstitutionTotal",
             "type": "Element",
         },
     )
-    slavery_total: Optional[str] = field(
+    slavery_total: Optional[SlaveryTotal] = field(
         default=None,
         metadata={
             "name": "SlaveryTotal",
             "type": "Element",
         },
     )
-    trait_total: Optional[str] = field(
+    trait_total: Optional[TraitTotal] = field(
         default=None,
         metadata={
             "name": "TraitTotal",
             "type": "Element",
         },
     )
-    skill_total: Optional[str] = field(
+    skill_total: Optional[SkillTotal] = field(
         default=None,
         metadata={
             "name": "SkillTotal",
             "type": "Element",
         },
     )
-    trait_xptotal: Optional[str] = field(
+    trait_xptotal: Optional[TraitXptotal] = field(
         default=None,
         metadata={
             "name": "TraitXPTotal",
             "type": "Element",
         },
     )
-    skill_xptotal: Optional[str] = field(
+    skill_xptotal: Optional[SkillXptotal] = field(
         default=None,
         metadata={
             "name": "SkillXPTotal",
             "type": "Element",
         },
     )
-    skill_to_level: Optional[str] = field(
+    skill_to_level: Optional[SkillToLevel] = field(
         default=None,
         metadata={
             "name": "SkillToLevel",
             "type": "Element",
         },
     )
-    req_captor_skill: Optional[str] = field(
+    req_captor_skill: Optional[ReqCaptorSkill] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkill",
             "type": "Element",
         },
     )
-    req_hero_skill: Optional[str] = field(
+    req_hero_skill: Optional[ReqHeroSkill] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkill",
             "type": "Element",
         },
     )
-    trait_to_level: Optional[str] = field(
+    trait_to_level: Optional[TraitToLevel] = field(
         default=None,
         metadata={
             "name": "TraitToLevel",
             "type": "Element",
         },
     )
-    req_captor_trait: Optional[str] = field(
+    req_captor_trait: Optional[ReqCaptorTrait] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTrait",
             "type": "Element",
         },
     )
-    req_hero_trait: Optional[str] = field(
+    req_hero_trait: Optional[ReqHeroTrait] = field(
         default=None,
         metadata={
             "name": "ReqHeroTrait",
@@ -3425,7 +3426,7 @@ class Ceevent:
     class Meta:
         name = "CEEvent"
 
-    name: Optional[str] = field(
+    name: Optional[Name] = field(
         default=None,
         metadata={
             "name": "Name",
@@ -3511,14 +3512,14 @@ class Ceevent:
             "type": "Element",
         },
     )
-    order_to_call: Optional[str] = field(
+    order_to_call: Optional[OrderToCall] = field(
         default=None,
         metadata={
             "name": "OrderToCall",
             "type": "Element",
         },
     )
-    req_custom_code: Optional[bool] = field(
+    req_custom_code: Optional[ReqCustomCode] = field(
         default=None,
         metadata={
             "name": "ReqCustomCode",
@@ -3541,483 +3542,483 @@ class Ceevent:
             "required": True,
         },
     )
-    pregnancy_risk_modifier: Optional[str] = field(
+    pregnancy_risk_modifier: Optional[PregnancyRiskModifier] = field(
         default=None,
         metadata={
             "name": "PregnancyRiskModifier",
             "type": "Element",
         },
     )
-    escape_chance: Optional[str] = field(
+    escape_chance: Optional[EscapeChance] = field(
         default=None,
         metadata={
             "name": "EscapeChance",
             "type": "Element",
         },
     )
-    weighted_chance_of_occurring: Optional[str] = field(
+    weighted_chance_of_occurring: Optional[WeightedChanceOfOccurring] = field(
         default=None,
         metadata={
             "name": "WeightedChanceOfOccurring",
             "type": "Element",
         },
     )
-    req_hero_min_age: Optional[str] = field(
+    req_hero_min_age: Optional[ReqHeroMinAge] = field(
         default=None,
         metadata={
             "name": "ReqHeroMinAge",
             "type": "Element",
         },
     )
-    req_hero_max_age: Optional[str] = field(
+    req_hero_max_age: Optional[ReqHeroMaxAge] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaxAge",
             "type": "Element",
         },
     )
-    req_hero_party_have_item: Optional[str] = field(
+    req_hero_party_have_item: Optional[ReqHeroPartyHaveItem] = field(
         default=None,
         metadata={
             "name": "ReqHeroPartyHaveItem",
             "type": "Element",
         },
     )
-    req_captor_party_have_item: Optional[str] = field(
+    req_captor_party_have_item: Optional[ReqCaptorPartyHaveItem] = field(
         default=None,
         metadata={
             "name": "ReqCaptorPartyHaveItem",
             "type": "Element",
         },
     )
-    req_hero_health_below_percentage: Optional[str] = field(
+    req_hero_health_below_percentage: Optional[ReqHeroHealthBelowPercentage] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthBelowPercentage",
             "type": "Element",
         },
     )
-    req_hero_health_above_percentage: Optional[str] = field(
+    req_hero_health_above_percentage: Optional[ReqHeroHealthAbovePercentage] = field(
         default=None,
         metadata={
             "name": "ReqHeroHealthAbovePercentage",
             "type": "Element",
         },
     )
-    req_hero_captor_relation_above: Optional[str] = field(
+    req_hero_captor_relation_above: Optional[ReqHeroCaptorRelationAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationAbove",
             "type": "Element",
         },
     )
-    req_hero_captor_relation_below: Optional[str] = field(
+    req_hero_captor_relation_below: Optional[ReqHeroCaptorRelationBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptorRelationBelow",
             "type": "Element",
         },
     )
-    req_hero_prostitute_level_above: Optional[str] = field(
+    req_hero_prostitute_level_above: Optional[ReqHeroProstituteLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_prostitute_level_below: Optional[str] = field(
+    req_hero_prostitute_level_below: Optional[ReqHeroProstituteLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroProstituteLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_slave_level_above: Optional[str] = field(
+    req_hero_slave_level_above: Optional[ReqHeroSlaveLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_slave_level_below: Optional[str] = field(
+    req_hero_slave_level_below: Optional[ReqHeroSlaveLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroSlaveLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_trait_level_above: Optional[str] = field(
+    req_hero_trait_level_above: Optional[ReqHeroTraitLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_trait_level_below: Optional[str] = field(
+    req_hero_trait_level_below: Optional[ReqHeroTraitLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroTraitLevelBelow",
             "type": "Element",
         },
     )
-    req_captor_trait_level_above: Optional[str] = field(
+    req_captor_trait_level_above: Optional[ReqCaptorTraitLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelAbove",
             "type": "Element",
         },
     )
-    req_captor_trait_level_below: Optional[str] = field(
+    req_captor_trait_level_below: Optional[ReqCaptorTraitLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTraitLevelBelow",
             "type": "Element",
         },
     )
-    req_hero_skill_level_above: Optional[str] = field(
+    req_hero_skill_level_above: Optional[ReqHeroSkillLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelAbove",
             "type": "Element",
         },
     )
-    req_hero_skill_level_below: Optional[str] = field(
+    req_hero_skill_level_below: Optional[ReqHeroSkillLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkillLevelBelow",
             "type": "Element",
         },
     )
-    req_captor_skill_level_above: Optional[str] = field(
+    req_captor_skill_level_above: Optional[ReqCaptorSkillLevelAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelAbove",
             "type": "Element",
         },
     )
-    req_captor_skill_level_below: Optional[str] = field(
+    req_captor_skill_level_below: Optional[ReqCaptorSkillLevelBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkillLevelBelow",
             "type": "Element",
         },
     )
-    req_troops_above: Optional[str] = field(
+    req_troops_above: Optional[ReqTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqTroopsAbove",
             "type": "Element",
         },
     )
-    req_troops_below: Optional[str] = field(
+    req_troops_below: Optional[ReqTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqTroopsBelow",
             "type": "Element",
         },
     )
-    req_captives_above: Optional[str] = field(
+    req_captives_above: Optional[ReqCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesAbove",
             "type": "Element",
         },
     )
-    req_captives_below: Optional[str] = field(
+    req_captives_below: Optional[ReqCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqCaptivesBelow",
             "type": "Element",
         },
     )
-    req_female_troops_above: Optional[str] = field(
+    req_female_troops_above: Optional[ReqFemaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_female_troops_below: Optional[str] = field(
+    req_female_troops_below: Optional[ReqFemaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqFemaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_female_captives_above: Optional[str] = field(
+    req_female_captives_above: Optional[ReqFemaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_female_captives_below: Optional[str] = field(
+    req_female_captives_below: Optional[ReqFemaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqFemaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_male_troops_above: Optional[str] = field(
+    req_male_troops_above: Optional[ReqMaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_male_troops_below: Optional[str] = field(
+    req_male_troops_below: Optional[ReqMaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqMaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_male_captives_above: Optional[str] = field(
+    req_male_captives_above: Optional[ReqMaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_male_captives_below: Optional[str] = field(
+    req_male_captives_below: Optional[ReqMaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqMaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_troops_above: Optional[str] = field(
+    req_hero_troops_above: Optional[ReqHeroTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_troops_below: Optional[str] = field(
+    req_hero_troops_below: Optional[ReqHeroTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_captives_above: Optional[str] = field(
+    req_hero_captives_above: Optional[ReqHeroCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_captives_below: Optional[str] = field(
+    req_hero_captives_below: Optional[ReqHeroCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_female_troops_above: Optional[str] = field(
+    req_hero_female_troops_above: Optional[ReqHeroFemaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_female_troops_below: Optional[str] = field(
+    req_hero_female_troops_below: Optional[ReqHeroFemaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_female_captives_above: Optional[str] = field(
+    req_hero_female_captives_above: Optional[ReqHeroFemaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_female_captives_below: Optional[str] = field(
+    req_hero_female_captives_below: Optional[ReqHeroFemaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroFemaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_hero_male_troops_above: Optional[str] = field(
+    req_hero_male_troops_above: Optional[ReqHeroMaleTroopsAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsAbove",
             "type": "Element",
         },
     )
-    req_hero_male_troops_below: Optional[str] = field(
+    req_hero_male_troops_below: Optional[ReqHeroMaleTroopsBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleTroopsBelow",
             "type": "Element",
         },
     )
-    req_hero_male_captives_above: Optional[str] = field(
+    req_hero_male_captives_above: Optional[ReqHeroMaleCaptivesAbove] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesAbove",
             "type": "Element",
         },
     )
-    req_hero_male_captives_below: Optional[str] = field(
+    req_hero_male_captives_below: Optional[ReqHeroMaleCaptivesBelow] = field(
         default=None,
         metadata={
             "name": "ReqHeroMaleCaptivesBelow",
             "type": "Element",
         },
     )
-    req_morale_below: Optional[str] = field(
+    req_morale_below: Optional[ReqMoraleBelow] = field(
         default=None,
         metadata={
             "name": "ReqMoraleBelow",
             "type": "Element",
         },
     )
-    req_morale_above: Optional[str] = field(
+    req_morale_above: Optional[ReqMoraleAbove] = field(
         default=None,
         metadata={
             "name": "ReqMoraleAbove",
             "type": "Element",
         },
     )
-    req_gold_above: Optional[str] = field(
+    req_gold_above: Optional[ReqGoldAbove] = field(
         default=None,
         metadata={
             "name": "ReqGoldAbove",
             "type": "Element",
         },
     )
-    req_gold_below: Optional[str] = field(
+    req_gold_below: Optional[ReqGoldBelow] = field(
         default=None,
         metadata={
             "name": "ReqGoldBelow",
             "type": "Element",
         },
     )
-    gold_total: Optional[str] = field(
+    gold_total: Optional[GoldTotal] = field(
         default=None,
         metadata={
             "name": "GoldTotal",
             "type": "Element",
         },
     )
-    captor_gold_total: Optional[str] = field(
+    captor_gold_total: Optional[CaptorGoldTotal] = field(
         default=None,
         metadata={
             "name": "CaptorGoldTotal",
             "type": "Element",
         },
     )
-    relation_total: Optional[str] = field(
+    relation_total: Optional[RelationTotal] = field(
         default=None,
         metadata={
             "name": "RelationTotal",
             "type": "Element",
         },
     )
-    morale_total: Optional[str] = field(
+    morale_total: Optional[MoraleTotal] = field(
         default=None,
         metadata={
             "name": "MoraleTotal",
             "type": "Element",
         },
     )
-    health_total: Optional[str] = field(
+    health_total: Optional[HealthTotal] = field(
         default=None,
         metadata={
             "name": "HealthTotal",
             "type": "Element",
         },
     )
-    renown_total: Optional[str] = field(
+    renown_total: Optional[RenownTotal] = field(
         default=None,
         metadata={
             "name": "RenownTotal",
             "type": "Element",
         },
     )
-    prostitution_total: Optional[str] = field(
+    prostitution_total: Optional[ProstitutionTotal] = field(
         default=None,
         metadata={
             "name": "ProstitutionTotal",
             "type": "Element",
         },
     )
-    slavery_total: Optional[str] = field(
+    slavery_total: Optional[SlaveryTotal] = field(
         default=None,
         metadata={
             "name": "SlaveryTotal",
             "type": "Element",
         },
     )
-    trait_total: Optional[str] = field(
+    trait_total: Optional[TraitTotal] = field(
         default=None,
         metadata={
             "name": "TraitTotal",
             "type": "Element",
         },
     )
-    skill_total: Optional[str] = field(
+    skill_total: Optional[SkillTotal] = field(
         default=None,
         metadata={
             "name": "SkillTotal",
             "type": "Element",
         },
     )
-    trait_xptotal: Optional[str] = field(
+    trait_xptotal: Optional[TraitXptotal] = field(
         default=None,
         metadata={
             "name": "TraitXPTotal",
             "type": "Element",
         },
     )
-    skill_xptotal: Optional[str] = field(
+    skill_xptotal: Optional[SkillXptotal] = field(
         default=None,
         metadata={
             "name": "SkillXPTotal",
             "type": "Element",
         },
     )
-    skill_to_level: Optional[str] = field(
+    skill_to_level: Optional[SkillToLevel] = field(
         default=None,
         metadata={
             "name": "SkillToLevel",
             "type": "Element",
         },
     )
-    req_captor_skill: Optional[str] = field(
+    req_captor_skill: Optional[ReqCaptorSkill] = field(
         default=None,
         metadata={
             "name": "ReqCaptorSkill",
             "type": "Element",
         },
     )
-    req_hero_skill: Optional[str] = field(
+    req_hero_skill: Optional[ReqHeroSkill] = field(
         default=None,
         metadata={
             "name": "ReqHeroSkill",
             "type": "Element",
         },
     )
-    trait_to_level: Optional[str] = field(
+    trait_to_level: Optional[TraitToLevel] = field(
         default=None,
         metadata={
             "name": "TraitToLevel",
             "type": "Element",
         },
     )
-    req_captor_trait: Optional[str] = field(
+    req_captor_trait: Optional[ReqCaptorTrait] = field(
         default=None,
         metadata={
             "name": "ReqCaptorTrait",
             "type": "Element",
         },
     )
-    req_hero_trait: Optional[str] = field(
+    req_hero_trait: Optional[ReqHeroTrait] = field(
         default=None,
         metadata={
             "name": "ReqHeroTrait",
@@ -4113,7 +4114,7 @@ class Ceevent:
         else:
             for flag in flags:
                 try:
-                    return flag.color
+                    return flag.value.color
                 except KeyError:
                     continue
 

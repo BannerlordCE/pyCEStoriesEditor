@@ -22,7 +22,7 @@ from pathlib import Path
 from xsdata_attrs.bindings import XmlParser
 import xmlschema
 
-from pycestorieseditor.ceevents_template import Ceevent, SkillsRequired, SkillsToLevel
+from pycestorieseditor.ceevents_template import Ceevent, SkillsRequired, SkillsToLevel, ReqHeroSkill
 from pycestorieseditor.pil2wx import default_background
 
 logger = logging.getLogger(__name__)
@@ -128,7 +128,7 @@ class EventAncestryErrors:
 
 class AncestryNode:
     def __init__(self, ceeventref):
-        self.name = ceeventref.name
+        self.name = ceeventref.name.value
         self._ceevent = ceeventref
         self._parents = []
         self._children = []
@@ -171,7 +171,7 @@ class Ancestry:
         if node.name not in self._nodes:
             self._nodes[node.name] = node
 
-    def get(self, name: str):
+    def get(self, name: str) -> AncestryNode:
         return self._nodes[name]
 
     def set_child_node(self, name: str, node: AncestryNode):
@@ -202,7 +202,7 @@ def _outboundevents(cevent: Ceevent, errors):
             yield child
         except ChildNotFound as e:
             event_ancestry_errors.register(
-                event_ancestry_error(cevent.name, e.outboundevent, cevent.xmlfile)
+                event_ancestry_error(cevent.name.value, e.outboundevent, cevent.xmlfile)
             )
             next(errors)
             logger.error(
@@ -217,7 +217,7 @@ def populate_children():
     bucket = get_ebucket()
     for cevent in bucket.values():
         for child in _outboundevents(cevent, errors):
-            ancestry_instance.set_child_node_from_name(cevent.name, child.name)
+            ancestry_instance.set_child_node_from_name(cevent.name.value, child.name.value)
     return next(errors)
 
 
@@ -260,7 +260,7 @@ def get_skill_text_value(element):
         return [skill.id for skill in element.skill_required]
     if isinstance(element, SkillsToLevel):
         return [skill.id for skill in element.skill]
-    if isinstance(element, str):
+    if isinstance(element, ReqHeroSkill):
         return [element]
     raise Exception("element of type '%s' not handled" % type(element))
 
@@ -402,20 +402,21 @@ def process_module(xmlfiles: list, cb=None):
             if cb:
                 cb("Munching events ...")
             for ceevent in bucket:
-                if ceevent.name in ebucket.keys():
+                if ceevent.name.value in ebucket.keys():
                     mlogger.warning(
                         "Override of '%s' already present in bucket. (trigger: %s)",
-                        ceevent.name,
+                        ceevent.name.value,
                         ceevent.xmlfile,
                     )
-                ebucket[ceevent.name] = ceevent
+                ebucket[ceevent.name.value] = ceevent
                 ancestry_instance.register(AncestryNode(ceevent))
             if cb:
                 cb("Munching skills...")
             for skill, eventname in skills:
                 for s in skill:
-                    indexes['skills'].setdefault(s, [])
-                    indexes['skills'][s].append(eventname)
+                    skey = s.value if hasattr(s, 'value') else s
+                    indexes['skills'].setdefault(skey, [])
+                    indexes['skills'][skey].append(eventname)
 
     return errcount
 
@@ -451,7 +452,7 @@ def process_file(
         ceevent: Ceevent = parser.from_string(string, Ceevent)
         ceevent.xmlsource = string
         ceevent.xmlfile = xmlfile
-        skills = skills + list(filter_ceevent(ceevent, ceevent.name))
+        skills = skills + list(filter_ceevent(ceevent, ceevent.name.value))
         bucket.append(ceevent)
     mlogger.info("-stop- %s", x.name)
     return bucket, skills, False

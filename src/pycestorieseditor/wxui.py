@@ -101,7 +101,15 @@ faces["fore"] = style.styles[token.Token] or "#000"
 
 
 def values_as_list(modalitem):
-    return [x.value for x in modalitem]
+    # RestrictedListOfFlags[value=<RestrictedListOfFlagsType>]
+    # RestrictedListOfFlagsType.value = FLAG
+    return [x.value.value for x in modalitem]
+
+
+def vfm(modalitem):
+    if modalitem and hasattr(modalitem, 'value'):
+        return modalitem.value
+    return ""
 
 
 # HACK around terrain types being multiple levels of list
@@ -719,10 +727,11 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
         fsizer = wx.FlexGridSizer(2, gap=(5, 5))
 
         wx_label_text(self, fsizer, label="Filename", text=ceevent.xmlfile)
-        wx_label_text(self, fsizer, label="Event Name", text=ceevent.name)
+        wx_label_text(self, fsizer, label="Event Name", text=ceevent.name.value)
         with suppress(AttributeError):
             wx_label_text(self, fsizer, label="Text", text=ceevent.text.value, multiline=True)
-        wx_label_text(self, fsizer, label="Order to Call", text=ceevent.order_to_call)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="Order to Call", text=ceevent.order_to_call.value)
 
         with suppress(AttributeError):
             wx_label_text(
@@ -803,24 +812,35 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             )
 
         wx_label_text(self, fsizer, "Sexual Content", text=str(ceevent.sexual_content.value))
-        wx_label_text(
-            self, fsizer, label="Pregnancy Risk Modifier", text=ceevent.pregnancy_risk_modifier
-        )
-        wx_label_text(self, fsizer, label="Escape Chance", text=ceevent.escape_chance)
-        wx_label_text(
-            self,
-            fsizer,
-            label="WeightedChanceOfOccurring",
-            text=ceevent.weighted_chance_of_occurring,
-        )
-        wx_label_text(self, fsizer, label="GoldTotal", text=ceevent.gold_total)
-        wx_label_text(self, fsizer, label="CaptorGoldTotal", text=ceevent.captor_gold_total)
-        wx_label_text(self, fsizer, label="RelationTotal", text=ceevent.relation_total)
-        wx_label_text(self, fsizer, label="MoraleTotal", text=ceevent.morale_total)
-        wx_label_text(self, fsizer, label="HealthTotal", text=ceevent.health_total)
-        wx_label_text(self, fsizer, label="RenownTotal", text=ceevent.renown_total)
-        wx_label_text(self, fsizer, label="ProstitutionTotal", text=ceevent.prostitution_total)
-        wx_label_text(self, fsizer, label="SlaveryTotal", text=ceevent.slavery_total)
+        with suppress(AttributeError):
+            wx_label_text(
+                self, fsizer, label="Pregnancy Risk Modifier", text=ceevent.pregnancy_risk_modifier.value
+            )
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="Escape Chance", text=ceevent.escape_chance.value)
+        with suppress(AttributeError):
+            wx_label_text(
+                self,
+                fsizer,
+                label="WeightedChanceOfOccurring",
+                text=ceevent.weighted_chance_of_occurring.value,
+            )
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="GoldTotal", text=ceevent.gold_total.value)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="CaptorGoldTotal", text=ceevent.captor_gold_total.value)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="RelationTotal", text=ceevent.relation_total.value)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="MoraleTotal", text=ceevent.morale_total.value)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="HealthTotal", text=ceevent.health_total.value)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="RenownTotal", text=ceevent.renown_total.value)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="ProstitutionTotal", text=ceevent.prostitution_total.value)
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, label="SlaveryTotal", text=ceevent.slavery_total.value)
 
         if ceevent.skills_required:
             table = ListCtrlPanel(
@@ -847,9 +867,9 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             RestrictedListOfConsequencesValue.CHANGE_SKILL
             in ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags
         ):
-            wx_label_text(self, fsizer, label="SkillTotal", text=ceevent.skill_total)
-            wx_label_text(self, fsizer, label="SkillXPTotal", text=ceevent.skill_xptotal)
-            wx_label_text(self, fsizer, label="SkillToLevel", text=ceevent.skill_to_level)
+            wx_label_text(self, fsizer, label="SkillTotal", text=ceevent.skill_total.value)
+            wx_label_text(self, fsizer, label="SkillXPTotal", text=ceevent.skill_xptotal.value)
+            wx_label_text(self, fsizer, label="SkillToLevel", text=ceevent.skill_to_level.value)
 
         if ceevent.traits_required:
             table = ListCtrlPanel(
@@ -876,9 +896,9 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             RestrictedListOfConsequencesValue.CHANGE_TRAIT
             in ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags
         ):
-            wx_label_text(self, fsizer, label="TraitTotal", text=ceevent.trait_total)
-            wx_label_text(self, fsizer, label="TraitXPTotal", text=ceevent.trait_xptotal)
-            wx_label_text(self, fsizer, label="TraitToLevel", text=ceevent.trait_to_level)
+            wx_label_text(self, fsizer, label="TraitTotal", text=ceevent.trait_total.value)
+            wx_label_text(self, fsizer, label="TraitXPTotal", text=ceevent.trait_xptotal.value)
+            wx_label_text(self, fsizer, label="TraitToLevel", text=ceevent.trait_to_level.value)
 
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
@@ -961,23 +981,23 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             ),
         )
         wx_label_text(self, fsizer, label="Trigger Event Name", text=option.trigger_event_name)
-        wx_label_text(self, fsizer, label="Sound Name", text=option.sound_name)
-        wx_label_text(self, fsizer, label="Scene to play", text=option.scene_to_play)
+        wx_label_text(self, fsizer, label="Sound Name", text=vfm(option.sound_name))
+        wx_label_text(self, fsizer, label="Scene to play", text=vfm(option.scene_to_play))
         wx_label_text(
             self,
             fsizer,
             label="Pregnancy Modifier",
-            text=option.pregnancy_risk_modifier,
+            text=vfm(option.pregnancy_risk_modifier),
         )
-        wx_label_text(self, fsizer, label="Escape Chance", text=option.escape_chance)
-        wx_label_text(self, fsizer, label="Captor Gold", text=option.captor_gold_total)
-        wx_label_text(self, fsizer, label="Prostitution Total", text=option.prostitution_total)
-        wx_label_text(self, fsizer, label="Gold Total", text=option.gold_total)
-        wx_label_text(self, fsizer, label="Health Total", text=option.health_total)
-        wx_label_text(self, fsizer, label="Morale Total", text=option.morale_total)
-        wx_label_text(self, fsizer, label="Relation Total", text=option.relation_total)
-        wx_label_text(self, fsizer, label="Renown Total", text=option.renown_total)
-        wx_label_text(self, fsizer, label="Item to Give", text=option.item_to_give)
+        wx_label_text(self, fsizer, label="Escape Chance", text=vfm(option.escape_chance))
+        wx_label_text(self, fsizer, label="Captor Gold", text=vfm(option.captor_gold_total))
+        wx_label_text(self, fsizer, label="Prostitution Total", text=vfm(option.prostitution_total))
+        wx_label_text(self, fsizer, label="Gold Total", text=vfm(option.gold_total))
+        wx_label_text(self, fsizer, label="Health Total", text=vfm(option.health_total))
+        wx_label_text(self, fsizer, label="Morale Total", text=vfm(option.morale_total))
+        wx_label_text(self, fsizer, label="Relation Total", text=vfm(option.relation_total))
+        wx_label_text(self, fsizer, label="Renown Total", text=vfm(option.renown_total))
+        wx_label_text(self, fsizer, label="Item to Give", text=vfm(option.item_to_give))
 
         if option.spawn_troops and option.spawn_troops.spawn_troop:
             table = ListCtrlPanel(
@@ -1027,11 +1047,11 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             RestrictedListOfConsequencesValue.CHANGE_TRAIT
             in option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
         ):
-            wx_label_text(self, fsizer, label="Traits to level", text=option.trait_to_level)
+            wx_label_text(self, fsizer, label="Traits to level", text=option.trait_to_level.value)
             if option.trait_total:
-                wx_label_text(self, fsizer, label="Trait Total", text=option.trait_total)
+                wx_label_text(self, fsizer, label="Trait Total", text=option.trait_total.value)
             elif option.trait_xptotal:
-                wx_label_text(self, fsizer, label="Trait XP Total", text=option.trait_xptotal)
+                wx_label_text(self, fsizer, label="Trait XP Total", text=option.trait_xptotal.value)
 
         if option.traits_required:
             table = ListCtrlPanel(
@@ -1058,11 +1078,11 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             RestrictedListOfConsequencesValue.CHANGE_SKILL
             in option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
         ):
-            wx_label_text(self, fsizer, label="Skill to Level", text=option.skill_to_level)
+            wx_label_text(self, fsizer, label="Skill to Level", text=option.skill_to_level.value)
             if option.skill_total:
-                wx_label_text(self, fsizer, label="Skill Total", text=option.skill_total)
+                wx_label_text(self, fsizer, label="Skill Total", text=option.skill_total.value)
             elif option.skill_xptotal:
-                wx_label_text(self, fsizer, label="Skill XP Total", text=option.skill_xptotal)
+                wx_label_text(self, fsizer, label="Skill XP Total", text=option.skill_xptotal.value)
 
         if option.skills_required:
             table = ListCtrlPanel(
@@ -1217,7 +1237,7 @@ class DwTabAncestry(wx.Panel):
 
 class DetailWindow(wx.Frame):
     def __init__(self, parent, ceevent: Ceevent, *args, **kwargs):
-        title = f"Event details: {ceevent.name}"
+        title = f"Event details: {ceevent.name.value}"
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title=title, *args, **kwargs)
         self.SetMinSize((800, 600))
@@ -1239,12 +1259,12 @@ class DetailWindow(wx.Frame):
             nb.AddPage(taboptions, "Options")
         if tabmoptions:
             nb.AddPage(tabmoptions, "Menu Options")
-        ancestry = ancestry_instance.get(ceevent.name)
+        ancestry = ancestry_instance.get(ceevent.name.value)
         if ancestry.is_graphable():
             self.tabancestry = DwTabAncestry(nb, ceevent)
             nb.AddPage(self.tabancestry, "Ancestry Graph")
         else:
-            logger.warning(f"Event {ceevent.name} doesn't have children nor parents.")
+            logger.warning(f"Event {ceevent.name.value} doesn't have children nor parents.")
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND | wx.ALL)
@@ -1288,7 +1308,7 @@ class DetailWindow(wx.Frame):
         self.previewframe.Bind(wx.EVT_CLOSE, self.preview_on_close)
         self.previewframe.SetMinSize(size)
         self.previewframe.SetMaxSize(size)
-        self.previewframe.SetTitle(f"Preview: {ceevent.name}")
+        self.previewframe.SetTitle(f"Preview: {ceevent.name.value}")
         preview = PreviewEvent(self.previewframe, ceevent)
         self.previewframe.Center()
         self.previewframe.Show()
@@ -1520,7 +1540,7 @@ class SearchIndice(wx.BoxSizer):
 class CeListItem(wx.ListItem):
     def __init__(self, item, wxid: int):
         super().__init__()
-        self.SetText(item.name)
+        self.SetText(item.name.value)
         self.SetId(wxid)
         if color := item.get_color():
             self.SetBackgroundColour(wx.Colour(hex2rgb(color)))
@@ -1788,7 +1808,7 @@ class MainWindow(wx.Frame):
                 items = c(value, items)
         if filterstr:
             for string in filterstr:
-                items = list(filter(lambda x: string in x.name, items))
+                items = list(filter(lambda x: string in x.name.value, items))
 
         self.celb.populate(list(items))
 

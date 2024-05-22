@@ -22,7 +22,7 @@ def nwrap(txt):
 
 
 def build_graph(ceevent):
-    core_node = ancestry_instance.get(ceevent.name)
+    core_node = ancestry_instance.get(ceevent.name.value)
     nodes = [core_node.name] + list(set(core_node.parents_names() + core_node.children_names()))
     colors = {i: get_color(node, core_node) for i, node in enumerate(nodes)}
     labels = {i: nwrap(lbl) for i, lbl in enumerate(nodes)}
