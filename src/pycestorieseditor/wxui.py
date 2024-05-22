@@ -49,6 +49,7 @@ from pycestorieseditor.ceevents import (
     event_ancestry_errors,
     find_by_name,
     ancestry_instance,
+    NotBannerLordModule
 )
 from pycestorieseditor.ceevents_template import (
     RestrictedListOfFlagsType,
@@ -1731,7 +1732,11 @@ class MainWindow(wx.Frame):
 
         xmlfiles = []
         for n in range(path_amount):
-            p = CePath(conf.Read("CeModulePath%i" % n))
+            try:
+                p = CePath(conf.Read("CeModulePath%i" % n))
+            except NotBannerLordModule as e:
+                logger.error(e)
+                continue
             pulse("Populating xmlfiles to parse...")
             xmlfiles.extend(p.events_files)
             pulse("Populating images for module %s..." % p.name)
