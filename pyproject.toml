@@ -19,7 +19,7 @@ python = ">=3.11,<3.12"
 graphviz = "^0.20.1"
 xmlschema = "^3.0"
 attrs = "^23.1"
-xsdata-attrs = {extras = ["cli"], version = "^23.8"}
+xsdata-attrs = {extras = ["cli"], version = ">=24.5"}
 pygments = "^2.15"
 wxpython = "^4.2"
 pillow = ">=10.3,<11.0"

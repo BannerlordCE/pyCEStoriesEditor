@@ -1258,30 +1258,30 @@ test = ["pre-commit", "pytest", "pytest-benchmark", "pytest-cov"]
 
 [[package]]
 name = "xsdata-attrs"
-version = "23.8"
+version = "24.5"
 description = "xsdata attrs plugin"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "xsdata_attrs-23.8-py3-none-any.whl", hash = "sha256:c4ac0e734333d0528fcf0f7e14bfb3045d9ed5fabe7aa401b9fc92a64a86653c"},
-    {file = "xsdata_attrs-23.8.tar.gz", hash = "sha256:f306ff0aeb04e01ad79b0d5cf56f475d8dcb9240384756fa6ec5c4489e641599"},
+    {file = "xsdata_attrs-24.5-py3-none-any.whl", hash = "sha256:45583c4b4e793b624d3f254de0cdb24bd446da2e8ab987f7a8f1259486c1941d"},
+    {file = "xsdata_attrs-24.5.tar.gz", hash = "sha256:8823fe4c42aa1387be00936051cb4a58f28328cd50ccf5592b505d9629fa9720"},
 ]
 
 [package.dependencies]
 attrs = ">=19.2.0"
 xsdata = [
-    {version = ">=23.5"},
+    {version = ">=24.5"},
     {version = ">=23.5", extras = ["cli"], optional = true, markers = "extra == \"cli\""},
 ]
 
 [package.extras]
 cli = ["xsdata[cli] (>=23.5)"]
-docs = ["furo", "sphinx", "sphinx-autobuild"]
-lxml = ["lxml (>=4.4.1)"]
+docs = ["markdown-exec[ansi]", "mkdocs", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-material", "mkdocs-minify-plugin", "mkdocstrings[python]", "pymdownx-superfence-filter-lines"]
+lxml = ["lxml (>=4.5.0)"]
 soap = ["requests"]
 test = ["codecov", "lxml", "pre-commit", "pytest", "pytest-cov"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "e052d328a305cc719098d241b9263e4d286d08799546202b966a40f971557612"
+content-hash = "c899cdc28dec0aeda81765adbf9174e69561d046254ebf6d16c0a265386f02d1"
