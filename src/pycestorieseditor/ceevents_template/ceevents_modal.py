@@ -944,6 +944,7 @@ class RestrictedListOfConsequencesValue(Enum):
     TRADE = "Trade"
     GIVE_BIRTH = "GiveBirth"
     ABORT = "Abort"
+    UNAVAILABLE_IS_INVISIBLE = "UnavailableIsInvisible"
     SOLD_TO_CARAVAN = "SoldToCaravan"
     SOLD_TO_SETTLEMENT = "SoldToSettlement"
     SOLD_TO_LORD_PARTY = "SoldToLordParty"
