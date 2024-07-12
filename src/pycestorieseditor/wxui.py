@@ -1447,7 +1447,10 @@ class PreviewEvent(wx.Panel):
             rect = self.GetUpdateRegion().GetBox()
             dc.SetClippingRegion(rect)
         dc.Clear()
-        dc.DrawBitmap(self.get_bitmap(self.background_img), 0, 0)
+        no_log = wx.LogNull()  # HACK: silence ICCP warnings about bad PNG.
+        img = wx.Bitmap(str(self.background_img), wx.BITMAP_TYPE_PNG)
+        dc.DrawBitmap(img, 0, 0)
+        del no_log
 
 
 class BadXmlDetails(wx.Frame):
