@@ -33,7 +33,7 @@ netgraph = "^4.13"
 setuptools = "*"
 wheel = "*"
 pip = "*"
-cx-freeze = "^7"
+cx-freeze = "^8"
 
 [build-system]
 requires = ["poetry-core"]
