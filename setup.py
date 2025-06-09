@@ -12,7 +12,7 @@ buildexe = {
         "PySide2", "PySide6", "shiboken2", "shiboken6", "lib2to3"
     ],
     'packages': ["xsdata_attrs.hooks"],
-    'include_msvcr': False
+    'include_msvcr': True
 }
 
 setup(
