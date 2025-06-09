@@ -24,4 +24,8 @@ def main():
 if __name__ == '__main__':
     if getattr(sys, "frozen", False):
         multiprocessing.freeze_support()
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(e)
+        raise
