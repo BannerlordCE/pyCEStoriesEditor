@@ -1461,7 +1461,6 @@ class PreviewEvent(wx.Panel):
             logger.error("Background '%s' cannot be loaded." % self.background_img)
         dc.DrawBitmap(img, 0, 0)
         self._refresh_bg = False
-        evt.Skip()
 
 
 class BadXmlDetails(wx.Frame):
