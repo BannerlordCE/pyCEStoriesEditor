@@ -6,12 +6,15 @@ import argparse
 import multiprocessing
 import sys
 
+from wx import version
+
 from pycestorieseditor.wxlaunch import launch
 
 
 def main():
     parser = argparse.ArgumentParser(
         prog="pycestorieseditor",
+        epilog="Running wxPython %s" % version()
     )
     parser.add_argument(
         "-s", "--settings", action="store_true", required=False,

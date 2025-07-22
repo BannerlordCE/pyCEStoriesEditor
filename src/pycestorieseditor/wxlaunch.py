@@ -455,6 +455,7 @@ def launch(settings=False):
     LAUNCH_SETTINGS = settings
     app = CeStoriesViewer()
     wx.ArtProvider.Push(ArtProvider())
+    logger.info("Launching with wxPython %s" % wx.version())
 
     if PORTABLE:
         conf = get_config("settings")
