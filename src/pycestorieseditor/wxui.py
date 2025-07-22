@@ -1240,6 +1240,7 @@ class DetailWindow(wx.Frame):
         title = f"Event details: {ceevent.name.value}"
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title=title, *args, **kwargs)
+        self.SetIcon(wx.ArtProvider.GetIcon('ICON_DETAILS'))
         self.SetMinSize((800, 600))
         self.previewframe = None
 
