@@ -1342,6 +1342,7 @@ class PreviewEvent(wx.Panel):
         self.SetBackgroundStyle(wx.BG_STYLE_ERASE)
         self.frame = parent
         self.background_img: Optional[os.PathLike] = None
+        self._refresh_bg = True
 
         self.set_bgimg(ceevent)
         self.build_widgets(ceevent)
@@ -1428,8 +1429,10 @@ class PreviewEvent(wx.Panel):
             )
             dialog.ShowModal()
             return False
+
+        self._refresh_bg = True
         self.DestroyChildren()
-        self.ClearBackground()
+        #self.ClearBackground()
         self.set_bgimg(ceevent)
         self.build_widgets(ceevent)
         self.Layout()
@@ -1441,19 +1444,20 @@ class PreviewEvent(wx.Panel):
         return wx.Bitmap(str(img), wx.BITMAP_TYPE_PNG)
 
     def on_erase_background(self, evt):
+        if not self._refresh_bg:
+            return
         dc = evt.GetDC()
         if not dc:
             dc = wx.ClientDC(self)
             rect = self.GetUpdateRegion().GetBox()
             dc.SetClippingRegion(rect)
         dc.Clear()
-        #no_log = wx.LogNull()  # HACK: silence ICCP warnings about bad PNG.
-        wx.Image.SetDefaultLoadFlags(0)
-        img = wx.Bitmap(str(self.background_img), wx.BITMAP_TYPE_PNG)
+        wx.Image.SetDefaultLoadFlags(0)  # HACK: silence ICCP warnings about bad PNG.
+        img = self.get_bitmap(self.background_img)
         if not img:
             logger.error("Background '%s' cannot be loaded." % self.background_img)
         dc.DrawBitmap(img, 0, 0)
-        #del no_log
+        self._refresh_bg = False
 
 
 class BadXmlDetails(wx.Frame):
