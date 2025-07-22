@@ -1436,6 +1436,8 @@ class PreviewEvent(wx.Panel):
         self.set_bgimg(ceevent)
         self.build_widgets(ceevent)
         self.Layout()
+        if wx.PlatformInformation().GetOperatingSystemIdName() != "Unix":
+            self.Refresh()
 
     @lru_cache
     def get_bitmap(self, img):
