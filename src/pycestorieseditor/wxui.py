@@ -1447,10 +1447,13 @@ class PreviewEvent(wx.Panel):
             rect = self.GetUpdateRegion().GetBox()
             dc.SetClippingRegion(rect)
         dc.Clear()
-        no_log = wx.LogNull()  # HACK: silence ICCP warnings about bad PNG.
+        #no_log = wx.LogNull()  # HACK: silence ICCP warnings about bad PNG.
+        wx.Image.SetDefaultLoadFlags(0)
         img = wx.Bitmap(str(self.background_img), wx.BITMAP_TYPE_PNG)
+        if not img:
+            logger.error("Background '%s' cannot be loaded." % self.background_img)
         dc.DrawBitmap(img, 0, 0)
-        del no_log
+        #del no_log
 
 
 class BadXmlDetails(wx.Frame):
