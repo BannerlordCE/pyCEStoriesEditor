@@ -403,7 +403,7 @@ class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
         raise NotImplementedError
 
     def _first_flex(self, pane):
-        cp_flex = wx.FlexGridSizer(4, (5, 5))
+        cp_flex = wx.FlexGridSizer(4, wx.Size(5, 5))
         cp_flex.AddGrowableCol(1)
         cp_flex.AddGrowableCol(3)
         for label, value in self._data.items():
@@ -417,8 +417,8 @@ class CeComplexCollapsiblePanel(ABCCollapsiblePanel):
     def populate(self):
         pane = self.GetPane()
         cp_box = wx.BoxSizer(wx.VERTICAL)
-        cp_box.SetMinSize((800, -1))
-        cp_flex3 = wx.FlexGridSizer(2, (5, 5))
+        cp_box.SetMinSize(wx.Size(800, -1))
+        cp_flex3 = wx.FlexGridSizer(2, wx.Size(5, 5))
         cp_flex3.AddGrowableCol(1)
         if self._data:
             cp_box.Add(self._first_flex(pane), 0, wx.EXPAND | wx.ALL, 5)
@@ -724,9 +724,9 @@ class CeStripSettings(CeCollapsiblePanel):
 class DwTabOne(wx_scrolled.ScrolledPanel):
     def __init__(self, parent, ceevent: Ceevent):
         wx_scrolled.ScrolledPanel.__init__(self, parent, style=wx.TAB_TRAVERSAL)
-        self.SetMinSize((1024, -1))
+        self.SetMinSize(wx.Size(1024, -1))
         core = wx.BoxSizer(wx.VERTICAL)
-        fsizer = wx.FlexGridSizer(2, gap=(5, 5))
+        fsizer = wx.FlexGridSizer(2, gap=wx.Size(5, 5))
 
         wx_label_text(self, fsizer, label="Filename", text=ceevent.xmlfile)
         wx_label_text(self, fsizer, label="Event Name", text=ceevent.name.value)
@@ -1243,7 +1243,7 @@ class DetailWindow(wx.Frame):
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title=title, *args, **kwargs)
         self.SetIcon(wx.ArtProvider.GetIcon('ICON_DETAILS'))
-        self.SetMinSize((800, 600))
+        self.SetMinSize(wx.Size(800, 600))
         self.previewframe = None
 
         nb = wx.Notebook(self, wx.ID_ANY, style=wx.NB_LEFT)
@@ -1283,7 +1283,7 @@ class DetailWindow(wx.Frame):
         closebutton.Realize()
 
         self.SetSizerAndFit(sizer)
-        self.SetSize((800, 600))
+        self.SetSize(wx.Size(800, 600))
         self.CenterOnScreen()
 
         self.Bind(wx.EVT_CLOSE, self.on_close2)
@@ -1304,7 +1304,7 @@ class DetailWindow(wx.Frame):
 
     def on_preview_click(self, evt, ceevent):
         self.Enable(False)
-        size = (445, 805)
+        size = wx.Size(445, 805)
         self.previewframe = wx.Frame(
             self, size=size, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER
         )
@@ -1371,7 +1371,7 @@ class PreviewEvent(wx.Panel):
         )
         text.SetMaxHeight(400)
         vsizer.Add(text, 0, wx.EXPAND | wx.ALL, 5)
-        vsizer.Add((1, 1), 1, wx.EXPAND)
+        vsizer.Add(wx.Size(1, 1), 1, wx.EXPAND)
         buttonsize = (-1, 20)
         for opt in ceevent.options.option:
             if not opt.trigger_event_name and not opt.trigger_events:
@@ -1412,11 +1412,11 @@ class PreviewEvent(wx.Panel):
                     ssizer.Add(t, 0, wx.LEFT, 10)
                     sizer.Add(ssizer, 0, wx.ALL, 5)
 
-        hsizer.Add((1, 1), 1, wx.EXPAND)
+        hsizer.Add(wx.Size(1, 1), 1, wx.EXPAND)
         hsizer.Add(sizer, 0, wx.TOP, 100)
-        hsizer.Add((1, 1), 0, wx.ALL, 75)
+        hsizer.Add(wx.Size(1, 1), 0, wx.ALL, 75)
         vsizer.Add(hsizer, 0, wx.ALL, 5)
-        vsizer.Add((1, 1), 0, wx.ALL, 75)
+        vsizer.Add(wx.Size(1, 1), 0, wx.ALL, 75)
         self.SetSizer(vsizer)
 
     def on_button_clicked(self, evt):
@@ -1611,7 +1611,7 @@ class MainWindow(wx.Frame):
         self._indices: list[indice] = []
 
         self.Center()
-        self.SetSizeHints(800, 400, 1024, 768)
+        self.SetSizeHints(800, 400)
 
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
         self.window_1 = wx.SplitterWindow(self.panel_1, wx.ID_ANY)

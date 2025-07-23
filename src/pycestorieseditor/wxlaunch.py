@@ -156,7 +156,8 @@ class ArtProvider(wx.ArtProvider):
             return self._process_svg(svgicon_preview, size)
         return wx.NullBitmap
 
-    def _process_svg(self, svgstring, size):
+    @staticmethod
+    def _process_svg(svgstring, size):
         svg = wx.svg.SVGimage.CreateFromBytes(svgstring)
         return svg.ConvertToScaledBitmap(size)
 
@@ -204,6 +205,8 @@ class CeSettingsWindow(wx.Frame):
         self._paths: dict[str, CePath] = {}
         self._conffile = conffile
 
+        self.SetIcon(wx.ArtProvider.GetIcon('ICON'))
+        self.SetSizeHints(800, 400)
         panel = wx.Panel(self)
         window = ScrolledPanel(panel, wx.ID_ANY)
         window.SetupScrolling(scroll_x=False)
