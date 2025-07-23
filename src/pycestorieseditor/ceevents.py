@@ -20,7 +20,7 @@ from itertools import count, dropwhile
 from pathlib import Path
 
 from xsdata_attrs.bindings import XmlParser
-import xmlschema
+import Refreshxmlschema
 
 from pycestorieseditor.ceevents_template import Ceevent, SkillsRequired, SkillsToLevel, ReqHeroSkill
 from pycestorieseditor.pil2wx import default_background

@@ -1430,15 +1430,14 @@ class PreviewEvent(wx.Panel):
                 style=wx.OK | wx.CENTER | wx.ICON_WARNING,
             )
             dialog.ShowModal()
-            return False
+            return
 
-        self._refresh_bg = True
         self.DestroyChildren()
         self.ClearBackground()
         self.set_bgimg(ceevent)
         self.build_widgets(ceevent)
         self.Layout()
-        if wx.PlatformInformation().GetOperatingSystemIdName() != "Unix":
+        if "Windows" in wx.PlatformInformation().GetOperatingSystemIdName():
             self.Refresh()
 
     @lru_cache
