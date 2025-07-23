@@ -222,6 +222,8 @@ def sanitize_attr_value(attr):
     # Don't sanitize lists, their content is sanitized later.
     if isinstance(attr, list):
         return attr
+    if hasattr(attr, "value"):
+        return str(attr.value)
     return str(attr)
 
 
@@ -345,7 +347,7 @@ class SimpleListData:
 class ABCCollapsiblePanel(wx.CollapsiblePane):
     def __init__(self, parent, label, cb):
         super().__init__(parent, label=label, style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE)
-        self.SetMinSize((600, -1))
+        self.SetMinSize(wx.Size(600, -1))
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, cb, self)
         self._data = {}
         self._cld: list[ComplexListData | SimpleListData] = []
@@ -1061,7 +1063,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 GenericOptionCtrl,
                 ["id", "max", "min", "ref"],
             )
-            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills Required"), 0, wx.LEFT, 5)
+            fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits Required"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
 
         if option.skills_to_level and option.skills_to_level.skill:
@@ -1343,7 +1345,6 @@ class PreviewEvent(wx.Panel):
         self.SetBackgroundStyle(wx.BG_STYLE_ERASE)
         self.frame = parent
         self.background_img: Optional[os.PathLike] = None
-        self._refresh_bg = True
 
         self.set_bgimg(ceevent)
         self.build_widgets(ceevent)
@@ -1447,8 +1448,6 @@ class PreviewEvent(wx.Panel):
         return wx.Bitmap(str(img), wx.BITMAP_TYPE_PNG)
 
     def on_erase_background(self, evt):
-        if not self._refresh_bg:
-            return
         dc = evt.GetDC()
         if not dc:
             dc = wx.ClientDC(self)
@@ -1460,7 +1459,6 @@ class PreviewEvent(wx.Panel):
         if not img:
             logger.error("Background '%s' cannot be loaded." % self.background_img)
         dc.DrawBitmap(img, 0, 0)
-        self._refresh_bg = False
 
 
 class BadXmlDetails(wx.Frame):
