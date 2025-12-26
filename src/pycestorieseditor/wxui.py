@@ -7,11 +7,12 @@ import logging
 import os
 import re
 from collections import namedtuple
+from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from functools import lru_cache
 from itertools import chain
-from typing import Callable, TypeVar, Optional
+from typing import TypeVar, Optional
 
 import matplotlib.pyplot as plt
 import wx
@@ -141,6 +142,7 @@ def pyg2sci_properties(properties: str) -> str:
 # * https://github.com/wxWidgets/wxWidgets/blob/3bd50638863a379570f7f93d27d91ba297995369/include/wx/stc/stc.h#L736-L747
 def pygment2scite(styles):
     for pygtoken, properties in styles.items():
+        scitoken = None
         match pygtoken:
             case token.Name.Tag:
                 scitoken = [stc.STC_H_TAG, stc.STC_H_TAGEND, stc.STC_H_TAGUNKNOWN]
@@ -201,7 +203,7 @@ def wx_label_list(parent, sizer, label, data):
 
 
 class ABCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
-    def __init__(self, parent, data, headers):
+    def __init__(self, parent, data, headers, keys=None):
         super().__init__(
             parent, wx.ID_ANY, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_NONE
         )
@@ -296,7 +298,7 @@ class ListCtrlPanel(wx.Panel, ColumnSorterMixin):
         parent,
         data: list,
         headers: tuple[str, ...],
-        lobject: Callable[[ListCtrlPanel, list, tuple, Optional[list]], C],
+        lobject: Callable[[ListCtrlPanel|ABCtrl|BackgroundListCtrl, list, tuple, Optional[list]], C],
         keys=None,
     ):
         super().__init__(parent, wx.ID_ANY, style=wx.WANTS_CHARS)
@@ -304,7 +306,7 @@ class ListCtrlPanel(wx.Panel, ColumnSorterMixin):
         if lobject is GenericOptionCtrl:
             self.blc = lobject(self, data, headers, keys)
         else:
-            self.blc = lobject(self, data, headers)
+            self.blc = lobject(self, data, headers, None)
 
         for ri, idx, rdata in self.blc.populate():
             self.itemDataMap[ri] = rdata
@@ -566,16 +568,12 @@ class CeOptReqs(CeCollapsible2ColPanel):
             "req_hero_captor_relation_%s",
             "req_hero_prostitute_level_%s",
             "req_hero_slave_level_%s",
-            "req_hero_trait_level_%s",
-            "req_hero_skill_level_%s",
             "req_hero_troops_%s",
             "req_hero_captives_%s",
             "req_hero_female_troops_%s",
             "req_hero_female_captives_%s",
             "req_hero_male_troops_%s",
             "req_hero_male_captives_%s",
-            "req_captor_trait_level_%s",
-            "req_captor_skill_level_%s",
             "req_troops_%s",
             "req_captives_%s",
             "req_female_troops_%s",
@@ -589,10 +587,6 @@ class CeOptReqs(CeCollapsible2ColPanel):
             [
                 "req_hero_party_have_item",
                 "req_captor_party_have_item",
-                "req_captor_skill",
-                "req_captor_trait",
-                "req_hero_skill",
-                "req_hero_trait",
             ],
             chain.from_iterable(map(lambda x: [x % y for y in ("above", "below")], s)),
         )
@@ -611,16 +605,12 @@ class CeEvtReqs(CeCollapsible2ColPanel):
             "req_hero_captor_relation_%s",
             "req_hero_prostitute_level_%s",
             "req_hero_slave_level_%s",
-            "req_hero_trait_level_%s",
-            "req_hero_skill_level_%s",
             "req_hero_troops_%s",
             "req_hero_captives_%s",
             "req_hero_female_troops_%s",
             "req_hero_female_captives_%s",
             "req_hero_male_troops_%s",
             "req_hero_male_captives_%s",
-            "req_captor_trait_level_%s",
-            "req_captor_skill_level_%s",
             "req_troops_%s",
             "req_captives_%s",
             "req_female_troops_%s",
@@ -637,10 +627,6 @@ class CeEvtReqs(CeCollapsible2ColPanel):
                 "req_hero_max_age",
                 "req_hero_party_have_item",
                 "req_captor_party_have_item",
-                "req_captor_skill",
-                "req_captor_trait",
-                "req_hero_skill",
-                "req_hero_trait",
             ],
             chain.from_iterable(map(lambda x: [x % y for y in ("above", "below")], s)),
         )
@@ -974,6 +960,8 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
         core, fsizer = self.get_sizers()
         option = self._option
         wx_label_text(self, fsizer, label="Option text", text=option.option_text)
+        if isinstance(option, MenuOption):
+            wx_label_text(self, fsizer, label="Use conditions", text=option.use_conditions)
         wx_label_list(
             self,
             fsizer,
@@ -1045,15 +1033,6 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
-        elif (
-            RestrictedListOfConsequencesValue.CHANGE_TRAIT
-            in option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
-        ):
-            wx_label_text(self, fsizer, label="Traits to level", text=option.trait_to_level.value)
-            if option.trait_total:
-                wx_label_text(self, fsizer, label="Trait Total", text=option.trait_total.value)
-            elif option.trait_xptotal:
-                wx_label_text(self, fsizer, label="Trait XP Total", text=option.trait_xptotal.value)
 
         if option.traits_required:
             table = ListCtrlPanel(
@@ -1076,15 +1055,6 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
-        elif (
-            RestrictedListOfConsequencesValue.CHANGE_SKILL
-            in option.multiple_restricted_list_of_consequences.restricted_list_of_consequences
-        ):
-            wx_label_text(self, fsizer, label="Skill to Level", text=option.skill_to_level.value)
-            if option.skill_total:
-                wx_label_text(self, fsizer, label="Skill Total", text=option.skill_total.value)
-            elif option.skill_xptotal:
-                wx_label_text(self, fsizer, label="Skill XP Total", text=option.skill_xptotal.value)
 
         if option.skills_required:
             table = ListCtrlPanel(
@@ -1103,6 +1073,7 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
                 option.clan_options.clan_option,
                 ("Ref", "Action", "Clan", "Hide Notification"),
                 ClanOptionCtrl,
+                [],
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Clan Options"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
