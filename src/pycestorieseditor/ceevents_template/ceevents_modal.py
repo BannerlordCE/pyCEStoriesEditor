@@ -866,6 +866,9 @@ class RestrictedListOfConsequencesValue(Enum):
 class FlagsColors(Enum):
     CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT = "#007500"
     WAITING_MENU = "#11d116"
+    BIRTH_ALTERNATIVE = "#d111d1"
+    DEATH_ALTERNATIVE = "#2f2f2f"
+    DESERTION_ALTERNATIVE = "#8a8a8a"
 
 
 class RestrictedListOfFlagsType(Enum):
@@ -982,9 +985,6 @@ class RestrictedListOfFlagsType(Enum):
     @property
     def color(self):
         return FlagsColors[self.name].value
-
-
-ColourFlags = [("CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT", "#007500"), ("WAITING_MENU", "#11d116")]
 
 
 @define
@@ -3577,6 +3577,12 @@ class Ceevent:
             return RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT.color
         elif RestrictedListOfFlagsType.WAITING_MENU in flags:
             return RestrictedListOfFlagsType.WAITING_MENU.color
+        elif RestrictedListOfFlagsType.BIRTH_ALTERNATIVE in flags:
+            return RestrictedListOfFlagsType.BIRTH_ALTERNATIVE.color
+        elif RestrictedListOfFlagsType.DEATH_ALTERNATIVE in flags:
+            return RestrictedListOfFlagsType.DEATH_ALTERNATIVE.color
+        elif RestrictedListOfFlagsType.DESERTION_ALTERNATIVE in flags:
+            return RestrictedListOfFlagsType.DESERTION_ALTERNATIVE.color
         else:
             for flag in flags:
                 try:

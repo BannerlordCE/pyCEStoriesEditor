@@ -803,7 +803,8 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
                 text=ceevent.can_only_happen_nr_of_times.value,
             )
 
-        wx_label_text(self, fsizer, "Sexual Content", text=str(ceevent.sexual_content.value))
+        with suppress(AttributeError):
+            wx_label_text(self, fsizer, "Sexual Content", text=str(ceevent.sexual_content.value))
         with suppress(AttributeError):
             wx_label_text(
                 self, fsizer, label="Pregnancy Risk Modifier", text=ceevent.pregnancy_risk_modifier.value
@@ -855,13 +856,6 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Skills to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 0)
-        elif (
-            RestrictedListOfConsequencesValue.CHANGE_SKILL
-            in ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags
-        ):
-            wx_label_text(self, fsizer, label="SkillTotal", text=ceevent.skill_total.value)
-            wx_label_text(self, fsizer, label="SkillXPTotal", text=ceevent.skill_xptotal.value)
-            wx_label_text(self, fsizer, label="SkillToLevel", text=ceevent.skill_to_level.value)
 
         if ceevent.traits_required:
             table = ListCtrlPanel(
@@ -884,13 +878,6 @@ class DwTabOne(wx_scrolled.ScrolledPanel):
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Traits to level"), 0, wx.LEFT, 5)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
-        elif (
-            RestrictedListOfConsequencesValue.CHANGE_TRAIT
-            in ceevent.multiple_restricted_list_of_flags.restricted_list_of_flags
-        ):
-            wx_label_text(self, fsizer, label="TraitTotal", text=ceevent.trait_total.value)
-            wx_label_text(self, fsizer, label="TraitXPTotal", text=ceevent.trait_xptotal.value)
-            wx_label_text(self, fsizer, label="TraitToLevel", text=ceevent.trait_to_level.value)
 
         fsizer.AddGrowableCol(1)
         core.Add(fsizer, 1, wx.EXPAND)
@@ -1440,9 +1427,9 @@ class BadXmlDetails(wx.Frame):
         kwargs['style'] = kwargs.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super().__init__(parent, title="PCE: Troubleshooting xml files", *args, **kwargs)
         panel = wx_scrolled.ScrolledPanel(self, wx.ID_ANY)
-        panel.SetMinSize((800, -1))
+        panel.SetMinSize(wx.Size(1024, 600))
 
-        sizer = wx.FlexGridSizer(2, (5, 5))
+        sizer = wx.FlexGridSizer(2, wx.Size(5, 5))
         sizer.AddGrowableCol(1)
         for k, v in data.bad_xml:
             wx_label_text(panel, sizer, "File:", ce_abbr_path(k), tooltip=k)
@@ -1585,7 +1572,7 @@ class MainWindow(wx.Frame):
         self._indices: list[indice] = []
 
         self.Center()
-        self.SetSizeHints(800, 400)
+        self.SetSizeHints(800, 900)
 
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
         self.window_1 = wx.SplitterWindow(self.panel_1, wx.ID_ANY)
@@ -1633,16 +1620,33 @@ class MainWindow(wx.Frame):
         rightsizer = wx.BoxSizer(wx.VERTICAL)
 
         # - Legend ---
-        lg_one = Legend(
-            self.panel_leg,
-            RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT.value,
-            RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT.color,
-        )
-        lg_two = Legend(
-            self.panel_leg,
-            RestrictedListOfFlagsType.WAITING_MENU.value,
-            RestrictedListOfFlagsType.WAITING_MENU.color,
-        )
+        legends = [
+            Legend(
+                self.panel_leg,
+                RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT.value,
+                RestrictedListOfFlagsType.CAN_ONLY_BE_TRIGGERED_BY_OTHER_EVENT.color,
+            ),
+            Legend(
+                self.panel_leg,
+                RestrictedListOfFlagsType.WAITING_MENU.value,
+                RestrictedListOfFlagsType.WAITING_MENU.color,
+            ),
+            Legend(
+                self.panel_leg,
+                RestrictedListOfFlagsType.BIRTH_ALTERNATIVE.value,
+                RestrictedListOfFlagsType.BIRTH_ALTERNATIVE.color,
+            ),
+            Legend(
+                self.panel_leg,
+                RestrictedListOfFlagsType.DEATH_ALTERNATIVE.value,
+                RestrictedListOfFlagsType.DEATH_ALTERNATIVE.color,
+            ),
+            Legend(
+                self.panel_leg,
+                RestrictedListOfFlagsType.DESERTION_ALTERNATIVE.value,
+                RestrictedListOfFlagsType.DESERTION_ALTERNATIVE.color,
+            ),
+        ]
         # - End Legend ---
         searchlbl = wx.StaticText(
             self.panel_search,
@@ -1666,8 +1670,8 @@ class MainWindow(wx.Frame):
         topsizer.Add(self.window_1, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         self.leftsizer.Add(self.panel_leg, 2, wx.EXPAND | wx.ALL, 5)
-        legendsizer.Add(lg_one, 0, wx.EXPAND | wx.LEFT, 5)
-        legendsizer.Add(lg_two, 0, wx.EXPAND | wx.LEFT, 5)
+        for legend in legends:
+            legendsizer.Add(legend, 0, wx.EXPAND | wx.LEFT, 5)
 
         self.leftsizer.Add(self.panel_search_indices, 1, wx.EXPAND | wx.ALL, 5)
 
