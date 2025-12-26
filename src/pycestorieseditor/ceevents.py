@@ -22,7 +22,7 @@ from pathlib import Path
 from xsdata_attrs.bindings import XmlParser
 import xmlschema
 
-from pycestorieseditor.ceevents_template import Ceevent, SkillsRequired, SkillsToLevel, ReqHeroSkill
+from pycestorieseditor.ceevents_template import Ceevent, SkillsRequired, SkillsToLevel
 from pycestorieseditor.pil2wx import default_background
 
 logger = logging.getLogger(__name__)
@@ -260,8 +260,6 @@ def get_skill_text_value(element):
         return [skill.id for skill in element.skill_required]
     if isinstance(element, SkillsToLevel):
         return [skill.id for skill in element.skill]
-    if isinstance(element, ReqHeroSkill):
-        return [element]
     raise Exception("element of type '%s' not handled" % type(element))
 
 
