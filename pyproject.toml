@@ -15,7 +15,7 @@ packages = [{include = "pycestorieseditor", from = "src"}]
 pycestorieseditor = 'pycestorieseditor.__main__:main'
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.12"
+python = ">=3.11,<3.14"
 graphviz = "^0.20.1"
 xmlschema = "^3.0"
 attrs = "^23.1"
