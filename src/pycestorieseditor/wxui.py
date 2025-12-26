@@ -108,13 +108,17 @@ def values_as_list(modalitem):
 
 
 def vfm(modalitem):
+    """Value from modal object.
+
+    If the modal object has a value attribue, return it. Otherwise, return an empty string.
+    """
     if modalitem and hasattr(modalitem, 'value'):
         return modalitem.value
     return ""
 
 
-# HACK around terrain types being multiple levels of list
 def values_as_list_tt(tt):
+    """HACK around terrain types being multiple levels of list"""
     return [x.terrain_type[0].value for x in tt]
 
 
