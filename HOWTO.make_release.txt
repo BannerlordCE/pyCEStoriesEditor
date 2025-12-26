@@ -1,0 +1,17 @@
+This project uses github actions to compile and package itself for windows user.
+All the maintainer has to do at moment of release is create a tag named under
+the semantic version system (see https://semver.org).
+
+To do so, use this command:
+
+   git tag -s <version>
+
+It will open your configured text editor for you to write the release notes.
+
+The release notes must follow the following template. First line must start with the version number. Followed with an empty line, then the notes.
+
+```
+<version>
+
+Write notes here
+```
