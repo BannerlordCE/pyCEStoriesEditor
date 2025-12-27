@@ -995,9 +995,9 @@ class DwTabOption(wx_scrolled.ScrolledPanel):
             table = ListCtrlPanel(
                 self,
                 option.trigger_events.trigger_event,
-                ("Event Name", "Event Weight", "Event Use Conditions"),
+                ("Event Name", "Event Weight", "Event Use Conditions", "Use Conditions from"),
                 GenericOptionCtrl,
-                ["event_name", "event_weight", "event_use_conditions"],
+                ["event_name", "event_weight", "event_use_conditions", "event_use_conditions"],
             )
             fsizer.Add(wx.StaticText(self, wx.ID_ANY, label="Trigger Events"), 0, 0, 0)
             fsizer.Add(table, 1, wx.EXPAND | wx.ALL, 5)
