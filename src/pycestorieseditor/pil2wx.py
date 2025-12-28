@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Licensed under the EUPL v1.2
+# © 2025-current bicobus <bicobus@keemail.me>
 from __future__ import annotations
 
 import wx
