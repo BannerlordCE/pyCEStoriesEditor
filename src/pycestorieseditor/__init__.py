@@ -13,10 +13,11 @@ CE_TARGET_PATH = os.getenv("CE_TARGET_PATH")
 PORTABLE = True
 APPNAME = "pyCeStoriesViewer"
 
+logging_file_handler = logging.FileHandler(filename=os.path.join(os.getcwd(), "pce.log"), mode="w")
 logging.basicConfig(
     level=logging.INFO,  # DEBUG,
     handlers=[
-        logging.FileHandler(filename=os.path.join(os.getcwd(), "pce.log"), mode="w"),
+        logging_file_handler,
         # logging.StreamHandler()
     ],
     format="%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s"

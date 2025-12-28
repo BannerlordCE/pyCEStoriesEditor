@@ -11,7 +11,6 @@ import inspect
 import logging
 import logging.handlers
 import multiprocessing
-import queue
 import os
 from collections import namedtuple
 from xml.etree.ElementTree import ParseError as xmlParseError
@@ -22,6 +21,7 @@ from pathlib import Path
 from xsdata_attrs.bindings import XmlParser
 import xmlschema
 
+from pycestorieseditor import logging_file_handler
 from pycestorieseditor.ceevents_template import Ceevent, SkillsRequired, SkillsToLevel
 from pycestorieseditor.pil2wx import default_background
 
@@ -354,6 +354,11 @@ def get_bigbagxml() -> BigBagXml:
 big_bag_xml: BigBagXml | None = None
 
 
+def logging_process(queuelog):
+    listener = logging.handlers.QueueListener(queuelog, logging_file_handler)
+    listener.start()
+
+
 def process_module(xmlfiles: list, cb=None):
     """Process the various xml files present in a given module
 
@@ -365,8 +370,8 @@ def process_module(xmlfiles: list, cb=None):
 
     parser = XmlParser()
     xsd = get_xsdfile()
-    queuelog = multiprocessing.Manager().Queue(-1)
-    queuecb = multiprocessing.Manager().Queue(-1)
+    queuelog = multiprocessing.Queue()
+    logging.handlers.QueueHandler(queuelog)
 
     # Pool(processes) uses os.cpu_count() if none value is provided
     errcount = 0
@@ -374,22 +379,16 @@ def process_module(xmlfiles: list, cb=None):
         chunks = cpackage(len(xmlfiles))
         logger.info("Multiprocessing using %s chunks.", chunks)
         cb("Analyzing xml files...")
+        p1 = multiprocessing.Process(target=logging_process, args=(queuelog,))
+        p1.start()
         res = pool.starmap_async(
             process_file,
-            ((xmlfile, xsd, parser, queuelog, queuecb) for xmlfile in xmlfiles),
+            ((xmlfile, xsd, parser) for xmlfile in xmlfiles),
             chunksize=chunks,
         )
-        try:
-            timeout = None
-            while fn := queuecb.get(timeout=timeout):
-                timeout = 0.2
-                cb(f"Processing {fn}...")
-        except queue.Empty:
-            ...
+        p1.join()
 
-        qh = logging.handlers.QueueHandler(queuelog)
         mlogger = logging.getLogger(__name__)
-        mlogger.addHandler(qh)
 
         for bucket, skills, errs in res.get():
             if errs:
@@ -420,14 +419,11 @@ def process_module(xmlfiles: list, cb=None):
 
 
 def process_file(
-    xmlfile, xsd, parser, queuelog, queuecb
+    xmlfile, xsd, parser
 ) -> tuple[list[Ceevent], list, tuple | bool]:
     x = Path(xmlfile)
-    qh = logging.handlers.QueueHandler(queuelog)
     mlogger = logging.getLogger(__name__)
-    mlogger.addHandler(qh)
     mlogger.info("-start- %s", x.name)
-    queuecb.put(x.name)
     bucket = []
     try:
         xsobjects = xsd.to_objects(xmlfile)
