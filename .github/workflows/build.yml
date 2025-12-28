@@ -17,7 +17,7 @@ jobs:
       run:
         shell: bash
     env:
-      PYTHON: "3.11"
+      PYTHON: "3.13"
     steps:
       - name: Define Release Type
         id: release_type
@@ -32,7 +32,7 @@ jobs:
           fi
           echo "VERSION=$REF" >> $GITHUB_OUTPUT
           echo $REF
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON }}
@@ -46,7 +46,7 @@ jobs:
       - name: Configure poetry
         run: poetry config virtualenvs.in-project true
       - name: Setup cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache
         with:
           path: .venv
@@ -63,13 +63,13 @@ jobs:
 
       - name: Packaging
         run: |
-          cd build/exe.win-amd64-3.11
+          cd build/exe.win-amd64-3.13
           cp ../../LICENSE .
           7z a ../../pyCeStoriesViewer-win64-${GITHUB_REF##*/}.7z .
 
       - name: Release (debug)
         if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'debug' }}
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
           prerelease: True
@@ -80,7 +80,7 @@ jobs:
 
       - name: Release (beta)
         if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'beta' }}
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
           prerelease: True
@@ -88,7 +88,7 @@ jobs:
 
       - name: Release (stable)
         if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'release' }}
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
           token: ${{ secrets.GITHUB_TOKEN }}
