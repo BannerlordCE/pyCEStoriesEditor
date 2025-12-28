@@ -321,13 +321,13 @@ def ce_abbr_path(path):
 
 class BigBagXml:
     def __init__(self):
-        self._bad_xml = []
+        self._bad_xml: list[tuple[str, str]] = []
 
     def add_bad_xmlfile(self, xmlfile, msg):
         self._bad_xml.append((xmlfile, msg))
 
     def to_dict(self):
-        return dict(zip(*zip(*self._bad_xml)))
+        return dict(self._bad_xml)
 
     @property
     def bad_xml(self):
@@ -340,18 +340,18 @@ class BigBagXml:
         return len(self._bad_xml)
 
 
-def init_bigbadxml():
-    global big_bad_xml
-    big_bad_xml = BigBagXml()
-    return big_bad_xml
+def init_bigbagxml() -> BigBagXml:
+    global big_bag_xml
+    big_bag_xml = BigBagXml()
+    return big_bag_xml
 
 
-def get_bigbadxml():
-    global big_bad_xml
-    return big_bad_xml
+def get_bigbagxml() -> BigBagXml:
+    global big_bag_xml
+    return big_bag_xml
 
 
-big_bad_xml: BigBagXml | None = None
+big_bag_xml: BigBagXml | None = None
 
 
 def process_module(xmlfiles: list, cb=None):
@@ -394,7 +394,7 @@ def process_module(xmlfiles: list, cb=None):
         for bucket, skills, errs in res.get():
             if errs:
                 errcount += 1
-                bbx = get_bigbadxml()
+                bbx = get_bigbagxml()
                 bbx.add_bad_xmlfile(errs[0], errs[1])
                 continue
             if cb:

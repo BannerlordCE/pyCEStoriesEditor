@@ -43,8 +43,8 @@ from pycestorieseditor.ceevents import (
     get_imgbucket,
     init_index,
     get_indexes,
-    init_bigbadxml,
-    get_bigbadxml,
+    init_bigbagxml,
+    get_bigbagxml,
     ce_abbr_path,
     populate_children,
     event_ancestry_errors,
@@ -1334,7 +1334,7 @@ class PreviewEvent(wx.Panel):
         text.SetMaxHeight(400)
         vsizer.Add(text, 0, wx.EXPAND | wx.ALL, 5)
         vsizer.Add(wx.Size(1, 1), 1, wx.EXPAND)
-        buttonsize = (-1, 20)
+        buttonsize = wx.Size(-1, 20)
         for opt in ceevent.options.option:
             if not opt.trigger_event_name and not opt.trigger_events:
                 btn = wx.Button(
@@ -1567,7 +1567,7 @@ class MainWindow(wx.Frame):
         self.SetIcon(wx.ArtProvider.GetIcon('ICON'))
         self._conffile = conffile
         self._load_conf()
-        bbx = get_bigbadxml()
+        bbx = get_bigbagxml()
 
         self._indices: list[indice] = []
 
@@ -1753,7 +1753,7 @@ class MainWindow(wx.Frame):
         pulse("Init xsd file...")
         init_xsdfile(conf.Read("CE_XSDFILE"))
         pulse("Big Bad XML...")
-        init_bigbadxml()
+        init_bigbagxml()
         try:
             process_module(xmlfiles, pulse)
         except Exception as e:
@@ -1834,7 +1834,7 @@ class MainWindow(wx.Frame):
         event.Skip()
 
     def _on_bad_xml_clicked(self, evt):
-        x = BadXmlDetails(self, get_bigbadxml())
+        x = BadXmlDetails(self, get_bigbagxml())
         x.Show()
 
     def _on_ancestry_btn_clicked(self, evt):

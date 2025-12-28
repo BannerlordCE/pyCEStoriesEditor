@@ -22,7 +22,7 @@ from pycestorieseditor.ceevents import (
     CePath,
     init_index,
     get_xsdfile,
-    init_bigbadxml,
+    init_bigbagxml,
 )
 from pycestorieseditor.config import get_config
 from pycestorieseditor.wxui import MainWindow
@@ -410,7 +410,7 @@ class CeSettingsWindow(wx.Frame):
 
         create_ebucket()
         init_index()
-        init_bigbadxml()
+        init_bigbagxml()
         errs = 0
         for module in self._paths.values():
             pulse("Processing module... {}".format(module.name))
