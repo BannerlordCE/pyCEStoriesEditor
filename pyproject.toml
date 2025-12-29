@@ -25,9 +25,9 @@ pygments = "^2.15"
 wxpython = "^4.2"
 pillow = ">=12,<13.0"
 platformdirs = "^4.2"
-matplotlib = "^3.8"
+matplotlib = "^3.10"
 netgraph = "^4.13"
-
+numpy = "<2.4"
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "*"
