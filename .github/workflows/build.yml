@@ -5,7 +5,7 @@ on:
     branches:
       - debug*
     tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+[a-z]?
       - v[0-9]+.[0-9]+.[0-9]+-*
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
           REF="${GITHUB_REF##*/}"
           if [[ $REF =~ "v"([0-9]\.)+[0-9]"-beta" ]]; then
             echo "RELEASE_TYPE=beta" >> $GITHUB_OUTPUT
-          elif [[ $REF =~ "v"([0-9]\.)+[0-9]$ ]]; then
+          elif [[ $REF =~ "v"([0-9]\.)+[0-9][a-z]?$ ]]; then
             echo "RELEASE_TYPE=release" >> $GITHUB_OUTPUT
           elif [[ $REF =~ "debug"("-".*)? ]]; then
             echo "RELEASE_TYPE=debug" >> $GITHUB_OUTPUT
