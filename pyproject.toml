@@ -21,7 +21,7 @@ xmlschema = "^3.0"
 attrs = "^25"
 xsdata = ">=25,<26"
 xsdata-attrs = {extras = ["cli"], version = ">=24,<25"}
-pygments = "^2.15"
+pygments = "^2.19"
 wxpython = "^4.2"
 pillow = ">=12,<13.0"
 platformdirs = "^4.2"
