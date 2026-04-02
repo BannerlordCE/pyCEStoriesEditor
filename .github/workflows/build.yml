@@ -69,7 +69,7 @@ jobs:
 
       - name: Release (debug)
         if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'debug' }}
-        uses: ncipollo/release-action@v1.20.0
+        uses: ncipollo/release-action@v1.21.0
         with:
           artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
           prerelease: True
@@ -80,7 +80,7 @@ jobs:
 
       - name: Release (beta)
         if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'beta' }}
-        uses: ncipollo/release-action@v1.20.0
+        uses: ncipollo/release-action@v1.21.0
         with:
           artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
           prerelease: True
@@ -88,7 +88,7 @@ jobs:
 
       - name: Release (stable)
         if: ${{ steps.release_type.outputs.RELEASE_TYPE == 'release' }}
-        uses: ncipollo/release-action@v1.20.0
+        uses: ncipollo/release-action@v1.21.0
         with:
           artifacts: pyCeStoriesViewer-win64-${{ steps.release_type.outputs.VERSION }}.7z
           token: ${{ secrets.GITHUB_TOKEN }}
