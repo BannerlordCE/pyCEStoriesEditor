@@ -33,7 +33,7 @@ jobs:
           echo "VERSION=$REF" >> $GITHUB_OUTPUT
           echo $REF
       - uses: actions/checkout@v7.0.0
-      - uses: actions/setup-python@v6.3.0
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON }}
       - name: Bootstrap Poetry
